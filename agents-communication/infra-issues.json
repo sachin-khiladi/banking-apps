@@ -1,0 +1,12 @@
+[
+  {
+    "resource_group": "rg-bankapi-dev",
+    "resource_name": "ca-bankapi-dev",
+    "resource_type": "container app",
+    "issue_summary": "Unable to verify deployment health: Azure MCP diagnostics not available in this environment.",
+    "evidence": ["Azure MCP tools are not accessible from this CLI session."],
+    "severity": "medium",
+    "recommended_fix": "Run AppLens diagnostics for the Container App in Azure Portal or via Azure CLI with Log Analytics queries; confirm revision health, ingress, and container start events.",
+    "owner": "infra"
+  }
+]

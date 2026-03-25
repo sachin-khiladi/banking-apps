@@ -1,0 +1,12 @@
+[
+  {
+    "resource_group": "rg-bankapi-dev",
+    "resource_name": "ca-bankapi-dev",
+    "resource_type": "container app",
+    "issue_summary": "Application health not verified: no telemetry access from this environment.",
+    "evidence": ["App Insights/Log Analytics access unavailable via MCP tools here."],
+    "severity": "medium",
+    "recommended_fix": "Check Container App logs and App Insights for startup exceptions, probe failures, or dependency errors; confirm /health returns 200.",
+    "owner": "coding"
+  }
+]
