@@ -158,13 +158,17 @@ class TestAuthenticateUser:
         assert user["role"] == "bank_employee"
 
     @pytest.mark.asyncio
-    async def test_authenticate_user_wrong_password_raises_invalid_credentials(self) -> None:
+    async def test_authenticate_user_wrong_password_raises_invalid_credentials(
+        self,
+    ) -> None:
         # Act / Assert
         with pytest.raises(InvalidCredentialsException):
             await authenticate_user("johndoe", "wrongpassword")
 
     @pytest.mark.asyncio
-    async def test_authenticate_user_unknown_username_raises_invalid_credentials(self) -> None:
+    async def test_authenticate_user_unknown_username_raises_invalid_credentials(
+        self,
+    ) -> None:
         # Act / Assert
         with pytest.raises(InvalidCredentialsException):
             await authenticate_user("nobody", "anypassword")

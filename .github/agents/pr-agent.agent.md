@@ -59,16 +59,23 @@ You **must** verify the code is in a working state before creating any PR.
 Run these steps in order and stop immediately on first failure.
 
 1. **Dependencies**
-   - `pip install -r requirements.txt`
+   - `python3 -m venv .venv` (if `.venv` does not exist)
+   - `. .venv/bin/activate && pip install -r requirements.txt`
 
 2. **Format check**
-   - `python -m black --check src tests`
+   - `. .venv/bin/activate && python -m black --check src tests`
+
+   If formatting check fails with "would be reformatted":
+   - `. .venv/bin/activate && python -m black src tests`
+   - `git add -A`
+   - `git commit -m "style: apply black formatting"`
+   - Re-run `. .venv/bin/activate && python -m black --check src tests`
 
 3. **Lint**
-   - `pylint src/`
+   - `. .venv/bin/activate && pylint src/`
 
 4. **Unit tests + coverage**
-   - `pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=85`
+   - `. .venv/bin/activate && pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=85`
 
 5. **Build + security scan**
    - `docker build -t bankapi .`
@@ -82,6 +89,17 @@ Run these steps in order and stop immediately on first failure.
   - Return a failure summary with command, error output, and likely cause.
   - Return next-step guidance (exact command to retry/fix).
 - Include verification outputs in PR description under **Testing / Validation** when successful.
+
+## Agent Responsibility Matrix (enforce in PR summary)
+
+When composing the PR description, explicitly map verification ownership:
+
+- `python-coding-agent`: dependency install + `black --check src` + `pylint src`
+- `unit-test-agent`: `black --check tests` + `pytest --cov-fail-under=85`
+- `infra-devops-agent`: `docker build` + `trivy image --exit-code 1 --severity HIGH,CRITICAL bankapi`
+- `pr-agent`: final verification run + branch/PR automation
+
+If evidence for any owner is missing, do not conclude with "all checks passed".
 
 ---
 

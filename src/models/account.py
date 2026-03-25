@@ -80,7 +80,9 @@ class AccountResponse(BaseModel):
     Excludes soft-delete metadata (closure_reason, is_deleted).
     """
 
-    account_number: str = Field(..., description="Unique 10-digit account number (primary key).")
+    account_number: str = Field(
+        ..., description="Unique 10-digit account number (primary key)."
+    )
     owner_id: str = Field(..., description="JWT sub of the account owner.")
     account_type: AccountType
     status: AccountStatus
@@ -135,7 +137,9 @@ class AccountAdminResponse(AccountResponse):
     Adds soft-delete metadata not visible in the customer-facing response.
     """
 
-    is_deleted: bool = Field(..., description="True when the account has been soft-deleted.")
+    is_deleted: bool = Field(
+        ..., description="True when the account has been soft-deleted."
+    )
     closure_reason: Optional[str] = None
 
     model_config = {"from_attributes": True}

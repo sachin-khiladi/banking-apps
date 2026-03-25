@@ -19,7 +19,10 @@ from azure.cosmos.exceptions import CosmosHttpResponseError, CosmosResourceNotFo
 from azure.identity.aio import DefaultAzureCredential
 from opentelemetry import trace
 
-from src.exceptions.domain_exceptions import AccountNotFoundException, RepositoryException
+from src.exceptions.domain_exceptions import (
+    AccountNotFoundException,
+    RepositoryException,
+)
 from src.repository.interfaces.i_account_repository import IAccountRepository
 
 tracer = trace.get_tracer(__name__)
@@ -89,8 +92,11 @@ class CosmosAccountRepository(IAccountRepository):
             "updated_at": item.get("updatedAt") or item.get("updated_at"),
             "closed_at": item.get("closedAt") or item.get("closed_at"),
             "closure_reason": item.get("closureReason") or item.get("closure_reason"),
-            "is_deleted": item.get("isDeleted") if item.get("isDeleted") is not None
-                          else item.get("is_deleted", False),
+            "is_deleted": (
+                item.get("isDeleted")
+                if item.get("isDeleted") is not None
+                else item.get("is_deleted", False)
+            ),
         }
 
     @staticmethod
@@ -141,10 +147,9 @@ class CosmosAccountRepository(IAccountRepository):
             cosmos_doc = self._to_cosmos_doc(document)
             try:
                 async with self._new_client() as client:
-                    container = (
-                        client.get_database_client(self._database_name)
-                        .get_container_client(_CONTAINER_NAME)
-                    )
+                    container = client.get_database_client(
+                        self._database_name
+                    ).get_container_client(_CONTAINER_NAME)
                     created = await container.create_item(body=cosmos_doc)
                     return self._doc_to_dict(created)
             except CosmosHttpResponseError as exc:
@@ -171,10 +176,9 @@ class CosmosAccountRepository(IAccountRepository):
             span.set_attribute("account_number", account_number)
             try:
                 async with self._new_client() as client:
-                    container = (
-                        client.get_database_client(self._database_name)
-                        .get_container_client(_CONTAINER_NAME)
-                    )
+                    container = client.get_database_client(
+                        self._database_name
+                    ).get_container_client(_CONTAINER_NAME)
                     item = await container.read_item(
                         item=account_number, partition_key=account_number
                     )
@@ -218,10 +222,9 @@ class CosmosAccountRepository(IAccountRepository):
 
             try:
                 async with self._new_client() as client:
-                    container = (
-                        client.get_database_client(self._database_name)
-                        .get_container_client(_CONTAINER_NAME)
-                    )
+                    container = client.get_database_client(
+                        self._database_name
+                    ).get_container_client(_CONTAINER_NAME)
                     items = [
                         self._doc_to_dict(item)
                         async for item in container.query_items(
@@ -233,7 +236,8 @@ class CosmosAccountRepository(IAccountRepository):
                     return items
             except CosmosHttpResponseError as exc:
                 raise RepositoryException(
-                    f"Failed to list accounts for owner {owner_id}: {exc.message}", cause=exc
+                    f"Failed to list accounts for owner {owner_id}: {exc.message}",
+                    cause=exc,
                 ) from exc
 
     async def list_all(self, *, include_closed: bool = True) -> list[dict]:
@@ -263,10 +267,9 @@ class CosmosAccountRepository(IAccountRepository):
 
             try:
                 async with self._new_client() as client:
-                    container = (
-                        client.get_database_client(self._database_name)
-                        .get_container_client(_CONTAINER_NAME)
-                    )
+                    container = client.get_database_client(
+                        self._database_name
+                    ).get_container_client(_CONTAINER_NAME)
                     items = [
                         self._doc_to_dict(item)
                         async for item in container.query_items(
@@ -311,16 +314,13 @@ class CosmosAccountRepository(IAccountRepository):
                 "closure_reason": "closureReason",
                 "is_deleted": "isDeleted",
             }
-            cosmos_updates = {
-                _field_map.get(k, k): v for k, v in updates.items()
-            }
+            cosmos_updates = {_field_map.get(k, k): v for k, v in updates.items()}
 
             try:
                 async with self._new_client() as client:
-                    container = (
-                        client.get_database_client(self._database_name)
-                        .get_container_client(_CONTAINER_NAME)
-                    )
+                    container = client.get_database_client(
+                        self._database_name
+                    ).get_container_client(_CONTAINER_NAME)
                     # Read-then-replace (no server-side partial patch in basic SDK tier).
                     try:
                         existing = await container.read_item(
@@ -336,5 +336,6 @@ class CosmosAccountRepository(IAccountRepository):
                     return self._doc_to_dict(replaced)
             except CosmosHttpResponseError as exc:
                 raise RepositoryException(
-                    f"Failed to update account {account_number}: {exc.message}", cause=exc
+                    f"Failed to update account {account_number}: {exc.message}",
+                    cause=exc,
                 ) from exc

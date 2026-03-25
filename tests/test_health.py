@@ -31,7 +31,9 @@ class TestHealthEndpoint:
         # Assert
         assert response.status_code == 200
 
-    def test_health_check_returns_healthy_status(self, health_client: TestClient) -> None:
+    def test_health_check_returns_healthy_status(
+        self, health_client: TestClient
+    ) -> None:
         # Arrange / Act
         response = health_client.get("/health")
 
@@ -45,14 +47,18 @@ class TestHealthEndpoint:
         # Assert
         assert "application/json" in response.headers["content-type"]
 
-    def test_health_check_unknown_path_returns_404(self, health_client: TestClient) -> None:
+    def test_health_check_unknown_path_returns_404(
+        self, health_client: TestClient
+    ) -> None:
         # Arrange / Act
         response = health_client.get("/healthz")
 
         # Assert
         assert response.status_code == 404
 
-    def test_health_check_versioned_path_returns_404(self, health_client: TestClient) -> None:
+    def test_health_check_versioned_path_returns_404(
+        self, health_client: TestClient
+    ) -> None:
         # Arrange / Act
         response = health_client.get("/v1/health")
 

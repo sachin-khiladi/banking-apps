@@ -131,4 +131,14 @@ When input type is `v1__sre__to__planner__...`:
 - [ ] No INFRA task includes application logic
 - [ ] `depends_on` chains are acyclic
 - [ ] Both handoff files are valid JSON
+
+## Quality-Gate Delegation Requirement
+
+For each handoff, include at least one task or explicit instruction that preserves gate ownership:
+
+- Coding stream must include: dependency install, `black --check src`, `pylint src`.
+- Testing stream (via coding handoff notes to testing agent) must include: `black --check tests`, `pytest --cov-fail-under=85`.
+- Infra stream must include: `docker build -t bankapi .`, `trivy image --exit-code 1 --severity HIGH,CRITICAL bankapi`.
+
+Never produce a plan that leaves quality gates only to the PR step.
 ````

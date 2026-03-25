@@ -103,4 +103,7 @@ class TestRequireBankEmployee:
         with pytest.raises(HTTPException) as exc_info:
             await require_bank_employee(current_user=customer)
 
-        assert "bank_employee" in exc_info.value.detail.lower() or "employee" in exc_info.value.detail.lower()
+        assert (
+            "bank_employee" in exc_info.value.detail.lower()
+            or "employee" in exc_info.value.detail.lower()
+        )

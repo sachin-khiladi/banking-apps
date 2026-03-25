@@ -37,6 +37,7 @@ from src.api.statements import get_statement_service  # noqa: E402
 
 # ── Convenience client ────────────────────────────────────────────────────────
 
+
 @pytest.fixture(scope="module")
 def main_client() -> TestClient:
     """TestClient backed by the real src.main app (stubs applied at module level)."""
@@ -44,6 +45,7 @@ def main_client() -> TestClient:
 
 
 # ── App metadata ──────────────────────────────────────────────────────────────
+
 
 class TestAppMetadata:
     """Tests for FastAPI app metadata set in the factory call."""
@@ -59,18 +61,21 @@ class TestAppMetadata:
 
     def test_app_is_fastapi_instance(self) -> None:
         from fastapi import FastAPI
+
         assert isinstance(main_module.app, FastAPI)
 
 
 # ── CORS middleware ───────────────────────────────────────────────────────────
+
 
 class TestCorsMiddleware:
     """Tests that CORS middleware is present and functional."""
 
     def test_cors_middleware_is_registered(self) -> None:
         # user_middleware is a list of starlette Middleware(cls, **kwargs) namedtuples
-        class_names = [m.cls.__name__ for m in main_module.app.user_middleware
-                       if hasattr(m, "cls")]
+        class_names = [
+            m.cls.__name__ for m in main_module.app.user_middleware if hasattr(m, "cls")
+        ]
         assert any("CORS" in n for n in class_names)
 
     def test_cors_preflight_includes_allow_origin_header(
@@ -87,6 +92,7 @@ class TestCorsMiddleware:
 
 
 # ── Route registration ────────────────────────────────────────────────────────
+
 
 class TestRouteRegistration:
     """Tests that all expected routes are registered on the app."""
@@ -112,6 +118,7 @@ class TestRouteRegistration:
 
 # ── /health endpoint ──────────────────────────────────────────────────────────
 
+
 class TestHealthEndpointViaMainApp:
     """Tests GET /health through the fully-assembled src.main app."""
 
@@ -130,6 +137,7 @@ class TestHealthEndpointViaMainApp:
 
 # ── / root endpoint ───────────────────────────────────────────────────────────
 
+
 class TestRootEndpoint:
     """Tests GET / through the fully-assembled src.main app."""
 
@@ -147,6 +155,7 @@ class TestRootEndpoint:
 
 
 # ── Dependency wiring — repo available ───────────────────────────────────────
+
 
 class TestDependencyWiringRepoAvailable:
     """Tests the happy path where CosmosAccountRepository is available."""
@@ -172,6 +181,7 @@ class TestDependencyWiringRepoAvailable:
 
 # ── Dependency wiring — env vars absent ──────────────────────────────────────
 
+
 class TestDependencyWiringEnvVarsAbsent:
     """Tests the fallback path when env vars are missing."""
 
@@ -189,7 +199,9 @@ class TestDependencyWiringEnvVarsAbsent:
         assert main_module._account_repo is None
 
         # Restore: re-reload with env vars so other tests are not affected
-        monkeypatch.setenv("COSMOS_ACCOUNT_URL", "https://test.documents.azure.com:443/")
+        monkeypatch.setenv(
+            "COSMOS_ACCOUNT_URL", "https://test.documents.azure.com:443/"
+        )
         monkeypatch.setenv("COSMOS_DB_NAME", "test_banking_db")
         with patch.dict(sys.modules, {"src.logging.app_insights": _mock_app_insights}):
             importlib.reload(main_module)
@@ -197,13 +209,17 @@ class TestDependencyWiringEnvVarsAbsent:
     def test_profile_repo_is_none_when_profile_repository_import_fails(self) -> None:
         original_import = __import__
 
-        def _raise_for_profile_repo(name, globals_=None, locals_=None, fromlist=(), level=0):
+        def _raise_for_profile_repo(
+            name, globals_=None, locals_=None, fromlist=(), level=0
+        ):
             if name == "src.repository.cosmos_user_profile_repository":
                 raise ImportError("simulated profile repository import failure")
             return original_import(name, globals_, locals_, fromlist, level)
 
         with patch("builtins.__import__", side_effect=_raise_for_profile_repo):
-            with patch.dict(sys.modules, {"src.logging.app_insights": _mock_app_insights}):
+            with patch.dict(
+                sys.modules, {"src.logging.app_insights": _mock_app_insights}
+            ):
                 importlib.reload(main_module)
 
         assert main_module._user_profile_repo is None
@@ -227,7 +243,9 @@ class TestDependencyWiringEnvVarsAbsent:
         assert response.status_code == 200
 
         # Restore
-        monkeypatch.setenv("COSMOS_ACCOUNT_URL", "https://test.documents.azure.com:443/")
+        monkeypatch.setenv(
+            "COSMOS_ACCOUNT_URL", "https://test.documents.azure.com:443/"
+        )
         monkeypatch.setenv("COSMOS_DB_NAME", "test_banking_db")
         with patch.dict(sys.modules, {"src.logging.app_insights": _mock_app_insights}):
             importlib.reload(main_module)
@@ -243,7 +261,9 @@ class TestDependencyWiringEnvVarsAbsent:
 
         assert get_statement_service not in main_module.app.dependency_overrides
 
-        monkeypatch.setenv("COSMOS_ACCOUNT_URL", "https://test.documents.azure.com:443/")
+        monkeypatch.setenv(
+            "COSMOS_ACCOUNT_URL", "https://test.documents.azure.com:443/"
+        )
         monkeypatch.setenv("COSMOS_DB_NAME", "test_banking_db")
         with patch.dict(sys.modules, {"src.logging.app_insights": _mock_app_insights}):
             importlib.reload(main_module)

@@ -75,7 +75,9 @@ def _make_profile_app_no_auth(mock_service: MagicMock) -> FastAPI:
     app.dependency_overrides[get_profile_service] = lambda: mock_service
 
     def _raise_401():
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+        )
 
     app.dependency_overrides[get_current_user] = _raise_401
     return app

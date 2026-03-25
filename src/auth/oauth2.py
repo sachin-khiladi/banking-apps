@@ -66,7 +66,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     """
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (
-        expires_delta if expires_delta else timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta
+        if expires_delta
+        else timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     to_encode["exp"] = expire
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -145,6 +147,7 @@ async def require_bank_employee(
 
 # ── Dummy user store (dev/test only) ──────────────────────────────────────────
 # Replace with a real user service backed by Cosmos DB or Entra ID.
+
 
 @lru_cache(maxsize=1)
 def _get_fake_users_db() -> dict[str, dict[str, object]]:

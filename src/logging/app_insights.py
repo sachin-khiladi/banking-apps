@@ -6,6 +6,7 @@ Falls back to a stdout StreamHandler for local development — no credentials ne
 Environment variables:
   APPLICATIONINSIGHTS_CONNECTION_STRING  — Azure Monitor connection string (optional locally).
 """
+
 from __future__ import annotations
 
 import logging

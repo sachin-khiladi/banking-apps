@@ -156,7 +156,9 @@ class TestGetAccount:
     async def test_get_account_wrong_owner_raises_insufficient_permissions(
         self, account_service: AccountService, mock_repo: AsyncMock
     ) -> None:
-        mock_repo.get_by_account_number.return_value = make_account_doc(owner_id=OTHER_OWNER_ID)
+        mock_repo.get_by_account_number.return_value = make_account_doc(
+            owner_id=OTHER_OWNER_ID
+        )
         with pytest.raises(InsufficientPermissionsException):
             await account_service.get_account(ACCOUNT_NUMBER, OWNER_ID)
 
@@ -176,7 +178,10 @@ class TestListAccounts:
     async def test_list_accounts_returns_list_of_account_response(
         self, account_service: AccountService, mock_repo: AsyncMock
     ) -> None:
-        mock_repo.list_by_owner.return_value = [make_account_doc(), make_account_doc(account_number="9999999999")]
+        mock_repo.list_by_owner.return_value = [
+            make_account_doc(),
+            make_account_doc(account_number="9999999999"),
+        ]
         result = await account_service.list_accounts(OWNER_ID)
         assert len(result) == 2
         assert all(isinstance(a, AccountResponse) for a in result)
@@ -231,15 +236,21 @@ class TestUpdateAccount:
     ) -> None:
         mock_repo.get_by_account_number.return_value = None
         with pytest.raises(AccountNotFoundException):
-            await account_service.update_account(ACCOUNT_NUMBER, AccountUpdate(), OWNER_ID)
+            await account_service.update_account(
+                ACCOUNT_NUMBER, AccountUpdate(), OWNER_ID
+            )
 
     @pytest.mark.asyncio
     async def test_update_account_wrong_owner_raises_insufficient_permissions(
         self, account_service: AccountService, mock_repo: AsyncMock
     ) -> None:
-        mock_repo.get_by_account_number.return_value = make_account_doc(owner_id=OTHER_OWNER_ID)
+        mock_repo.get_by_account_number.return_value = make_account_doc(
+            owner_id=OTHER_OWNER_ID
+        )
         with pytest.raises(InsufficientPermissionsException):
-            await account_service.update_account(ACCOUNT_NUMBER, AccountUpdate(), OWNER_ID)
+            await account_service.update_account(
+                ACCOUNT_NUMBER, AccountUpdate(), OWNER_ID
+            )
 
     @pytest.mark.asyncio
     async def test_update_account_closed_raises_account_already_closed(
@@ -248,7 +259,9 @@ class TestUpdateAccount:
         closed = make_account_doc(status=AccountStatus.CLOSED.value, is_deleted=False)
         mock_repo.get_by_account_number.return_value = closed
         with pytest.raises(AccountAlreadyClosedException):
-            await account_service.update_account(ACCOUNT_NUMBER, AccountUpdate(), OWNER_ID)
+            await account_service.update_account(
+                ACCOUNT_NUMBER, AccountUpdate(), OWNER_ID
+            )
 
 
 class TestCloseAccount:
@@ -322,7 +335,9 @@ class TestCloseAccount:
     async def test_close_account_wrong_owner_raises_insufficient_permissions(
         self, account_service: AccountService, mock_repo: AsyncMock
     ) -> None:
-        mock_repo.get_by_account_number.return_value = make_account_doc(owner_id=OTHER_OWNER_ID)
+        mock_repo.get_by_account_number.return_value = make_account_doc(
+            owner_id=OTHER_OWNER_ID
+        )
         with pytest.raises(InsufficientPermissionsException):
             await account_service.close_account(
                 ACCOUNT_NUMBER, AccountCloseRequest(closure_reason="gone."), OWNER_ID
@@ -405,7 +420,9 @@ class TestGetBalanceByType:
         self, account_service: AccountService, mock_repo: AsyncMock
     ) -> None:
         mock_repo.list_by_owner.return_value = [make_account_doc()]
-        result = await account_service.get_balance_by_type(AccountType.SAVINGS, OWNER_ID)
+        result = await account_service.get_balance_by_type(
+            AccountType.SAVINGS, OWNER_ID
+        )
         assert isinstance(result, AccountBalanceResponse)
 
     @pytest.mark.asyncio
@@ -413,7 +430,9 @@ class TestGetBalanceByType:
         self, account_service: AccountService, mock_repo: AsyncMock
     ) -> None:
         mock_repo.list_by_owner.return_value = [make_account_doc()]
-        result = await account_service.get_balance_by_type(AccountType.SAVINGS, OWNER_ID)
+        result = await account_service.get_balance_by_type(
+            AccountType.SAVINGS, OWNER_ID
+        )
         assert result.available_balance == Decimal("500.00")
 
     @pytest.mark.asyncio
@@ -447,5 +466,7 @@ class TestGetBalanceByType:
 
         mock_repo.list_by_owner.return_value = [older, current, newer]
 
-        result = await account_service.get_balance_by_type(AccountType.SAVINGS, OWNER_ID)
+        result = await account_service.get_balance_by_type(
+            AccountType.SAVINGS, OWNER_ID
+        )
         assert result.account_number == "2222222222"

@@ -30,7 +30,9 @@ def mock_profile_repo() -> AsyncMock:
 
 
 @pytest.fixture
-def statement_service(mock_account_repo: AsyncMock, mock_profile_repo: AsyncMock) -> StatementService:
+def statement_service(
+    mock_account_repo: AsyncMock, mock_profile_repo: AsyncMock
+) -> StatementService:
     return StatementService(
         account_repository=mock_account_repo,
         user_profile_repository=mock_profile_repo,
@@ -64,7 +66,9 @@ class TestEmailStatement:
         smtp_context = MagicMock()
         smtp_context.__enter__.return_value = smtp_client
         smtp_context.__exit__.return_value = False
-        mocker.patch("src.services.statement_service.smtplib.SMTP", return_value=smtp_context)
+        mocker.patch(
+            "src.services.statement_service.smtplib.SMTP", return_value=smtp_context
+        )
 
         payload = StatementEmailRequest(
             recipient_email="request@example.com",
@@ -72,11 +76,15 @@ class TestEmailStatement:
             end_date=date(2026, 3, 2),
         )
 
-        result = await statement_service.email_statement(owner_id=OWNER_ID, payload=payload)
+        result = await statement_service.email_statement(
+            owner_id=OWNER_ID, payload=payload
+        )
 
         assert str(result.recipient_email) == "request@example.com"
         mock_profile_repo.get_by_owner_id.assert_not_called()
-        mock_account_repo.list_by_owner.assert_called_once_with(OWNER_ID, include_closed=False)
+        mock_account_repo.list_by_owner.assert_called_once_with(
+            OWNER_ID, include_closed=False
+        )
         smtp_client.send_message.assert_called_once()
 
     @pytest.mark.asyncio
@@ -90,14 +98,18 @@ class TestEmailStatement:
         smtp_context = MagicMock()
         smtp_context.__enter__.return_value = smtp_client
         smtp_context.__exit__.return_value = False
-        mocker.patch("src.services.statement_service.smtplib.SMTP", return_value=smtp_context)
+        mocker.patch(
+            "src.services.statement_service.smtplib.SMTP", return_value=smtp_context
+        )
 
         payload = StatementEmailRequest(
             start_date=date(2026, 2, 1),
             end_date=date(2026, 3, 2),
         )
 
-        result = await statement_service.email_statement(owner_id=OWNER_ID, payload=payload)
+        result = await statement_service.email_statement(
+            owner_id=OWNER_ID, payload=payload
+        )
 
         assert str(result.recipient_email) == "profile@example.com"
 
@@ -128,7 +140,9 @@ class TestEmailStatement:
         smtp_context = MagicMock()
         smtp_context.__enter__.return_value = smtp_client
         smtp_context.__exit__.return_value = False
-        mocker.patch("src.services.statement_service.smtplib.SMTP", return_value=smtp_context)
+        mocker.patch(
+            "src.services.statement_service.smtplib.SMTP", return_value=smtp_context
+        )
 
         mock_span = MagicMock()
         span_context = MagicMock()
@@ -163,14 +177,18 @@ class TestDateResolution:
         self,
         statement_service: StatementService,
     ) -> None:
-        start_date, end_date = statement_service._resolve_date_range(date(2026, 3, 1), None)
+        start_date, end_date = statement_service._resolve_date_range(
+            date(2026, 3, 1), None
+        )
         assert end_date == date(2026, 3, 31)
 
     def test_resolve_date_range_derives_start_when_only_end_supplied(
         self,
         statement_service: StatementService,
     ) -> None:
-        start_date, end_date = statement_service._resolve_date_range(None, date(2026, 3, 31))
+        start_date, end_date = statement_service._resolve_date_range(
+            None, date(2026, 3, 31)
+        )
         assert start_date == date(2026, 3, 1)
 
     def test_resolve_date_range_raises_when_start_after_end(

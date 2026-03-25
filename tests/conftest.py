@@ -23,7 +23,11 @@ from fastapi.testclient import TestClient
 os.environ.setdefault("COSMOS_ACCOUNT_URL", "https://test.documents.azure.com:443/")
 os.environ.setdefault("COSMOS_DB_NAME", "test_banking_db")
 
-from src.api.accounts import admin_router, customer_router, get_account_service  # noqa: E402
+from src.api.accounts import (
+    admin_router,
+    customer_router,
+    get_account_service,
+)  # noqa: E402
 from src.auth.oauth2 import get_current_user  # noqa: E402
 from src.models.account import AccountStatus, AccountType  # noqa: E402
 from src.services.account_service import AccountService  # noqa: E402
@@ -40,6 +44,7 @@ EMPLOYEE_USER: dict = {"sub": "employee-xyz", "role": "bank_employee"}
 
 
 # ── Account document factory ──────────────────────────────────────────────────
+
 
 def make_account_doc(
     *,
@@ -75,6 +80,7 @@ CLOSED_DOC: dict = make_account_doc(
 
 
 # ── Mock repository fixture ───────────────────────────────────────────────────
+
 
 @pytest.fixture
 def mock_repo() -> AsyncMock:
@@ -117,6 +123,7 @@ def account_service(mock_repo: AsyncMock) -> AccountService:
 #            env vars before instantiation.
 # Both source gaps require changes in src/main.py by the python-coding-agent.
 
+
 def _make_test_app(user_identity: dict, service: AccountService) -> FastAPI:
     """Create a fresh FastAPI app with account routers and injected dependencies.
 
@@ -138,10 +145,14 @@ def _make_test_app(user_identity: dict, service: AccountService) -> FastAPI:
 @pytest.fixture
 def customer_client(account_service: AccountService) -> TestClient:
     """TestClient with customer-role identity and mock AccountService."""
-    return TestClient(_make_test_app(CUSTOMER_USER, account_service), raise_server_exceptions=False)
+    return TestClient(
+        _make_test_app(CUSTOMER_USER, account_service), raise_server_exceptions=False
+    )
 
 
 @pytest.fixture
 def employee_client(account_service: AccountService) -> TestClient:
     """TestClient with bank_employee-role identity and mock AccountService."""
-    return TestClient(_make_test_app(EMPLOYEE_USER, account_service), raise_server_exceptions=False)
+    return TestClient(
+        _make_test_app(EMPLOYEE_USER, account_service), raise_server_exceptions=False
+    )

@@ -66,7 +66,9 @@ try:
     from src.repository.cosmos_account_repository import CosmosAccountRepository  # type: ignore
 
     _account_repo = CosmosAccountRepository()
-    app.dependency_overrides[get_account_service] = lambda: AccountService(_account_repo)
+    app.dependency_overrides[get_account_service] = lambda: AccountService(
+        _account_repo
+    )
 except (ImportError, RepositoryException):
     # Repository not available (missing module or missing env vars).
     # Service will raise NotImplementedError at runtime until wired.
@@ -104,6 +106,7 @@ app.include_router(statement_router)
 
 
 # ── Root ──────────────────────────────────────────────────────────────────────
+
 
 @app.get("/", tags=["root"])
 async def root() -> dict:

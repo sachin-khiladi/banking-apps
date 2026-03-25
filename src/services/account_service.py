@@ -108,9 +108,7 @@ class AccountService:
             span.set_attribute("account_number", account_number)
             return AccountResponse(**created)
 
-    async def get_account(
-        self, account_number: str, owner_id: str
-    ) -> AccountResponse:
+    async def get_account(self, account_number: str, owner_id: str) -> AccountResponse:
         """Retrieve an active account belonging to the authenticated user.
 
         Args:
@@ -181,9 +179,7 @@ class AccountService:
             span.set_attribute("account_type", account_type.value)
 
             docs = await self._repo.list_by_owner(owner_id, include_closed=False)
-            matching = [
-                d for d in docs if d.get("account_type") == account_type.value
-            ]
+            matching = [d for d in docs if d.get("account_type") == account_type.value]
 
             if not matching:
                 raise AccountTypeNotFoundException(account_type.value)
@@ -303,9 +299,7 @@ class AccountService:
             docs = await self._repo.list_all(include_closed=include_closed)
             return [AccountAdminResponse(**d) for d in docs]
 
-    async def admin_get_account(
-        self, account_number: str
-    ) -> AccountAdminResponse:
+    async def admin_get_account(self, account_number: str) -> AccountAdminResponse:
         """Retrieve any account including closed ones (admin only).
 
         Args:

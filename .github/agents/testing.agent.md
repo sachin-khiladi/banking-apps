@@ -28,6 +28,7 @@ You are a unit test specialist agent for this FastAPI Azure application. Your so
 - If a source-code change is required, stop, document the gap in `agents-communication/coding-inputs-from-test-agent`, and hand off to the `python-coding-agent`.
 - Target a minimum of **85% code coverage** across all source modules.
 - Report coverage results after every test run; highlight any module below 85%.
+- Own formatting compliance for test files (`tests/`) and resolve format drift before concluding.
 - Write tests that are independent, deterministic, and fast.
 - Mock all external dependencies — Azure services, databases, HTTP clients, filesystem, environment variables.
 - Never use real Azure credentials, live endpoints, or real databases in unit tests.
@@ -160,9 +161,15 @@ For every testing task:
 3. Plan test cases: happy paths, edge cases, error cases, boundary conditions.
 4. Write or update test files in `tests/` only.
 5. Add or update fixtures in `conftest.py` as needed.
-6. Run `pytest --cov=src --cov-report=term-missing --cov-fail-under=85`.
-7. Iterate until coverage is ≥85%; report per-module coverage gaps.
-8. Summarize: tests written, scenarios covered, coverage achieved, any gaps flagged.
+6. Prepare an isolated environment for quality checks:
+    - `python3 -m venv .venv` (if `.venv` does not exist)
+    - `. .venv/bin/activate && pip install -r requirements.txt`
+7. Run test formatting gate and remediate if needed:
+    - `. .venv/bin/activate && python -m black --check tests`
+    - If it fails due formatting-only issues, run `. .venv/bin/activate && python -m black tests` and re-run the check.
+8. Run `pytest --cov=src --cov-report=term-missing --cov-fail-under=85`.
+9. Iterate until coverage is ≥85%; report per-module coverage gaps.
+10. Summarize: tests written, scenarios covered, coverage achieved, any gaps flagged.
 
 ## Pre-Submission Checklist
 
@@ -172,6 +179,7 @@ For every testing task:
 - [ ] Fixtures defined in `conftest.py` and scoped appropriately
 - [ ] All Azure services and external dependencies are mocked
 - [ ] No real credentials, endpoints, or databases used
+- [ ] `python -m black --check tests` passes (after applying `black tests` when needed)
 - [ ] Coverage ≥ 85% confirmed with `pytest --cov-fail-under=85`
 - [ ] Per-module coverage gaps identified and reported
 - [ ] Tests are isolated, deterministic, and order-independent
