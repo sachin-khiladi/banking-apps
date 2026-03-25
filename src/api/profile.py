@@ -24,6 +24,7 @@ profile_router = APIRouter(prefix="/profile", tags=["profile"])
 
 # ── Dependency stubs — overridden in main.py ──────────────────────────────────
 
+
 def get_profile_service() -> UserProfileService:
     """Dependency placeholder; real factory wired in main.py.
 
@@ -41,6 +42,7 @@ CurrentUser = Annotated[dict, Depends(get_current_user)]
 
 
 # ── Domain exception to HTTP response mapping ─────────────────────────────────
+
 
 def _raise_http(exc: Exception) -> None:
     """Translate a domain exception to an HTTPException.

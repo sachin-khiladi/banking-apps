@@ -24,6 +24,7 @@ from tests.conftest import ACCOUNT_NUMBER, CLOSED_DOC, OWNER_ID, make_account_do
 
 # ── POST /accounts ─────────────────────────────────────────────────────────────
 
+
 class TestCreateAccountEndpoint:
     """Tests for POST /accounts."""
 
@@ -31,18 +32,14 @@ class TestCreateAccountEndpoint:
         self, customer_client: TestClient, mock_repo: AsyncMock
     ) -> None:
         mock_repo.create.return_value = make_account_doc()
-        response = customer_client.post(
-            "/accounts", json={"account_type": "SAVINGS"}
-        )
+        response = customer_client.post("/accounts", json={"account_type": "SAVINGS"})
         assert response.status_code == 201
 
     def test_create_account_response_has_account_number(
         self, customer_client: TestClient, mock_repo: AsyncMock
     ) -> None:
         mock_repo.create.return_value = make_account_doc()
-        response = customer_client.post(
-            "/accounts", json={"account_type": "CURRENT"}
-        )
+        response = customer_client.post("/accounts", json={"account_type": "CURRENT"})
         assert "account_number" in response.json()
 
     def test_create_account_missing_account_type_returns_422(
@@ -53,6 +50,7 @@ class TestCreateAccountEndpoint:
 
 
 # ── GET /accounts ──────────────────────────────────────────────────────────────
+
 
 class TestListAccountsEndpoint:
     """Tests for GET /accounts."""
@@ -80,6 +78,7 @@ class TestListAccountsEndpoint:
 
 
 # ── GET /accounts/balance/{account_type} ────────────────────────────────────
+
 
 class TestGetBalanceByTypeEndpoint:
     """Tests for GET /accounts/balance/{account_type}."""
@@ -121,6 +120,7 @@ class TestGetBalanceByTypeEndpoint:
 
 # ── GET /accounts/{account_number} ────────────────────────────────────────────
 
+
 class TestGetAccountEndpoint:
     """Tests for GET /accounts/{account_number}."""
 
@@ -149,12 +149,16 @@ class TestGetAccountEndpoint:
         self, customer_client: TestClient, mock_repo: AsyncMock
     ) -> None:
         from tests.conftest import OTHER_OWNER_ID
-        mock_repo.get_by_account_number.return_value = make_account_doc(owner_id=OTHER_OWNER_ID)
+
+        mock_repo.get_by_account_number.return_value = make_account_doc(
+            owner_id=OTHER_OWNER_ID
+        )
         response = customer_client.get(f"/accounts/{ACCOUNT_NUMBER}")
         assert response.status_code == 403
 
 
 # ── PUT /accounts/{account_number} ────────────────────────────────────────────
+
 
 class TestUpdateAccountEndpoint:
     """Tests for PUT /accounts/{account_number}."""
@@ -190,6 +194,7 @@ class TestUpdateAccountEndpoint:
 
 
 # ── POST /accounts/{account_number}/close ─────────────────────────────────────
+
 
 class TestCloseAccountEndpoint:
     """Tests for POST /accounts/{account_number}/close."""
@@ -238,6 +243,7 @@ class TestCloseAccountEndpoint:
 
 # ── GET /admin/accounts ───────────────────────────────────────────────────────
 
+
 class TestAdminListAccountsEndpoint:
     """Tests for GET /admin/accounts."""
 
@@ -270,6 +276,7 @@ class TestAdminListAccountsEndpoint:
 
 
 # ── GET /admin/accounts/{account_number} ─────────────────────────────────────
+
 
 class TestAdminGetAccountEndpoint:
     """Tests for GET /admin/accounts/{account_number}."""
@@ -305,6 +312,7 @@ class TestAdminGetAccountEndpoint:
 
 # ── get_account_service placeholder and _raise_http 500 fallback ──────────────
 
+
 class TestEdgeCases:
     """Tests covering the get_account_service placeholder and 500-level paths."""
 
@@ -334,7 +342,5 @@ class TestEdgeCases:
         """When the service raises an unexpected exception,
         _raise_http falls through to the 500 status code path."""
         mock_repo.create.side_effect = RuntimeError("disk full")
-        response = customer_client.post(
-            "/accounts", json={"account_type": "SAVINGS"}
-        )
+        response = customer_client.post("/accounts", json={"account_type": "SAVINGS"})
         assert response.status_code == 500

@@ -11,7 +11,11 @@ from unittest.mock import AsyncMock
 import pytest
 
 from src.exceptions.domain_exceptions import UserProfileNotFoundException
-from src.models.user_profile import Address, UserProfileResponse, UserProfileUpdateRequest
+from src.models.user_profile import (
+    Address,
+    UserProfileResponse,
+    UserProfileUpdateRequest,
+)
 from src.services.user_profile_service import UserProfileService
 
 # ── Constants ──────────────────────────────────────────────────────────────────
@@ -148,7 +152,9 @@ class TestUpdateProfile:
     ) -> None:
         mock_profile_repo.get_by_owner_id.return_value = None
         mock_profile_repo.upsert.return_value = PROFILE_DOC
-        payload = UserProfileUpdateRequest(email="new@example.com", mobile_no="+12065550100")
+        payload = UserProfileUpdateRequest(
+            email="new@example.com", mobile_no="+12065550100"
+        )
         await profile_service.update_profile(OWNER_ID, payload)
         upserted_doc = mock_profile_repo.upsert.call_args[0][0]
         assert upserted_doc["owner_id"] == OWNER_ID

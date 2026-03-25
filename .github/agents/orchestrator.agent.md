@@ -240,6 +240,22 @@ Report the summary to the user.
 
 If any gate fails, enter the appropriate failure path. Never skip a gate.
 
+## Agent-Owned Quality Responsibilities (enforce before completion)
+
+Treat quality validation as distributed ownership. Do not allow any run to conclude unless each agent has completed its own gate subset.
+
+| Agent | Mandatory gates owned by agent |
+|---|---|
+| `python-coding-agent` | `pip install -r requirements.txt`, `python -m black --check src`, `pylint src/` |
+| `unit-test-agent` | `python -m black --check tests`, `pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=85` |
+| `infra-devops-agent` | `docker build -t bankapi .`, `trivy image --exit-code 1 --severity HIGH,CRITICAL bankapi` |
+| `orchestrator-agent` | Deployment health validation via `/health` and failure-loop routing |
+
+Execution rules:
+1. Require explicit pass/fail evidence from each agent handoff before marking run success.
+2. If any agent reports a gate failure, route back through planner for remediation; do not write a success summary.
+3. Never treat another agent's gates as optional or implicitly satisfied.
+
 ---
 
 ## Token Budget Discipline

@@ -40,7 +40,9 @@ def _make_statements_app_no_auth(mock_service: MagicMock) -> FastAPI:
     app.dependency_overrides[get_statement_service] = lambda: mock_service
 
     def _raise_401():
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+        )
 
     app.dependency_overrides[get_current_user] = _raise_401
     return app
@@ -72,7 +74,9 @@ def statements_client(mock_statement_service: MagicMock) -> TestClient:
 class TestEmailStatementEndpoint:
     """Tests for POST /statements/email."""
 
-    def test_email_statement_returns_200_on_happy_path(self, statements_client: TestClient) -> None:
+    def test_email_statement_returns_200_on_happy_path(
+        self, statements_client: TestClient
+    ) -> None:
         response = statements_client.post(
             "/statements/email",
             json={"recipient_email": "request@example.com"},
@@ -121,7 +125,9 @@ class TestEmailStatementEndpoint:
         mock_statement_service: MagicMock,
     ) -> None:
         errors = {"recipient_email": "required"}
-        mock_statement_service.email_statement = AsyncMock(side_effect=ValidationException(errors))
+        mock_statement_service.email_statement = AsyncMock(
+            side_effect=ValidationException(errors)
+        )
         client = TestClient(
             _make_statements_app(CUSTOMER_USER, mock_statement_service),
             raise_server_exceptions=False,
@@ -134,7 +140,9 @@ class TestEmailStatementEndpoint:
         self,
         mock_statement_service: MagicMock,
     ) -> None:
-        mock_statement_service.email_statement = AsyncMock(side_effect=RuntimeError("boom"))
+        mock_statement_service.email_statement = AsyncMock(
+            side_effect=RuntimeError("boom")
+        )
         client = TestClient(
             _make_statements_app(CUSTOMER_USER, mock_statement_service),
             raise_server_exceptions=False,

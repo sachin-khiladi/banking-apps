@@ -39,6 +39,7 @@ admin_router = APIRouter(prefix="/admin/accounts", tags=["admin-accounts"])
 
 # ── Dependency stubs — overridden in main.py ──────────────────────────────────
 
+
 def get_account_service() -> AccountService:
     """Dependency placeholder; real factory wired in main.py.
 
@@ -57,6 +58,7 @@ BankEmployee = Annotated[dict, Depends(require_bank_employee)]
 
 
 # ── Domain exception to HTTP response mapping ─────────────────────────────────
+
 
 def _raise_http(exc: Exception) -> None:
     """Translate a domain exception to an HTTPException.

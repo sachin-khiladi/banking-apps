@@ -123,14 +123,18 @@ class CosmosUserProfileRepository(IUserProfileRepository):
         Raises:
             RepositoryException: On Cosmos DB read failure (excluding 404).
         """
-        with tracer.start_as_current_span("CosmosUserProfileRepository.get_by_owner_id") as span:
+        with tracer.start_as_current_span(
+            "CosmosUserProfileRepository.get_by_owner_id"
+        ) as span:
             span.set_attribute("owner_id", owner_id)
             try:
                 async with self._new_client() as client:
                     container = client.get_database_client(
                         self._database_name
                     ).get_container_client(_CONTAINER_NAME)
-                    item = await container.read_item(item=owner_id, partition_key=owner_id)
+                    item = await container.read_item(
+                        item=owner_id, partition_key=owner_id
+                    )
                     return self._doc_to_dict(item)
             except CosmosResourceNotFoundError:
                 return None

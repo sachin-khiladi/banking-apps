@@ -77,9 +77,7 @@ class AccountTypeNotFoundException(DomainException):
 
     def __init__(self, account_type: str) -> None:
         self.account_type = account_type
-        super().__init__(
-            f"No active {account_type} account found for this user."
-        )
+        super().__init__(f"No active {account_type} account found for this user.")
 
 
 class UserProfileNotFoundException(NotFoundException):

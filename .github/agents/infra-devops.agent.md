@@ -94,7 +94,21 @@ az containerapp revision list \
   -o table
 ```
 
-### Step 3 — Write Completion Report
+### Step 3 — Build and Security Validation (mandatory)
+
+Before writing your completion report, validate image build and security scan:
+
+```bash
+docker build -t bankapi .
+trivy image --exit-code 1 --severity HIGH,CRITICAL bankapi
+```
+
+Rules:
+- Stop on first failure and report command + error in your handoff notes.
+- Do not proceed to deployment completion when HIGH/CRITICAL vulnerabilities are present.
+- Never mark infra work as completed unless both commands pass.
+
+### Step 4 — Write Completion Report
 
 After all tasks complete, write:
 `agents-communication/handoffs/v1__infra__to__orchestrator__{task}__run-{NNN}.json`
@@ -166,6 +180,7 @@ Zero errors allowed.
 - Never output Azure credentials, connection strings, or SAS tokens in any file
 - All secrets → Key Vault references via `secretRef`
 - Managed Identity for all Azure SDK/CLI operations
+- Local image security gate is mandatory: `trivy image --exit-code 1 --severity HIGH,CRITICAL bankapi`
 - ACR image scanning: run `trivy image <acr>/<image>:latest` after push;
   report findings in the completion handoff; block deployment if HIGH/CRITICAL found
 

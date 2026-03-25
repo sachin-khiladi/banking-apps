@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi import HTTPException
-from jose import jwt
+import jwt
 
 from src.auth.oauth2 import (
     ALGORITHM,
@@ -103,4 +103,7 @@ class TestRequireBankEmployee:
         with pytest.raises(HTTPException) as exc_info:
             await require_bank_employee(current_user=customer)
 
-        assert "bank_employee" in exc_info.value.detail.lower() or "employee" in exc_info.value.detail.lower()
+        assert (
+            "bank_employee" in exc_info.value.detail.lower()
+            or "employee" in exc_info.value.detail.lower()
+        )

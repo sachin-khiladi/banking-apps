@@ -23,7 +23,7 @@ You are a Python coding agent for this FastAPI Azure application. You must alway
 - Log all events and errors to Azure Application Insights via OpenTelemetry (latest stable SDK).
 - Handle exceptions using domain-specific exception classes, propagating context at each layer.
 - Enforce code quality with `pylint`; no critical errors or warnings before merging.
-- Ensure Docker images build successfully and pass Trivy security scans.
+- Ensure source formatting and lint gates pass before handoff.
 - Update `README.md` and docstrings for all new features and changes.
 
 ## Code Organization
@@ -78,10 +78,16 @@ For every task:
 3. Implement API and service layers with type hints, docstrings, and SOLID principles. Depend only on the repository *interface* (ABC), never on the concrete Cosmos class.
 4. Invoke `cosmosdb-repo-agent` with the Repository Specification for each entity. Wait for completion before wiring dependencies.
 5. Wire the concrete repository to the service via FastAPI `Depends()` in `src/main.py` or a dedicated `src/dependencies.py`.
-6. Run `pylint src/` and fix all critical issues.
-7. Build the Docker image and run `trivy image` scan; resolve high/critical findings.
-8. Update `README.md` and inline docstrings.
-9. Summarize what was implemented, what `cosmosdb-repo-agent` delivered, and any testing handoff for `unit-test-agent`.
+6. Prepare an isolated environment for quality checks:
+  - `python3 -m venv .venv` (if `.venv` does not exist)
+  - `. .venv/bin/activate && pip install -r requirements.txt`
+7. Run source formatting gate and remediate if needed:
+  - `. .venv/bin/activate && python -m black --check src`
+  - If it fails due formatting-only issues, run `. .venv/bin/activate && python -m black src` and re-run the check.
+8. Run lint gate:
+  - `. .venv/bin/activate && pylint src/`
+9. Update `README.md` and inline docstrings.
+10. Summarize what was implemented, what `cosmosdb-repo-agent` delivered, and any testing handoff for `unit-test-agent`.
 
 ---
 
@@ -113,10 +119,11 @@ If a feature does not require data persistence (e.g. a pure health-check endpoin
 - [ ] Services depend only on repository interfaces (ABCs), never on concrete Cosmos classes
 - [ ] Domain-specific exceptions used and propagated with context
 - [ ] OpenTelemetry logging present at key operations
+- [ ] Dependencies installed in `.venv` using `pip install -r requirements.txt`
+- [ ] `python -m black --check src` passes (after applying `black src` when needed)
 - [ ] `pylint src/` passes with no critical errors
 - [ ] Type hints and Google-style docstrings on all new/modified code
 - [ ] `README.md` updated
-- [ ] Docker image builds and passes Trivy scan
 - [ ] No duplicated code
 
 **Repository delegation (cosmosdb-repo-agent)**

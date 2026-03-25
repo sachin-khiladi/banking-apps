@@ -114,7 +114,9 @@ class UserProfileUpdateRequest(BaseModel):
         pattern=r"^\+[1-9]\d{1,14}$",
         description="New E.164 mobile number (e.g. +12065550100).",
     )
-    address: Optional[Address] = Field(default=None, description="New or updated postal address.")
+    address: Optional[Address] = Field(
+        default=None, description="New or updated postal address."
+    )
 
     model_config = {
         "json_schema_extra": {

@@ -80,7 +80,9 @@ class StatementService:
                 payload.start_date,
                 payload.end_date,
             )
-            recipient_email, recipient_source = await self._resolve_recipient(owner_id, payload)
+            recipient_email, recipient_source = await self._resolve_recipient(
+                owner_id, payload
+            )
             span.set_attribute("recipient_source", recipient_source)
             span.set_attribute("period_days", (end_date - start_date).days)
 
@@ -194,7 +196,9 @@ class StatementService:
         Returns:
             Dict containing summary values used by the e-mail template.
         """
-        accounts = await self._account_repository.list_by_owner(owner_id, include_closed=False)
+        accounts = await self._account_repository.list_by_owner(
+            owner_id, include_closed=False
+        )
         total_balance = Decimal("0")
         currency = "USD"
         for account in accounts:
@@ -238,14 +242,18 @@ class StatementService:
         message.set_content(email_body)
 
         try:
-            with smtplib.SMTP(config.host, config.port, timeout=config.timeout_seconds) as client:
+            with smtplib.SMTP(
+                config.host, config.port, timeout=config.timeout_seconds
+            ) as client:
                 if config.use_tls:
                     client.starttls()
                 if config.username and config.password:
                     client.login(config.username, config.password)
                 client.send_message(message)
         except (smtplib.SMTPException, OSError) as exc:
-            raise RepositoryException("Failed to send statement e-mail.", cause=exc) from exc
+            raise RepositoryException(
+                "Failed to send statement e-mail.", cause=exc
+            ) from exc
 
     def _render_statement_email_content(
         self,
@@ -265,7 +273,9 @@ class StatementService:
         Returns:
             Plaintext content for the statement e-mail body.
         """
-        total_balance = f"{statement_payload['total_balance']} {statement_payload['currency']}"
+        total_balance = (
+            f"{statement_payload['total_balance']} {statement_payload['currency']}"
+        )
         return (
             "Your statement is ready.\n\n"
             f"Owner ID: {owner_id}\n"
@@ -307,8 +317,7 @@ class StatementService:
             raise ValidationException(
                 {
                     "smtp": (
-                        "Missing required SMTP configuration: "
-                        f"{', '.join(missing)}."
+                        "Missing required SMTP configuration: " f"{', '.join(missing)}."
                     )
                 }
             )

@@ -111,9 +111,7 @@ class TestCosmosUserProfileRepositoryInit:
         assert repo._account_url == "https://test.documents.azure.com/"
         assert repo._database_name == "my_db"
 
-    def test_init_stores_database_name(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_init_stores_database_name(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("COSMOS_ACCOUNT_URL", "https://test.documents.azure.com/")
         monkeypatch.setenv("COSMOS_DB_NAME", "banking_db")
         repo = CosmosUserProfileRepository()

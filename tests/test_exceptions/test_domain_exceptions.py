@@ -179,6 +179,8 @@ class TestRepositoryException:
         exc = RepositoryException("Wrapped error.", cause=cause)
         assert exc.cause is cause
 
-    def test_repository_exception_can_be_raised_and_caught_as_domain_exception(self) -> None:
+    def test_repository_exception_can_be_raised_and_caught_as_domain_exception(
+        self,
+    ) -> None:
         with pytest.raises(DomainException):
             raise RepositoryException("fail")

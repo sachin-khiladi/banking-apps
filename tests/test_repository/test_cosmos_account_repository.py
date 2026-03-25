@@ -81,9 +81,7 @@ class TestCosmosAccountRepositoryInit:
         assert repo._account_url == "https://test.documents.azure.com/"
         assert repo._database_name == "my_db"
 
-    def test_init_stores_account_url(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_init_stores_account_url(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("COSMOS_ACCOUNT_URL", "https://prod.documents.azure.com/")
         monkeypatch.setenv("COSMOS_DB_NAME", "banking")
         repo = CosmosAccountRepository()
@@ -184,7 +182,9 @@ class TestDocToDict:
         assert result["owner_id"] == "user-abc"
 
     def test_doc_to_dict_defaults_is_deleted_to_false_when_absent(self) -> None:
-        item = {k: v for k, v in _CAMEL_ITEM.items() if k not in ("isDeleted", "is_deleted")}
+        item = {
+            k: v for k, v in _CAMEL_ITEM.items() if k not in ("isDeleted", "is_deleted")
+        }
         result = CosmosAccountRepository._doc_to_dict(item)
         assert result["is_deleted"] is False
 
@@ -201,6 +201,7 @@ class TestDocToDict:
 
 # ── Async method helpers ──────────────────────────────────────────────────────
 
+
 def _make_async_iter(items: list):
     """Return an object whose __aiter__ yields items — usable in 'async for'."""
 
@@ -216,7 +217,9 @@ def _make_mock_client(mock_container):
     mock_client = MagicMock()
     mock_client.__aenter__ = AsyncMock(return_value=mock_client)
     mock_client.__aexit__ = AsyncMock(return_value=None)
-    mock_client.get_database_client.return_value.get_container_client.return_value = mock_container
+    mock_client.get_database_client.return_value.get_container_client.return_value = (
+        mock_container
+    )
     return mock_client
 
 
@@ -230,6 +233,7 @@ def repo_fixture(monkeypatch: pytest.MonkeyPatch) -> CosmosAccountRepository:
 
 # ── _new_client ───────────────────────────────────────────────────────────────
 
+
 class TestNewClient:
     """Tests for CosmosAccountRepository._new_client()."""
 
@@ -238,16 +242,19 @@ class TestNewClient:
     ) -> None:
         from azure.cosmos.aio import CosmosClient
 
-        with patch("src.repository.cosmos_account_repository.DefaultAzureCredential"), \
-             patch("src.repository.cosmos_account_repository.CosmosClient") as mock_cls:
+        with patch(
+            "src.repository.cosmos_account_repository.DefaultAzureCredential"
+        ), patch("src.repository.cosmos_account_repository.CosmosClient") as mock_cls:
             mock_cls.return_value = MagicMock()
             client = repo_fixture._new_client()
             mock_cls.assert_called_once_with(
-                repo_fixture._account_url, credential=mock_cls.call_args[1]["credential"]
+                repo_fixture._account_url,
+                credential=mock_cls.call_args[1]["credential"],
             )
 
 
 # ── create ────────────────────────────────────────────────────────────────────
+
 
 class TestAsyncCreate:
     """Tests for CosmosAccountRepository.create()."""
@@ -308,6 +315,7 @@ class TestAsyncCreate:
 
 
 # ── get_by_account_number ─────────────────────────────────────────────────────
+
 
 class TestAsyncGetByAccountNumber:
     """Tests for CosmosAccountRepository.get_by_account_number()."""
@@ -372,6 +380,7 @@ class TestAsyncGetByAccountNumber:
 
 # ── list_by_owner ─────────────────────────────────────────────────────────────
 
+
 class TestAsyncListByOwner:
     """Tests for CosmosAccountRepository.list_by_owner()."""
 
@@ -408,7 +417,9 @@ class TestAsyncListByOwner:
     ) -> None:
         closed_item = {**_CAMEL_ITEM, "isDeleted": True}
         mock_container = MagicMock()
-        mock_container.query_items.return_value = _make_async_iter([_CAMEL_ITEM, closed_item])
+        mock_container.query_items.return_value = _make_async_iter(
+            [_CAMEL_ITEM, closed_item]
+        )
         mock_client = _make_mock_client(mock_container)
 
         with patch.object(repo_fixture, "_new_client", return_value=mock_client):
@@ -462,6 +473,7 @@ class TestAsyncListByOwner:
 
 # ── list_all ──────────────────────────────────────────────────────────────────
 
+
 class TestAsyncListAll:
     """Tests for CosmosAccountRepository.list_all()."""
 
@@ -471,7 +483,9 @@ class TestAsyncListAll:
     ) -> None:
         closed_item = {**_CAMEL_ITEM, "isDeleted": True}
         mock_container = MagicMock()
-        mock_container.query_items.return_value = _make_async_iter([_CAMEL_ITEM, closed_item])
+        mock_container.query_items.return_value = _make_async_iter(
+            [_CAMEL_ITEM, closed_item]
+        )
         mock_client = _make_mock_client(mock_container)
 
         with patch.object(repo_fixture, "_new_client", return_value=mock_client):
@@ -509,6 +523,7 @@ class TestAsyncListAll:
 
 
 # ── update ────────────────────────────────────────────────────────────────────
+
 
 class TestAsyncUpdate:
     """Tests for CosmosAccountRepository.update()."""
