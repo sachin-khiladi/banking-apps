@@ -1,0 +1,239 @@
+# ============================================================
+# cd.yml — Continuous Deployment Pipeline
+#
+# Purpose:
+#   Multi-stage promotion pipeline. Each environment is a
+#   separate, independently-conditionalised stage that calls
+#   the same single-environment deployment template.
+#
+#   Promotion order with dependsOn gates:
+#
+#     [CI success]
+#         │
+#         ▼
+#     ┌─────────────────────────────────────────────┐
+#     │  Deploy_Dev    (automatic, no approval)      │
+#     └──────────────────┬──────────────────────────┘
+#                        │  dependsOn: Deploy_Dev
+#                        │  condition: succeeded()
+#                        ▼
+#     ┌─────────────────────────────────────────────┐
+#     │  Deploy_Staging  (ADO Environment approval)  │
+#     └──────────────────┬──────────────────────────┘
+#                        │  dependsOn: Deploy_Staging
+#                        │  condition: succeeded()
+#                        ▼
+#     ┌─────────────────────────────────────────────┐
+#     │  Deploy_Prod     (ADO Environment approval)  │
+#     └─────────────────────────────────────────────┘
+#
+# Selective deployment:
+#   Use the `deployTo` runtime parameter to target specific
+#   environments without promoting through all stages.
+#   Example: run manually with deployTo = ['dev'] to hotfix dev
+#   without risking a staging or prod promotion.
+#
+#   Each stage is individually conditioned:
+#     condition: and(succeeded(), contains(parameters.deployTo, 'dev'))
+#
+# Template per stage: templates/stages/deploy-container-app.yml @ ado-templates v1.0.0
+#   → Each stage calls the SAME single-environment template.
+#   → No combined multi-env template; orchestration lives here.
+#
+# Approval gates:
+#   Staging and Prod gates are ADO Environment checks, NOT
+#   pipeline conditions. Configure approvers in:
+#     Pipelines → Environments → banking-staging/banking-prod
+#       → Approvals and checks → Approvals
+#
+# To register in ADO: Pipelines → New Pipeline → Azure Repos Git
+#   → select this repo → "Existing Azure Pipelines YAML file"
+#   → path: .pipelines/cd.yml
+# ============================================================
+
+# ── Trigger: only via pipeline resource (CI completion) ───────
+trigger: none
+pr:     none
+
+# ── Runtime parameters ─────────────────────────────────────────
+# Allows targeted deployments when running manually.
+# When triggered automatically by CI, all three environments
+# are selected by default (full promotion chain).
+parameters:
+  - name: deployTo
+    displayName: 'Deploy to environments'
+    type: object
+    default:
+      - dev
+      - staging
+      - prod
+
+  - name: imageTag
+    displayName: 'Image tag to deploy (leave blank to use CI build ID)'
+    type: string
+    default: ''
+
+# ── Resources ─────────────────────────────────────────────────
+resources:
+
+  # Upstream CI pipeline — triggers this CD run on success.
+  pipelines:
+    - pipeline: ci
+      source: ci                   # must match the ADO pipeline name registered in ADO
+      trigger:
+        branches:
+          include:
+            - main
+            - develop
+
+  # Shared template repository, pinned to v1.0.0.
+  # Update ref: here (and templateRepoRef in global.yml) to upgrade templates.
+  repositories:
+    - repository: templates
+      type: git
+      name: AIDemoApp/ado-templates
+      ref: refs/tags/v1.0.0
+
+# ── Global variables (shared across all stages) ────────────────
+# Environment-specific files are loaded INSIDE each stage template
+# to prevent variable leakage between stages.
+variables:
+  - template: variables/global.yml
+
+  # Resolved image tag: use the explicit parameter if provided
+  # (manual hotfix), otherwise fall back to the upstream CI run ID.
+  - name: resolvedImageTag
+    value: ${{ if ne(parameters.imageTag, '') }}:
+              ${{ parameters.imageTag }}
+           ${{ else }}:
+              $(resources.pipeline.ci.runID)
+
+# ══════════════════════════════════════════════════════════════
+# STAGE 1 — Development
+# ── Automatic: no approval gate.
+# ── Condition: deployTo list must include 'dev'.
+# ══════════════════════════════════════════════════════════════
+stages:
+
+  - stage: Deploy_Dev
+    displayName: 'Deploy → Development'
+    condition: and(not(failed()), contains(join(',', parameters.deployTo), 'dev'))
+    variables:
+      - template: variables/global.yml
+      - template: variables/dev.yml
+    jobs:
+      - template: templates/stages/deploy-container-app.yml@templates
+        parameters:
+          # ── Identity ───────────────────────────────────────
+          adoEnvironment:          ''            # no ADO env gate = automatic
+          azureServiceConnection:  $(azureServiceConnection)
+          resourceGroup:           $(resourceGroup)
+
+          # ── Image ──────────────────────────────────────────
+          acrLoginServer:          $(acrLoginServer)
+          imageRepository:         $(imageRepository)
+          imageTag:                $(resolvedImageTag)
+
+          # ── Container App ──────────────────────────────────
+          containerAppName:        $(containerAppName)
+          containerAppEnvironment: $(containerAppEnvironment)
+          containerAppLocation:    $(containerAppLocation)
+          targetPort:              $(targetPort)
+          minReplicas:             $(minReplicas)
+          maxReplicas:             $(maxReplicas)
+
+          # ── Health check ───────────────────────────────────
+          healthCheckPath:         /health
+          appName:                 $(appName)
+
+  # ══════════════════════════════════════════════════════════
+  # STAGE 2 — Staging
+  # ── dependsOn Deploy_Dev: will not start until dev succeeds.
+  # ── Approval gate: banking-staging ADO Environment check.
+  # ── Condition: deployTo must include 'staging'.
+  #    When deploying to staging only (no dev), set condition
+  #    to allow it without Dev completing first by also checking
+  #    if 'dev' was skipped intentionally.
+  # ══════════════════════════════════════════════════════════
+
+  - stage: Deploy_Staging
+    displayName: 'Deploy → Staging'
+    dependsOn: Deploy_Dev
+    condition: |
+      and(
+        in(dependencies.Deploy_Dev.result, 'Succeeded', 'Skipped'),
+        contains(join(',', parameters.deployTo), 'staging')
+      )
+    variables:
+      - template: variables/global.yml
+      - template: variables/staging.yml
+    jobs:
+      - template: templates/stages/deploy-container-app.yml@templates
+        parameters:
+          # ── Identity ───────────────────────────────────────
+          # adoEnvironment maps to Pipelines → Environments → banking-staging.
+          # Approval gates must be configured there, not here.
+          adoEnvironment:          banking-staging
+          azureServiceConnection:  $(azureServiceConnection)
+          resourceGroup:           $(resourceGroup)
+
+          # ── Image ──────────────────────────────────────────
+          acrLoginServer:          $(acrLoginServer)
+          imageRepository:         $(imageRepository)
+          imageTag:                $(resolvedImageTag)
+
+          # ── Container App ──────────────────────────────────
+          containerAppName:        $(containerAppName)
+          containerAppEnvironment: $(containerAppEnvironment)
+          containerAppLocation:    $(containerAppLocation)
+          targetPort:              $(targetPort)
+          minReplicas:             $(minReplicas)
+          maxReplicas:             $(maxReplicas)
+
+          # ── Health check ───────────────────────────────────
+          healthCheckPath:         /health
+          appName:                 $(appName)
+
+  # ══════════════════════════════════════════════════════════
+  # STAGE 3 — Production
+  # ── dependsOn Deploy_Staging: will not start until staging
+  #    succeeds (or is skipped by the deployTo condition).
+  # ── Approval gate: banking-prod ADO Environment check.
+  # ── Condition: deployTo must include 'prod'.
+  # ══════════════════════════════════════════════════════════
+
+  - stage: Deploy_Prod
+    displayName: 'Deploy → Production'
+    dependsOn: Deploy_Staging
+    condition: |
+      and(
+        in(dependencies.Deploy_Staging.result, 'Succeeded', 'Skipped'),
+        contains(join(',', parameters.deployTo), 'prod')
+      )
+    variables:
+      - template: variables/global.yml
+      - template: variables/prod.yml
+    jobs:
+      - template: templates/stages/deploy-container-app.yml@templates
+        parameters:
+          # ── Identity ───────────────────────────────────────
+          adoEnvironment:          banking-prod
+          azureServiceConnection:  $(azureServiceConnection)
+          resourceGroup:           $(resourceGroup)
+
+          # ── Image ──────────────────────────────────────────
+          acrLoginServer:          $(acrLoginServer)
+          imageRepository:         $(imageRepository)
+          imageTag:                $(resolvedImageTag)
+
+          # ── Container App ──────────────────────────────────
+          containerAppName:        $(containerAppName)
+          containerAppEnvironment: $(containerAppEnvironment)
+          containerAppLocation:    $(containerAppLocation)
+          targetPort:              $(targetPort)
+          minReplicas:             $(minReplicas)
+          maxReplicas:             $(maxReplicas)
+
+          # ── Health check ───────────────────────────────────
+          healthCheckPath:         /health
+          appName:                 $(appName)

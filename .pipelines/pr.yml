@@ -1,0 +1,50 @@
+# ============================================================
+# pr.yml — Pull-Request Validation Pipeline
+#
+# Purpose:  Runs lint and tests on every pull request targeting
+#           the main or develop branches. Provides fast feedback
+#           before code reaches the main integration stream.
+#           No Docker build, no image push, no deployment.
+#
+# Template: templates/pipelines/pr-validation.yml @ ado-templates v1.0.0
+#
+# To register in ADO: Pipelines → New Pipeline → Azure Repos Git
+#   → select this repo → "Existing Azure Pipelines YAML file"
+#   → path: .pipelines/pr.yml
+# ============================================================
+
+# ── Trigger: run ONLY on pull requests ────────────────────────
+trigger: none
+
+pr:
+  branches:
+    include:
+      - main
+      - develop
+  paths:
+    exclude:
+      - '**/*.md'
+      - '.github/**'
+      - '.pipelines/variables/**'
+
+# ── Template repository resource (pinned to v1.0.0) ───────────
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: AIDemoApp/ado-templates
+      ref: refs/tags/v1.0.0
+
+# ── Variables: global only (no env context needed for PR) ─────
+variables:
+  - template: variables/global.yml
+
+# ── Pipeline body: pure template extension, no inline steps ───
+extends:
+  template: templates/pipelines/pr-validation.yml@templates
+  parameters:
+    pythonVersion:            $(pythonVersion)
+    pylintSrcPath:            $(pylintSrcPath)
+    pytestCoverageThreshold:  $(pytestCoverageThreshold)
+    buildId:                  $(Build.BuildId)
+    sourceBranch:             $(Build.SourceBranch)

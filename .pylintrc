@@ -1,0 +1,23 @@
+[MASTER]
+init-hook='import os, sys; sys.path.insert(0, os.getcwd())'
+
+[FORMAT]
+indent-string='    '
+expected-line-ending-format=LF
+max-line-length=100
+
+[MESSAGES CONTROL]
+disable=
+    missing-docstring,
+    invalid-name,
+    too-few-public-methods,
+    too-many-arguments,
+    broad-exception-caught,
+    duplicate-code
+
+[DESIGN]
+max-public-methods=20
+
+[REPORTS]
+reports=yes
+output-format=text

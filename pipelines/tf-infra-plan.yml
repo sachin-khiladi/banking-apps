@@ -1,0 +1,354 @@
+# ===========================================================================
+# TF · Infra Plan  (Azure DevOps Pipeline)
+#
+# Triggered automatically on every Pull Request to main that touches infra/,
+# or manually (run pipeline → pick the environment parameter).
+#
+# What it does:
+#   1. Installs the pinned Terraform version on the Microsoft-hosted agent.
+#   2. Runs fmt-check, init, validate, plan for dev and prod in parallel.
+#   3. Posts the full plan output as a collapsible PR comment using the
+#      Azure DevOps Git REST API.
+#
+# ── Auth — Workload Identity Federation (no stored secrets) ──────────────────
+# Requires two Azure DevOps Service Connections of type
+# "Azure Resource Manager" with authentication "Workload Identity Federation":
+#   sc-bankapi-dev-tf   — used for the dev environment
+#   sc-bankapi-prod-tf  — used for the prod environment
+#
+# The managed identity / service principal backing each service connection
+# must have:
+#   • Contributor  on the Azure subscription (or scoped to the target RG)
+#   • Storage Blob Data Contributor  on the TF remote-state storage account
+#     (resource group: rg-tf-backend, account: strgtfbackendb86177)
+#
+# ── One-time ADO pipeline setting ────────────────────────────────────────────
+# In the pipeline definition UI:
+#   Edit → ... menu → Triggers → YAML tab → Get sources
+#   → tick "Allow scripts to access the OAuth token"
+# This makes $(System.AccessToken) available so the agent can post PR comments.
+# ===========================================================================
+
+trigger: none   # No automatic push trigger — only PR and manual runs
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - infra/**
+      - pipelines/tf-infra-*.yml
+
+parameters:
+  - name: environment
+    displayName: "Environment(s) to plan (manual runs only)"
+    type: string
+    default: both
+    values: [dev, prod, both]
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  TF_VERSION: "1.9.8"
+  SC_DEV:     "sc-bankapi-dev-tf"   # ADO Service Connection name — dev
+  SC_PROD:    "sc-bankapi-prod-tf"  # ADO Service Connection name — prod
+
+stages:
+
+  # ============================================================
+  # Stage: plan_dev
+  # ============================================================
+  - stage: plan_dev
+    displayName: "Plan · dev"
+    # Always run on PRs; on manual runs only when env = dev or both
+    condition: >
+      or(
+        eq(variables['Build.Reason'], 'PullRequest'),
+        and(
+          ne(variables['Build.Reason'], 'PullRequest'),
+          in('${{ parameters.environment }}', 'dev', 'both')
+        )
+      )
+    jobs:
+      - job: plan_dev
+        displayName: "Plan · dev"
+        steps:
+          - checkout: self
+            fetchDepth: 1
+            displayName: "Checkout source"
+
+          # ── Install Terraform ─────────────────────────────────────────────
+          - bash: |
+              set -euo pipefail
+              wget -q "https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip" \
+                   -O /tmp/tf.zip
+              unzip -q /tmp/tf.zip -d /usr/local/bin
+              terraform version
+            displayName: "Install Terraform $(TF_VERSION)"
+
+          # ── Format check (warning only, does not fail the pipeline) ───────
+          - task: AzureCLI@2
+            displayName: "fmt check"
+            continueOnError: true
+            inputs:
+              azureSubscription: $(SC_DEV)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)
+              inlineScript: |
+                if ! terraform fmt -check -recursive infra/; then
+                  echo "##vso[task.logissue type=warning]Unformatted .tf files found. Run: terraform fmt -recursive infra/"
+                  echo "##vso[task.complete result=SucceededWithIssues;]"
+                fi
+
+          # ── Init ──────────────────────────────────────────────────────────
+          - task: AzureCLI@2
+            displayName: "init · dev"
+            inputs:
+              azureSubscription: $(SC_DEV)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)/infra/environments/dev
+              inlineScript: |
+                set -euo pipefail
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                export ARM_OIDC_TOKEN="$idToken"
+                export ARM_TENANT_ID="$tenantId"
+                export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                export ARM_USE_OIDC=true
+                terraform init -input=false
+
+          # ── Validate ──────────────────────────────────────────────────────
+          - task: AzureCLI@2
+            displayName: "validate · dev"
+            inputs:
+              azureSubscription: $(SC_DEV)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)/infra/environments/dev
+              inlineScript: |
+                set -euo pipefail
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                export ARM_OIDC_TOKEN="$idToken"
+                export ARM_TENANT_ID="$tenantId"
+                export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                export ARM_USE_OIDC=true
+                terraform validate -no-color
+
+          # ── Plan ──────────────────────────────────────────────────────────
+          - task: AzureCLI@2
+            displayName: "plan · dev"
+            inputs:
+              azureSubscription: $(SC_DEV)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)/infra/environments/dev
+              inlineScript: |
+                set -euo pipefail
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                export ARM_OIDC_TOKEN="$idToken"
+                export ARM_TENANT_ID="$tenantId"
+                export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                export ARM_USE_OIDC=true
+                terraform plan -no-color -input=false \
+                  2>&1 | tee "$(Build.ArtifactStagingDirectory)/plan-dev.txt"
+
+          # ── Post PR comment (ADO Git REST API) ────────────────────────────
+          # Only runs when the pipeline was triggered by a Pull Request.
+          - bash: |
+              set -euo pipefail
+              PLAN_FILE="$(Build.ArtifactStagingDirectory)/plan-dev.txt"
+              BUILD_URL="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
+
+              # Use python3 for safe JSON encoding; backticks via chr(96) avoid shell escaping
+              python3 -c "
+              import json, sys
+              BT = chr(96) * 3
+              plan = open('${PLAN_FILE}').read()[:40000]
+              surplus = open('${PLAN_FILE}').read()[40000:]
+              truncation_note = ('\n\n... output truncated — see full build log ...' if surplus else '')
+              content = '\n'.join([
+                  '## Terraform Plan \u2014 dev',
+                  '',
+                  'Build: [$(Build.BuildNumber)](${BUILD_URL})',
+                  'Requested by: $(Build.RequestedFor)',
+                  '',
+                  '<details>',
+                  '<summary>Show full plan output</summary>',
+                  '',
+                  BT + 'hcl',
+                  plan + truncation_note,
+                  BT,
+                  '',
+                  '</details>',
+              ])
+              print(json.dumps({
+                  'comments': [{'parentCommentId': 0, 'content': content, 'commentType': 1}],
+                  'status': 1
+              }))
+              " > /tmp/pr-comment-dev.json
+
+              ADO_THREADS_URL="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_apis/git/repositories/$(Build.Repository.ID)/pullRequests/$(System.PullRequest.PullRequestId)/threads?api-version=7.1"
+
+              RESPONSE=$(curl -sf -u ":${SYSTEM_ACCESSTOKEN}" \
+                -X POST \
+                -H "Content-Type: application/json" \
+                "$ADO_THREADS_URL" \
+                --data-binary @/tmp/pr-comment-dev.json)
+
+              THREAD_ID=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+              echo "PR comment posted — thread id: $THREAD_ID"
+            env:
+              SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+            displayName: "Post plan comment to PR · dev"
+            condition: eq(variables['Build.Reason'], 'PullRequest')
+
+  # ============================================================
+  # Stage: plan_prod  (runs in parallel with plan_dev)
+  # ============================================================
+  - stage: plan_prod
+    displayName: "Plan · prod"
+    dependsOn: []   # no dependency on plan_dev — run in parallel
+    condition: >
+      or(
+        eq(variables['Build.Reason'], 'PullRequest'),
+        and(
+          ne(variables['Build.Reason'], 'PullRequest'),
+          in('${{ parameters.environment }}', 'prod', 'both')
+        )
+      )
+    jobs:
+      - job: plan_prod
+        displayName: "Plan · prod"
+        steps:
+          - checkout: self
+            fetchDepth: 1
+            displayName: "Checkout source"
+
+          - bash: |
+              set -euo pipefail
+              wget -q "https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip" \
+                   -O /tmp/tf.zip
+              unzip -q /tmp/tf.zip -d /usr/local/bin
+              terraform version
+            displayName: "Install Terraform $(TF_VERSION)"
+
+          - task: AzureCLI@2
+            displayName: "fmt check"
+            continueOnError: true
+            inputs:
+              azureSubscription: $(SC_PROD)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)
+              inlineScript: |
+                if ! terraform fmt -check -recursive infra/; then
+                  echo "##vso[task.logissue type=warning]Unformatted .tf files found. Run: terraform fmt -recursive infra/"
+                  echo "##vso[task.complete result=SucceededWithIssues;]"
+                fi
+
+          - task: AzureCLI@2
+            displayName: "init · prod"
+            inputs:
+              azureSubscription: $(SC_PROD)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)/infra/environments/prod
+              inlineScript: |
+                set -euo pipefail
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                export ARM_OIDC_TOKEN="$idToken"
+                export ARM_TENANT_ID="$tenantId"
+                export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                export ARM_USE_OIDC=true
+                terraform init -input=false
+
+          - task: AzureCLI@2
+            displayName: "validate · prod"
+            inputs:
+              azureSubscription: $(SC_PROD)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)/infra/environments/prod
+              inlineScript: |
+                set -euo pipefail
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                export ARM_OIDC_TOKEN="$idToken"
+                export ARM_TENANT_ID="$tenantId"
+                export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                export ARM_USE_OIDC=true
+                terraform validate -no-color
+
+          - task: AzureCLI@2
+            displayName: "plan · prod"
+            inputs:
+              azureSubscription: $(SC_PROD)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)/infra/environments/prod
+              inlineScript: |
+                set -euo pipefail
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                export ARM_OIDC_TOKEN="$idToken"
+                export ARM_TENANT_ID="$tenantId"
+                export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                export ARM_USE_OIDC=true
+                terraform plan -no-color -input=false \
+                  2>&1 | tee "$(Build.ArtifactStagingDirectory)/plan-prod.txt"
+
+          - bash: |
+              set -euo pipefail
+              PLAN_FILE="$(Build.ArtifactStagingDirectory)/plan-prod.txt"
+              BUILD_URL="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
+
+              python3 -c "
+              import json, sys
+              BT = chr(96) * 3
+              plan = open('${PLAN_FILE}').read()[:40000]
+              surplus = open('${PLAN_FILE}').read()[40000:]
+              truncation_note = ('\n\n... output truncated \u2014 see full build log ...' if surplus else '')
+              content = '\n'.join([
+                  '## Terraform Plan \u2014 prod',
+                  '',
+                  'Build: [$(Build.BuildNumber)](${BUILD_URL})',
+                  'Requested by: $(Build.RequestedFor)',
+                  '',
+                  '<details>',
+                  '<summary>Show full plan output</summary>',
+                  '',
+                  BT + 'hcl',
+                  plan + truncation_note,
+                  BT,
+                  '',
+                  '</details>',
+              ])
+              print(json.dumps({
+                  'comments': [{'parentCommentId': 0, 'content': content, 'commentType': 1}],
+                  'status': 1
+              }))
+              " > /tmp/pr-comment-prod.json
+
+              ADO_THREADS_URL="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_apis/git/repositories/$(Build.Repository.ID)/pullRequests/$(System.PullRequest.PullRequestId)/threads?api-version=7.1"
+
+              RESPONSE=$(curl -sf -u ":${SYSTEM_ACCESSTOKEN}" \
+                -X POST \
+                -H "Content-Type: application/json" \
+                "$ADO_THREADS_URL" \
+                --data-binary @/tmp/pr-comment-prod.json)
+
+              THREAD_ID=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+              echo "PR comment posted — thread id: $THREAD_ID"
+            env:
+              SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+            displayName: "Post plan comment to PR · prod"
+            condition: eq(variables['Build.Reason'], 'PullRequest')

@@ -1,0 +1,62 @@
+{
+  "schema_version": "1",
+  "run_id": "002",
+  "task_slug": "email-bank-statement",
+  "sender": "azure-sre-agent",
+  "receiver": "planning-agent",
+  "status": "completed",
+  "completed_at": "2026-03-20T04:47:30Z",
+  "planned_at": "2026-03-20T05:12:00Z",
+  "root_cause_classification": "network_ingress_misconfiguration",
+  "confidence": "high",
+  "evidence": [
+    {
+      "source": "container_logs",
+      "excerpt": "Direct probe confirms endpoint mismatch: https://ca-bankapi-dev.agreeablesea-384c7fb5.eastus.azurecontainerapps.io/health -> 200, https://ca-bankapi-dev--0000002.agreeablesea-384c7fb5.eastus.azurecontainerapps.io/health -> 200, but https://ca-bankapi-dev--0000001.agreeablesea-384c7fb5.eastus.azurecontainerapps.io/health -> 404 Not Found."
+    },
+    {
+      "source": "activity_log",
+      "excerpt": "Container App ca-bankapi-dev is running with latestReadyRevisionName=ca-bankapi-dev--0000002 and ingressFqdn=ca-bankapi-dev.agreeablesea-384c7fb5.eastus.azurecontainerapps.io; stale revision URL in gate check does not match current ready revision."
+    },
+    {
+      "source": "resource_health",
+      "excerpt": "Resource Health in rg-bankapi-dev shows no Azure platform outage for dependent resources (Key Vault/Cosmos/Storage/Log Analytics available), reducing likelihood of platform-induced 404."
+    },
+    {
+      "source": "applens",
+      "excerpt": "AppLens session creation failed in this run due MCP authentication/session error (InteractiveBrowserCredential redirect URI issue), so diagnosis was completed with direct resource inspection and endpoint probes."
+    }
+  ],
+  "remediation_actions": [
+    {
+      "action_id": "SRE-001",
+      "owner": "infra-devops-agent",
+      "description": "Update deployment health gate to use the canonical ingress FQDN from Container App resource (properties.configuration.ingress.fqdn) or latestReadyRevisionName-derived FQDN, and stop hardcoding/persisting stale revision URLs like --0000001.",
+      "urgency": "critical",
+      "specific_change": {
+        "resource_type": "Microsoft.App/containerApps",
+        "setting": "health_check_url_source",
+        "current_value": "stale pinned revision URL (ca-bankapi-dev--0000001...)",
+        "desired_value": "dynamic canonical ingress FQDN or latestReadyRevisionName URL"
+      }
+    },
+    {
+      "action_id": "SRE-002",
+      "owner": "infra-devops-agent",
+      "description": "Add a pre-check in deployment verification to fetch current latestReadyRevisionName and fail fast with a clear message if the probe URL revision does not match active revision, preventing false-negative health failures.",
+      "urgency": "high",
+      "specific_change": {
+        "resource_type": "Microsoft.App/containerApps",
+        "setting": "health_gate_revision_validation",
+        "current_value": "no explicit revision URL validation",
+        "desired_value": "validate probe URL revision equals latestReadyRevisionName before /health call"
+      }
+    }
+  ],
+  "rollback_recommendation": {
+    "recommended": false,
+    "target_revision": "",
+    "reason": "Active revision ca-bankapi-dev--0000002 is healthy and returns 200 on /health; failure is in verification endpoint selection, not runtime instability."
+  },
+  "notes": "Root cause is endpoint selection drift in deployment gate, not application startup failure."
+}

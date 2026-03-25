@@ -1,0 +1,50 @@
+{
+  "schema_version": "1",
+  "run_id": "002",
+  "task_slug": "email-bank-statement",
+  "overall_result": "failed",
+  "coding_status": "completed",
+  "infra_status": "completed",
+  "testing_status": "green",
+  "deployment_health": "healthy",
+  "quality_gates": {
+    "lint": "failed (pre-existing repo/import/config issues in current workspace lint run)",
+    "tests": "273 passed, 0 failed",
+    "coverage": "97.14%",
+    "security": "failed (Trivy detected HIGH vulnerabilities in image dependencies)"
+  },
+  "new_endpoints": [
+    "POST /statements/email"
+  ],
+  "new_files": [
+    "src/models/statement.py",
+    "src/services/statement_service.py",
+    "src/api/statements.py",
+    "tests/test_models/test_statement.py",
+    "tests/test_services/test_statement_service.py",
+    "tests/test_api/test_statements.py"
+  ],
+  "modified_files": [
+    "src/main.py",
+    "src/api/health.py",
+    "tests/test_health.py",
+    "README.md",
+    "infra/modules/keyvault/main.tf",
+    "infra/modules/keyvault/variables.tf",
+    "infra/modules/keyvault/outputs.tf",
+    "infra/modules/container_app/main.tf",
+    "infra/modules/container_app/variables.tf",
+    "infra/modules/container_app/outputs.tf",
+    "infra/environments/dev/main.tf",
+    "infra/environments/dev/variables.tf",
+    "infra/environments/dev/outputs.tf",
+    "infra/environments/dev/terraform.tfvars",
+    "infra/environments/prod/main.tf",
+    "infra/environments/prod/variables.tf",
+    "infra/environments/prod/outputs.tf",
+    "infra/environments/prod/terraform.tfvars",
+    "pipelines/tf-infra-apply.yml",
+    ".github/agents/infra-devops.agent.md"
+  ],
+  "notes": "Feature implementation, infra wiring, and deployment health checks completed successfully using canonical ingress FQDN. Workflow remains non-green overall due lint gate failures outside this feature scope and Trivy HIGH findings; both require separate remediation cycle."
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": "1",
+  "run_id": "004",
+  "task_slug": "lint-gate-remediation",
+  "sender": "orchestrator-agent",
+  "receiver": "planning-agent",
+  "created_at": "2026-03-23T01:51:48Z",
+  "status": "completed",
+  "requirement": {
+    "title": "Run-004 lint gate remediation",
+    "description": "Start run-004 to remediate the remaining strict lint gate failure (`pylint src/`) and drive the orchestrated workflow to completion without changing existing API behavior.",
+    "acceptance_criteria": [
+      "`pylint src/` passes in this repository environment.",
+      "All existing tests continue to pass with coverage >= 85%.",
+      "No regression to statement email API or health endpoint behavior.",
+      "Security and deployment health gates remain green."
+    ],
+    "target_env": "dev",
+    "breaking_change": false,
+    "security_sensitive": false
+  },
+  "instructions_for_receiver": "Read this file. Decompose the requirement into CODING and INFRA task streams. Write v1__planner__to__coding__lint-gate-remediation__run-004.json and v1__planner__to__infra__lint-gate-remediation__run-004.json. Mark this file status=completed when done.",
+  "planned_at": "2026-03-23T02:11:00Z"
+}

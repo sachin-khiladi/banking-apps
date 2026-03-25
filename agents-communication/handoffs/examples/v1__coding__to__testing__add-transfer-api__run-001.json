@@ -1,0 +1,59 @@
+{
+  "schema_version": "1",
+  "run_id": "001",
+  "task_slug": "add-transfer-api",
+  "sender": "python-coding-agent",
+  "receiver": "unit-test-agent",
+  "created_at": "2026-03-19T10:30:00Z",
+  "status": "pending",
+  "changed_files": [
+    {
+      "file_path": "src/models/transfer.py",
+      "change_type": "created",
+      "public_interface_summary": "New file. Defines TransferRequest (Pydantic BaseModel with source_account_id, destination_account_id, amount: Decimal, currency: str), TransferResponse (transfer_id, status, created_at), and TransferModel (full DB entity with partition_key source_account_id). All fields have validators.",
+      "new_exceptions_raised": [],
+      "new_env_vars_required": []
+    },
+    {
+      "file_path": "src/exceptions/domain_exceptions.py",
+      "change_type": "modified",
+      "public_interface_summary": "Added InsufficientFundsException(account_id, requested, available) with HTTP 422 and error_code='INSUFFICIENT_FUNDS'. Added TransferNotFoundException(transfer_id) with HTTP 404. Both inherit from existing RepositoryException base.",
+      "new_exceptions_raised": ["InsufficientFundsException", "TransferNotFoundException"],
+      "new_env_vars_required": []
+    },
+    {
+      "file_path": "src/services/account_service.py",
+      "change_type": "modified",
+      "public_interface_summary": "Added create_transfer(source_id: str, request: TransferRequest) -> TransferResponse async method. Fetches source and destination accounts, validates balance, calls _transfer_repo.create(). Raises AccountNotFoundException or InsufficientFundsException. Has OpenTelemetry span 'account_service.create_transfer'.",
+      "new_exceptions_raised": ["InsufficientFundsException", "AccountNotFoundException"],
+      "new_env_vars_required": []
+    },
+    {
+      "file_path": "src/api/accounts.py",
+      "change_type": "modified",
+      "public_interface_summary": "Added POST /accounts/{account_id}/transfers handler returning 202. Depends on AccountService and get_current_user. Maps InsufficientFundsException → 422, AccountNotFoundException → 404.",
+      "new_exceptions_raised": [],
+      "new_env_vars_required": []
+    },
+    {
+      "file_path": "src/repository/interfaces/i_transfer_repository.py",
+      "change_type": "created",
+      "public_interface_summary": "ABC defining create(transfer: TransferModel), get_by_id(id, partition_key), list_by_source_account(source_account_id) methods. All async.",
+      "new_exceptions_raised": [],
+      "new_env_vars_required": []
+    },
+    {
+      "file_path": "src/repository/cosmos_transfer_repository.py",
+      "change_type": "created",
+      "public_interface_summary": "Concrete Cosmos DB implementation of ITransferRepository. Uses AsyncCosmosClient. Reads COSMOS_DB_NAME and COSMOS_ACCOUNT_URL env vars. Implements create, get_by_id, list_by_source_account.",
+      "new_exceptions_raised": ["RepositoryException"],
+      "new_env_vars_required": ["COSMOS_DB_NAME", "COSMOS_ACCOUNT_URL"]
+    }
+  ],
+  "quality_gate_results": {
+    "pylint": "passed",
+    "docker_build": "passed",
+    "trivy_scan": "passed"
+  },
+  "instructions_for_receiver": "Read this file. Create or update the following test files: tests/test_services/test_account_service.py (add tests for create_transfer), tests/test_api/test_accounts.py (add tests for POST /accounts/{id}/transfers), tests/test_exceptions/test_domain_exceptions.py (add tests for InsufficientFundsException and TransferNotFoundException), tests/test_repository/test_cosmos_transfer_repository.py (create new). Mock all Cosmos SDK calls and DefaultAzureCredential. Target ≥ 85% coverage per module. Run pytest --cov=src --cov-report=term-missing --cov-fail-under=85. Write results to agents-communication/handoffs/v1__testing__to__orchestrator__add-transfer-api__run-001.json. Mark this file status=completed."
+}

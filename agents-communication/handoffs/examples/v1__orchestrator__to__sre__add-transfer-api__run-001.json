@@ -1,0 +1,26 @@
+{
+  "schema_version": "1",
+  "run_id": "001",
+  "task_slug": "add-transfer-api",
+  "sender": "orchestrator-agent",
+  "receiver": "azure-sre-agent",
+  "created_at": "2026-03-19T12:10:00Z",
+  "status": "pending",
+  "failure_context": {
+    "symptom": "GET /health returned HTTP 503 after 3 consecutive attempts. Container App revision ca-bankapi-dev--xk9p2qw shows 1/1 replicas running but app is returning 503.",
+    "resource_group": "rg-bankapi-dev",
+    "resource_name": "ca-bankapi-dev",
+    "resource_type": "Microsoft.App/containerApps",
+    "fqdn": "ca-bankapi-dev.ambitiousbeach-abc12345.eastus.azurecontainerapps.io",
+    "active_revision": "ca-bankapi-dev--xk9p2qw",
+    "target_env": "dev",
+    "last_successful_revision": "ca-bankapi-dev--3g2oklf",
+    "recent_changes": [
+      "Added Cosmos DB 'transfers' container (INFRA-001)",
+      "No new env vars added",
+      "New image deployed: bankapi:run-001",
+      "Added create_transfer service method + POST /accounts/{id}/transfers endpoint"
+    ]
+  },
+  "instructions_for_receiver": "Read this file. Query AppLens for ca-bankapi-dev in rg-bankapi-dev. Collect container logs from revision ca-bankapi-dev--xk9p2qw (last 200 lines). Diagnose root cause. Write findings to agents-communication/handoffs/v1__sre__to__planner__add-transfer-api__run-001.json. Mark this file status=completed."
+}

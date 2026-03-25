@@ -1,0 +1,74 @@
+{
+  "schema_version": "1",
+  "run_id": "004",
+  "task_slug": "lint-gate-remediation",
+  "sender": "planning-agent",
+  "receiver": "python-coding-agent",
+  "created_at": "2026-03-23T02:10:00Z",
+  "status": "pending",
+  "retry": true,
+  "tasks": [
+    {
+      "task_id": "CODING-001",
+      "type": "bug_fix",
+      "layer": "services",
+      "file_path": "src/services/account_service.py",
+      "description": "Remediate the strict pylint blocker in account service by fixing the undefined symbol used in balance computation and any directly related import/typing issues in this module. Keep all account ownership, not-found, and closed-account domain behaviors unchanged. Ensure the account balance endpoint contract and response model mapping remain exactly as-is.",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "pylint no longer reports E0602/undefined-variable or related import hygiene errors in src/services/account_service.py",
+        "No behavior change to create/get/list/update/close/admin account flows",
+        "Account balance response fields and semantics remain unchanged"
+      ]
+    },
+    {
+      "task_id": "CODING-002",
+      "type": "update_existing",
+      "layer": "api",
+      "file_path": "src/api/accounts.py",
+      "description": "Apply targeted lint-cleanup in the accounts API module for strict repository lint compliance, focusing on line-length, import placement/order, and formatting issues reported by pylint in this file. Preserve all route paths, status codes, and exception-to-HTTP mappings. Do not alter request/response schemas or authentication dependency usage.",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "pylint reports no remaining strict-gate issues in src/api/accounts.py",
+        "Customer and admin account endpoint behavior is unchanged",
+        "No changes to public API paths or response models"
+      ]
+    },
+    {
+      "task_id": "CODING-003",
+      "type": "update_existing",
+      "layer": "api",
+      "file_path": "src/api/profile.py",
+      "description": "Address remaining strict lint findings in the profile API module, including style and import/newline placement issues if present under current pylint configuration. Keep profile get/patch behavior, validation semantics, and exception mapping unchanged. Retain existing dependency injection and authentication flow.",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "pylint reports no strict-gate issues in src/api/profile.py",
+        "GET /profile and PATCH /profile request/response behavior remains unchanged",
+        "No changes to dependency wiring contract with main.py"
+      ]
+    },
+    {
+      "task_id": "CODING-004",
+      "type": "update_existing",
+      "layer": "main",
+      "file_path": "src/main.py",
+      "description": "Perform final lint-gate stabilization in app wiring by resolving any remaining strict pylint findings in main module import/wiring sections without changing runtime override behavior. Keep repository fallback handling and router registration exactly equivalent to current behavior. After module-level fixes, run full repo lint and tests and apply only minimal additional changes required for pylint src/ to pass.",
+      "depends_on": [
+        "CODING-001",
+        "CODING-002",
+        "CODING-003"
+      ],
+      "acceptance_criteria": [
+        "pylint src/ exits 0 in this repository environment",
+        "pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=85 passes",
+        "Health and statement-email endpoint behavior remains unchanged"
+      ]
+    }
+  ],
+  "quality_gates": {
+    "lint_required": true,
+    "docker_build_required": true,
+    "trivy_scan_required": true
+  },
+  "instructions_for_receiver": "Validate this file against agents-communication/schemas/planner-to-coding.schema.json before implementation. Execute CODING-001 through CODING-003 first (independent), then CODING-004 as final stabilization and repo-wide gate verification. Keep scope strictly limited to lint remediation and regression-safe refactors with no API contract changes. Record executed commands/results and produce v1__coding__to__testing__lint-gate-remediation__run-004.json when complete."
+}

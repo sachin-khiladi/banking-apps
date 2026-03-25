@@ -1,0 +1,107 @@
+{
+  "schema_version": "1",
+  "run_id": "001",
+  "task_slug": "update-user-profile",
+  "sender": "planning-agent",
+  "receiver": "python-coding-agent",
+  "created_at": "2026-03-19T10:00:00Z",
+  "status": "pending",
+  "retry": false,
+  "tasks": [
+    {
+      "task_id": "CODING-001",
+      "type": "new_model",
+      "layer": "models",
+      "file_path": "src/models/user_profile.py",
+      "description": "Create a new Pydantic v2 module at src/models/user_profile.py. Define an 'Address' BaseModel with fields: line1 (str, max_length=100), line2 (Optional[str], max_length=100), city (str, max_length=60), state (str, max_length=60), postal_code (str, pattern='^[A-Za-z0-9 -]{2,10}$'), country (str, max_length=60). Define 'UserProfile' BaseModel with fields: owner_id (str), address (Optional[Address]), mobile_no (Optional[str], pattern='^\\+[1-9]\\d{1,14}$'), email (Optional[EmailStr] — import EmailStr from pydantic), created_at (datetime), updated_at (datetime). Define 'UserProfileUpdateRequest' BaseModel where address, mobile_no, and email are all Optional with the same validations as UserProfile — this is the PATCH request body. Add model_config with json_schema_extra examples for all three models. Use 'from __future__ import annotations' and follow the same style as src/models/account.py.",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "Address, UserProfile, and UserProfileUpdateRequest are importable from src.models.user_profile",
+        "mobile_no rejects strings that do not match E.164 (^\\+[1-9]\\d{1,14}$)",
+        "email rejects non-RFC-5322 addresses (use pydantic EmailStr)",
+        "postal_code rejects values longer than 10 chars or containing special characters other than space and hyphen",
+        "All three models have json_schema_extra examples",
+        "pylint src/models/user_profile.py exits with code 0"
+      ]
+    },
+    {
+      "task_id": "CODING-002",
+      "type": "new_exception",
+      "layer": "exceptions",
+      "file_path": "src/exceptions/domain_exceptions.py",
+      "description": "Append a new exception class 'UserProfileNotFoundException' to the existing src/exceptions/domain_exceptions.py file. It must subclass 'NotFoundException' (already defined in the same file) and accept 'owner_id: str' in its __init__. Call super().__init__(resource='UserProfile') and store self.owner_id = owner_id. The exception message produced by NotFoundException will be 'UserProfile not found.' — do not override __str__. Add a Google-style docstring. Do not modify any existing class.",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "UserProfileNotFoundException is importable from src.exceptions.domain_exceptions",
+        "str(UserProfileNotFoundException('u-123')) == 'UserProfile not found.'",
+        "isinstance(UserProfileNotFoundException('u-123'), NotFoundException) is True",
+        "pylint src/exceptions/domain_exceptions.py exits with code 0"
+      ]
+    },
+    {
+      "task_id": "CODING-003",
+      "type": "new_service_method",
+      "layer": "services",
+      "file_path": "src/services/user_profile_service.py",
+      "description": "Create src/services/user_profile_service.py implementing 'UserProfileService'. The constructor accepts 'repository: IUserProfileRepository' (injected — import from src.repository.interfaces.i_user_profile_repository). Implement two async methods: (1) 'get_profile(owner_id: str) -> UserProfile' — calls await self._repo.get_by_owner_id(owner_id); if None, raises UserProfileNotFoundException(owner_id); otherwise returns UserProfile(**doc). (2) 'update_profile(owner_id: str, payload: UserProfileUpdateRequest) -> UserProfile' — fetches existing doc or starts with a skeleton dict containing owner_id and created_at=now; merges only non-None fields from payload (true PATCH: untouched fields keep existing values; nested Address fields also merged field-by-field); sets updated_at=datetime.now(timezone.utc); calls await self._repo.upsert(doc); returns UserProfile(**saved_doc). Use opentelemetry trace spans (tracer = trace.get_tracer(__name__)). Raise only domain exceptions — never expose Cosmos SDK exceptions. Follow patterns in src/services/account_service.py.",
+      "depends_on": ["CODING-001", "CODING-002"],
+      "repository_spec": {
+        "entity": "UserProfile",
+        "container": "user_profiles",
+        "partition_key": "/owner_id",
+        "database_env_var": "COSMOS_DB_NAME",
+        "account_env_var": "COSMOS_ACCOUNT_URL",
+        "operations": ["get_by_id", "create", "update", "query"],
+        "query_patterns": [
+          "get_by_owner_id(owner_id: str) -> Optional[dict]",
+          "upsert(document: dict) -> dict"
+        ]
+      },
+      "acceptance_criteria": [
+        "get_profile raises UserProfileNotFoundException when the repository returns None",
+        "update_profile with a partial payload leaves un-supplied fields unchanged",
+        "update_profile on a non-existent profile creates it (upsert semantics)",
+        "updated_at is always set to the current UTC time",
+        "owner_id is never taken from the payload — always from the caller argument",
+        "All Cosmos SDK exceptions are wrapped in RepositoryException before surfacing"
+      ]
+    },
+    {
+      "task_id": "CODING-004",
+      "type": "new_endpoint",
+      "layer": "api",
+      "file_path": "src/api/profile.py",
+      "description": "Create src/api/profile.py with a single APIRouter(prefix='/profile', tags=['profile']). Implement two endpoints: (1) GET /profile — CurrentUser = Annotated[dict, Depends(get_current_user)]; extract owner_id = token['sub']; call await profile_service.get_profile(owner_id); catch UserProfileNotFoundException and raise HTTPException(404); return UserProfile response model. (2) PATCH /profile — accept body: UserProfileUpdateRequest; extract owner_id from JWT; call await profile_service.update_profile(owner_id, payload); return UserProfile. Define 'get_profile_service() -> UserProfileService' stub (raises HTTP 503, same pattern as get_account_service in src/api/accounts.py). Use 'ProfileServiceDep = Annotated[UserProfileService, Depends(get_profile_service)]'. Import UserProfile, UserProfileUpdateRequest from src.models.user_profile. Import UserProfileNotFoundException from src.exceptions.domain_exceptions. Never accept owner_id from the request body — always derive from JWT sub. Follow the accounts.py pattern for exception mapping.",
+      "depends_on": ["CODING-003"],
+      "acceptance_criteria": [
+        "GET /profile returns HTTP 200 with UserProfile body when profile exists",
+        "GET /profile returns HTTP 404 with meaningful detail when profile not found",
+        "PATCH /profile returns HTTP 200 with the merged UserProfile",
+        "Supplying an invalid email in PATCH /profile returns HTTP 422",
+        "Supplying a mobile_no that does not match E.164 in PATCH returns HTTP 422",
+        "owner_id is always derived from JWT 'sub' — never from request body",
+        "pylint src/api/profile.py exits with code 0"
+      ]
+    },
+    {
+      "task_id": "CODING-005",
+      "type": "update_existing",
+      "layer": "main",
+      "file_path": "src/main.py",
+      "description": "Wire the new profile router and service into src/main.py. Follow the exact same pattern used for accounts: (1) Import 'profile_router' and 'get_profile_service' from 'src.api.profile'; (2) Import 'CosmosUserProfileRepository' from 'src.repository.cosmos_user_profile_repository' inside a try/except block mirroring the pattern for CosmosAccountRepository; (3) Import 'UserProfileService' from 'src.services.user_profile_service'; (4) Inside the try block, instantiate '_user_profile_repo = CosmosUserProfileRepository()' and override: 'app.dependency_overrides[get_profile_service] = lambda: UserProfileService(_user_profile_repo)'; (5) Call 'app.include_router(profile_router)' in the Routers section. Preserve all existing imports and registrations — no removals.",
+      "depends_on": ["CODING-004"],
+      "acceptance_criteria": [
+        "GET /profile and PATCH /profile are reachable after startup",
+        "When COSMOS_ACCOUNT_URL / COSMOS_DB_NAME are missing, the app still starts (service raises 503 at request time, not at startup)",
+        "All existing routes (health, accounts, admin/accounts) remain registered",
+        "pylint src/main.py exits with code 0"
+      ]
+    }
+  ],
+  "quality_gates": {
+    "lint_required": true,
+    "docker_build_required": true,
+    "trivy_scan_required": true
+  },
+  "instructions_for_receiver": "You are python-coding-agent. Validate this file against agents-communication/schemas/planner-to-coding.schema.json before proceeding. Implement tasks in dependency order: CODING-001 and CODING-002 are independent and can be done in parallel. CODING-003 depends on both; it also carries a repository_spec — invoke cosmosdb-repo-agent to generate src/repository/interfaces/i_user_profile_repository.py and src/repository/cosmos_user_profile_repository.py from that spec before implementing the service. CODING-004 depends on CODING-003. CODING-005 depends on CODING-004. After all tasks: run 'pylint src/' (must exit 0) and 'pytest tests/ --cov=src --cov-fail-under=85' (must pass). Write the testing handoff to agents-communication/handoffs/v1__coding__to__testing__update-user-profile__run-001.json when done."
+}

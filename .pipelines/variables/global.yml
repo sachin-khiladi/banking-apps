@@ -1,0 +1,44 @@
+# ============================================================
+# global.yml — Variables shared across ALL pipelines and ALL
+# environments. Values here must not be environment-specific.
+#
+# Referenced by every pipeline as:
+#   variables:
+#     - template: variables/global.yml
+# ============================================================
+
+variables:
+
+  # ── Application identity ──────────────────────────────────
+  appName: fastapi-azure-app
+  appVersion: $(Build.BuildNumber)
+
+  # ── Source image ──────────────────────────────────────────
+  # The repository name inside ACR.
+  # Full image tag is assembled by the build template as:
+  #   $(acrLoginServer)/$(imageRepository):$(imageTag)
+  imageRepository: banking-system/fastapi-azure-app
+  imageTag: $(Build.BuildId)
+
+  # ── Python / test ─────────────────────────────────────────
+  pythonVersion: '3.11'
+  pytestCoverageThreshold: 85
+
+  # ── Docker ────────────────────────────────────────────────
+  dockerfilePath: Dockerfile
+  dockerBuildContext: '$(Build.SourcesDirectory)'
+
+  # ── Lint ──────────────────────────────────────────────────
+  pylintSrcPath: 'src/'
+
+  # ── Pipeline telemetry ────────────────────────────────────
+  # ADO project used in badge/deep-link references across templates.
+  adoOrganisation: AIDemoApps
+  adoProject: AIDemoApp
+
+  # ── Template repository pin ───────────────────────────────
+  # Keep these in one place so every pipeline references the
+  # same tag. The actual resource declaration lives in each
+  # pipeline file; update both together when upgrading templates.
+  templateRepoName: AIDemoApp/ado-templates
+  templateRepoRef: refs/tags/v1.0.0

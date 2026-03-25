@@ -1,0 +1,38 @@
+{
+  "schema_version": "1",
+  "run_id": "001",
+  "task_slug": "update-user-profile",
+  "sender": "python-coding-agent",
+  "receiver": "unit-test-agent",
+  "created_at": "2026-03-19T10:00:00Z",
+  "status": "completed",
+  "implemented_modules": [
+    "src/models/user_profile.py",
+    "src/exceptions/domain_exceptions.py",
+    "src/services/user_profile_service.py",
+    "src/repository/interfaces/i_user_profile_repository.py",
+    "src/repository/cosmos_user_profile_repository.py",
+    "src/api/profile.py",
+    "src/main.py"
+  ],
+  "test_coverage_targets": [
+    {"module": "src/models/user_profile.py", "target": 85},
+    {"module": "src/services/user_profile_service.py", "target": 90},
+    {"module": "src/api/profile.py", "target": 90},
+    {"module": "src/repository/cosmos_user_profile_repository.py", "target": 85}
+  ],
+  "lint_result": {
+    "tool": "pylint",
+    "score": 9.88,
+    "critical_errors": 0,
+    "notes": "Pre-existing E0602 in account_service.py and W0706 in cosmos_account_repository.py; no errors in new files."
+  },
+  "test_result": {
+    "total_passed": 189,
+    "total_failed": 0,
+    "coverage_total": 86,
+    "coverage_threshold": 85,
+    "passed": true
+  },
+  "notes": "GET /profile returns 404 if profile not found. PATCH /profile upserts — creates if missing. owner_id always from JWT sub. Address merging is field-by-field to support partial address patches. All new files follow the same patterns as the accounts layer."
+}

@@ -1,0 +1,40 @@
+# ============================================================
+# prod.yml — Production-environment variables.
+#
+# IMPORTANT: This file must never contain secrets, keys, or
+# connection strings with credentials. All sensitive values
+# must come from ADO Library variable groups linked to Key Vault.
+# ============================================================
+
+variables:
+
+  # ── Environment identity ──────────────────────────────────
+  environment: prod
+  environmentDisplayName: Production
+
+  # ── Azure subscription ────────────────────────────────────
+  azureServiceConnection: sc-banking-prod
+
+  # ── Resource group ────────────────────────────────────────
+  resourceGroup: rg-banking-prod
+
+  # ── Azure Container Registry ──────────────────────────────
+  acrName: acrbankingprod
+  acrLoginServer: acrbankingprod.azurecr.io
+
+  # ── Azure Container Apps ──────────────────────────────────
+  containerAppName: ca-fastapi-banking-prod
+  containerAppEnvironment: cae-banking-prod
+  containerAppLocation: eastus
+
+  # ── Deployment behaviour ──────────────────────────────────
+  # Production always requires a manual approval gate.
+  requiresApproval: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetPort: 8000
+
+  # ── App configuration ─────────────────────────────────────
+  cosmosAccountUrl: https://cosmos-banking-prod.documents.azure.com:443/
+  cosmosDatabaseName: banking-prod
+  appInsightsConnectionString: '$(APP_INSIGHTS_CONNECTION_STRING_PROD)'

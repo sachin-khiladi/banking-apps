@@ -1,0 +1,816 @@
+Script started on Sun Mar  8 13:14:15 2026
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  ls src/[?1l>[?2004l
+]2;ls -G src/]1;ls[1m[36mapi[39;49m[0m        [1m[36mexceptions[39;49m[0m main.py    [1m[36mrepository[39;49m[0m
+[1m[36mauth[39;49m[0m       [1m[36mlogging[39;49m[0m    [1m[36mmodels[39;49m[0m     [1m[36mservices[39;49m[0m
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  F=src/models/account.py[?1l>[?2004l
+echo '"""Pydantic v2 schemas and DTOs for the bank account domain."""' > $F
+echo 'from __future__ import annotations' >> $F
+echo 'from datetime import datetime' >> $F
+echo 'from decimal import Decimal' >> $F
+echo 'from enum import Enum' >> $F
+echo 'from typing import Optional' >> $F
+echo 'from pydantic import BaseModel, Field' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountType(str, Enum):' >> $F
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTye]2;F=src/models/account.py ]1;[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '"""Pydantic v2 schemas and DTOs for the bank a [Kcccount domain."""' > $F[?1l>[?2004l
+echo 'from __future__ import annotations' >> $F
+echo 'from datetime import datetime' >> $F
+echo 'from decimal import Decimal' >> $F
+echo 'from enum import Enum' >> $F
+echo 'from typing import Optional' >> $F
+echo 'from pydantic import BaseModel, Field' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountType(str, Enum):' >> $F
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_ty]2;echo '"""Pydantic v2 schemas and DTOs for the bank account domain."""' > $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho 'from __future__ import annotations' >> $F[?1l>[?2004l
+echo 'from datetime import datetime' >> $F
+echo 'from decimal import Decimal' >> $F
+echo 'from enum import Enum' >> $F
+echo 'from typing import Optional' >> $F
+echo 'from pydantic import BaseModel, Field' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountType(str, Enum):' >> $F
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: Ac]2;echo 'from __future__ import annotations' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho 'from datetime import datetime' >> $F[?1l>[?2004l
+echo 'from decimal import Decimal' >> $F
+echo 'from enum import Enum' >> $F
+echo 'from typing import Optional' >> $F
+echo 'from pydantic import BaseModel, Field' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountType(str, Enum):' >> $F
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type]2;echo 'from datetime import datetime' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho 'from decimal import Decimal' >> $F[?1l>[?2004l
+echo 'from enum import Enum' >> $F
+echo 'from typing import Optional' >> $F
+echo 'from pydantic import BaseModel, Field' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountType(str, Enum):' >> $F
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_typ]2;echo 'from decimal import Decimal' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho 'from enum import Enum' >> $F[?1l>[?2004l
+echo 'from typing import Optional' >> $F
+echo 'from pydantic import BaseModel, Field' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountType(str, Enum):' >> $F
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    accoun]2;echo 'from enum import Enum' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho 'from typing import Optional' >> $F[?1l>[?2004l
+echo 'from pydantic import BaseModel, Field' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountType(str, Enum):' >> $F
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type:]2;echo 'from typing import Optional' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho 'from pydantic import BaseModel, Field' >> $F[?1l>[?2004l
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountType(str, Enum):' >> $F
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTye]2;echo 'from pydantic import BaseModel, Field' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '' >> $F[?1l>[?2004l
+echo '' >> $F
+echo 'class AccountType(str, Enum):' >> $F
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun]2;echo '' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '' >> $F[?1l>[?2004l
+echo 'class AccountType(str, Enum):' >> $F
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac ]2;echo '' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho 'class AccountType(str, Enum):' >> $F[?1l>[?2004l
+echo '    """Supported bank account types."""' >> $F
+echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: Accou]2;echo 'class AccountType(str, Enum):' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    """Supported bank account types."""' >> $F [K[K[?1l>[?2004l
+]2;echo '    """Supported bank account types."""' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                echo '    SAVINGS = "SAVINGS"' >> $F
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTy]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    SAVINGS = "SAVINGS"' >> $F[?1l>[?2004l
+echo '    CURRENT = "CURRENT"' >> $F
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: A]2;echo '    SAVINGS = "SAVINGS"' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    CURRENT = "CURRENT"' >> $F[?1l>[?2004l
+echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: Ac]2;echo '    CURRENT = "CURRENT"' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F[?1l>[?2004l
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho ']2;echo '    FIXED_DEPOSIT = "FIXED_DEPOSIT"' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '' >> $F[?1l>[?2004l
+echo '' >> $F
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho '    accongecho ]2;echo '' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '' >> $F[?1l>[?2004l
+echo 'class AccountStatus(str, Enum):' >> $F
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho '    accongecho '    ac
+eeeeee]2;echo '' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho 'class AccountStatus(str, Enum):' >> $F[?1l>[?2004l
+echo '    """Lifecycle status of a bank account. ACTIVE=operational, CLOSED=soft-deleted."""' >> $F
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho '    accongecho '    ac
+eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeee]2;echo 'class AccountStatus(str, Enum):' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    """Lifecycle status of a bank account. ACT [KIIVE=operational, CLOSED=soft-deleted."""' >> $F[?1l>[?2004l
+echo '    ACTIVE = "ACTIVE"' >> $F
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho '    accongecho '    ac
+eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleee]2;echo  >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    ACTIVE = "ACTIVE"' >> $F[?1l>[?2004l
+echo '    CLOSED = "CLOSED"' >> $F
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho '    accongecho '    ac
+eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeee:'eeeeeeeeeeeeeeleeeeeeeeeeeeee]2;echo '    ACTIVE = "ACTIVE"' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    CLOSED = "CLOSED"' >> $F[?1l>[?2004l
+echo '' >> $F
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho '    accongecho '    ac
+eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeee:'eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeefoeeeeeeeeeeeeeeleeeeeeeeeeeeeel]2;echo '    CLOSED = "CLOSED"' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '' >> $F[?1l>[?2004l
+echo '' >> $F
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho '    accongecho '    ac
+eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeee:'eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeefoeeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeaceeeeeeeeee]2;echo '' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '' >> $F[?1l>[?2004l
+echo 'class AccountCreate(BaseModel):' >> $F
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho '    accongecho '    ac
+eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeee:'eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeefoeeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeaceeeeeeeeeeee> eeeeeeeeeee]2;echo '' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho 'class AccountCreate(BaseModel):' >> $F[?1l>[?2004l
+echo '    """Request body for opening a new bank account."""' >> $F
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho '    accongecho '    ac
+eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeee:'eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeefoeeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeaceeeeeeeeeeee> eeeeeeeeeeee ceeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee]2;echo 'class AccountCreate(BaseModel):' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    """Request body for opening a new bank acc [Koount."""' >> $F[?1l>[?2004l
+echo '    account_type: AccountTyecho '    account_type:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun="echo '    account_type: AccountTyecho '    acc' echo '    account_type: AccountTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: AccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: AccountTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: AccountTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    account_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_type: AccountTyecho '    accongecho '    ac
+eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeee:'eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeefoeeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeaceeeeeeeeeeee> eeeeeeeeeeee ceeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee5,eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeer]2;echo '    """Request body for opening a new bank account."""' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    account_type: AccountTyecho '    account_t [Kyype:tiecho '    account_type: AccountTyecho '    account_type:tiecho '    accoun [K=="echo '    account_type: AccountTyecho '    acc' echo '    account_type: Accoun [KttTyecho '  ltecho '    account_type: AccountTyecho '  echo '    account_type: Ac [KccountTya"echo '    account_type: AccountTyecho '",echo '    account_type: Accoun [KttTyecho '    accoun >echo '    ac >echo '    ac >echo '    account_type: Account [KTTyecho '  :'echo '    account_type: AccountTyecho '    account_leecho '    accou [Knnt_type: AccountTyec""echo '    account_type: AccountTyecl[echo '    account_typ [Kee: AccountTyecho '    accongecho '    ac[?1l>[?2004l
+[0m[27m[24m[Jquote> [K[?1h=[?2004heeeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeee [Keeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleee [Keeeeee:'eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeefoeeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeaceee [Keeeeeeeeee> eeeeeeeeeeee ceeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee5,eeeeeeeeee [Keeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeraeeeeeeeeeeeeeeleeeeeee [Keeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeee [Keeeleeeeeeeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeee:'eeeeeeeeeeeeeeleeeeeee [Keeeeeeeeleeefoeeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeaceeeeeeeeeeee> eeeeeeeeeeee ceeee [Keeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee5,eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeee [Keeeeeeleeeeeeeeeeeee {eeeeeeraeeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeee [Keeeeeeee {eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeeeeleeeeeeeeeeeee {eeeeeeeeeee [Keeeeleeeeeeeeeeeeeeleeeeeeee:'eeeeeeeeeeeeeeleeeeeeeeeeeeeeleeefoeeeeeeeeeeeeeele [Keeeeeeeeeeeeeeleeeaceeeeeeeeeeee> eeeeeeeeeeee ceeeeeeeeeeeeeeleeeeeeeF[?1l>[?2004l
+]2;echo '    account_type: AccountTyecho ' account_type:tiecho    account_type: ]1;echozsh: bad pattern: AccountTyecl[echo
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    model_config = {"from_attributes": True}'  [K>>> $F[?1l>[?2004l
+]2;echo '    model_config = {"from_attributes": True}' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '' >> $F[?1l>[?2004l
+]2;echo '' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '' >> $F[?1l>[?2004l
+]2;echo '' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho 'class AccountAdminResponse(AccountResponse):'  [K>>> $F[?1l>[?2004l
+]2;echo 'class AccountAdminResponse(AccountResponse):' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    """Extended account view returned to autho [Krrised bank employees."""' >> $F[?1l>[?2004l
+]2;echo '    """Extended account view returned to authorised bank employees."""']1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    is_deleted: bool' >> $F[?1l>[?2004l
+]2;echo '    is_deleted: bool' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    closure_reason: Optional[str] = None' >> $ [KF[?1l>[?2004l
+]2;echo '    closure_reason: Optional[str] = None' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '    model_config = {"from_attributes": True}'  [K>>> $F[?1l>[?2004l
+]2;echo '    model_config = {"from_attributes": True}' >> $F]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "OK: $F"[?1l>[?2004l
+]2;echo "OK: $F"]1;echoOK: src/models/account.py
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  cd /Users/sachinkhilari/Documents/D/MyRepos/azure-c [Koontainer-apps/banking-system/fastapi-azure-app[?1l>[?2004l
+]2;cd ]1;cd[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '# placeholder' > src/repository/interfaces/i_a [Kcccount_repository.py[?1l>[?2004l
+]2;echo '# placeholder' > src/repository/interfaces/i_account_repository.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '# placeholder' > src/services/account_service. [Kppy[?1l>[?2004l
+]2;echo '# placeholder' > src/services/account_service.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '# placeholder' > src/api/accounts.py[?1l>[?2004l
+]2;echo '# placeholder' > src/api/accounts.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho '# placeholder' > src/repository/interfaces/__i [Knnit__.py[?1l>[?2004l
+]2;echo '# placeholder' > src/repository/interfaces/__init__.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004httouch src/repository/interfaces/__init__.py[?1l>[?2004l
+]2;touch src/repository/interfaces/__init__.py]1;touch[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004hlls -la src/models/account.py src/repository/interfac [Kees/i_account_repository.py src/services/account_service.py src/api/accounts.py[?1l>[?2004l
+]2;ls -G -la src/models/account.py  src/services/account_service.py ]1;ls-rw-r--r--  1 sachinkhilari  staff   14  8 Mar 13:16 src/api/accounts.py
+-rw-r--r--  1 sachinkhilari  staff  925  8 Mar 13:15 src/models/account.py
+-rw-r--r--  1 sachinkhilari  staff   14  8 Mar 13:16 src/repository/interfaces/i_account_repository.py
+-rw-r--r--  1 sachinkhilari  staff   14  8 Mar 13:16 src/services/account_service.py
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  python3 -m py_compile src/models/account.py src/exc [Keeptions/domain_exceptions.py src/repository/interfaces/i_account_repository.py & [K&& echo "syntax OK: models + exceptions + interface"[?1l>[?2004l
+]2;python3 -m py_compile src/models/account.py   && echo ]1;python3syntax OK: models + exceptions + interface
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  python3 -m py_compile src/services/account_service. [Kppy src/api/accounts.py src/auth/oauth2.py src/main.py && echo "syntax OK: servic [Kee + api + auth + main"[?1l>[?2004l
+]2;python3 -m py_compile src/services/account_service.py src/api/accounts.py   ]1;python3syntax OK: service + api + auth + main
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  pip install -q fastapi pydantic python-jose passlib [K  opentelemetry-api 2>/dev/null; python3 -c "from src.models.account import Accou [KnntCreate, AccountResponse, AccountAdminResponse, AccountStatus, AccountType; fro [Kmm src.exceptions.domain_exceptions import AccountNotFoundException, AccountAlrea [KddyClosedException, InsufficientPermissionsException; from src.repository.interfa [Kcces.i_account_repository import IAccountRepository; print('imports OK')"[?1l>[?2004l
+]2;pip install -q fastapi pydantic python-jose passlib opentelemetry-api 2> ;  -]1;pipTraceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/src/exceptions/domain_exceptions.py", line 73, in <module>
+    class RepositoryException(DomainException):
+  File "/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/src/exceptions/domain_exceptions.py", line 80, in RepositoryException
+    def __init__(self, message: str, cause: Exception | None = None) -> None:
+TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  python3 -c "from src.models.account import AccountC [Krreate, AccountResponse, AccountAdminResponse, AccountStatus, AccountType; from s [Krrc.exceptions.domain_exceptions import AccountNotFoundException, AccountAlreadyC [KllosedException, InsufficientPermissionsException; from src.repository.interfaces [K..i_account_repository import IAccountRepository; from src.services.account_servi [Kcce import AccountService; print('all imports OK')"[?1l>[?2004l
+]2;python3 -c ]1;python3all imports OK
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  pip install -q pylint 2>/dev/null && python3 -m pyl [Kiint src/models/account.py src/exceptions/domain_exceptions.py src/repository/int [Keerfaces/i_account_repository.py src/services/account_service.py src/api/accounts [K..py --disable=C0114,C0115,C0116,E0401 --score=no 2>&1 | tail -20[?1l>[?2004l
+]2;pip install -q pylint 2> /dev/null && python3 -m pylint src/models/account.py]1;pip/Library/Developer/CommandLineTools/usr/bin/python3: No module named pylint
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  pip3 install -q pylint fastapi pydantic python-jose [K  passlib opentelemetry-api opentelemetry-sdk 2>&1 | tail -3[?1l>[?2004l
+]2;pip3 install -q pylint fastapi pydantic python-jose passlib opentelemetry-api]1;pip3  NOTE: The current PATH contains path(s) starting with `~`, which may not be expanded by all applications.
+WARNING: You are using pip version 21.2.4; however, version 26.0.1 is available.
+You should consider upgrading via the '/Library/Developer/CommandLineTools/usr/bin/python3 -m pip install --upgrade pip' command.
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  pylint src/models/account.py src/exceptions/domain_ [Keexceptions.py src/repository/interfaces/i_account_repository.py src/services/acc [Koount_service.py src/api/accounts.py --disable=C0114,C0115,C0116,E0401,R0903 --sc [Koore=no 2>&1 | grep -E "^src|error|warning|E[0-9]|W[0-9]|C[0-9]|R[0-9]" | head -3 [K0[?1l>[?2004l
+]2;pylint src/models/account.py src/exceptions/domain_exceptions.py      2>&1 | ]1;pylint.pylintrc:1:0: F0011: error while parsing the configuration: While reading from '/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/.pylintrc' [line 27]: section 'MASTER' already exists (config-parse-error)
+src/exceptions/domain_exceptions.py:84:0: C0304: Final newline missing (missing-final-newline)
+src/api/accounts.py:80:0: C0301: Line too long (103/100) (line-too-long)
+src/api/accounts.py:175:0: C0301: Line too long (103/100) (line-too-long)
+src/api/accounts.py:190:0: C0301: Line too long (102/100) (line-too-long)
+src/api/accounts.py:90:11: W0718: Catching too general exception Exception (broad-exception-caught)
+src/api/accounts.py:120:11: W0718: Catching too general exception Exception (broad-exception-caught)
+src/api/accounts.py:140:11: W0718: Catching too general exception Exception (broad-exception-caught)
+src/api/accounts.py:164:11: W0718: Catching too general exception Exception (broad-exception-caught)
+src/api/accounts.py:200:11: W0718: Catching too general exception Exception (broad-exception-caught)
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  echo '# placeholder' > src/repository/cosmos_accoun [Ktt_repository.py[?1l>[?2004l
+]2;echo '# placeholder' > src/repository/cosmos_account_repository.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  python3 -m py_compile src/repository/cosmos_account [K__repository.py && echo "cosmos repo: syntax OK" && python3 -m py_compile src/mai [Knn.py && echo "main: syntax OK"[?1l>[?2004l
+]2;python3 -m py_compile src/repository/cosmos_account_repository.py && echo  &&]1;python3cosmos repo: syntax OK
+main: syntax OK
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  find src -name "*.py" | sort && echo "---" && wc -l [K  src/models/account.py src/services/account_service.py src/api/accounts.py src/r [Keepository/cosmos_account_repository.py src/repository/interfaces/i_account_repos [Kiitory.py[?1l>[?2004l
+]2;find src -name "*.py" | sort && echo "---" && wc -l src/models/account.py    ]1;findsrc/api/accounts.py
+src/api/health.py
+src/auth/oauth2.py
+src/exceptions/domain_exceptions.py
+src/logging/app_insights.py
+src/main.py
+src/models/__init__.py
+src/models/account.py
+src/repository/__init__.py
+src/repository/cosmos_account_repository.py
+src/repository/interfaces/__init__.py
+src/repository/interfaces/i_account_repository.py
+src/services/__init__.py
+src/services/account_service.py
+---
+     105 src/models/account.py
+     270 src/services/account_service.py
+     201 src/api/accounts.py
+     329 src/repository/cosmos_account_repository.py
+      78 src/repository/interfaces/i_account_repository.py
+     983 total
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  cd /Users/sachinkhilari/Documents/D/MyRepos/azure-c [Koontainer-apps/banking-system/fastapi-azure-app && python3 -c "[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004hffrom src.models.account import AccountCreate, AccountResponse, Ac [KccountAdminResponse, AccountCloseRequest, AccountUpdate, AccountStatus, AccountTy [Kppe[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004hffrom src.exceptions.domain_exceptions import AccountNotFoundExcep [Kttion, AccountAlreadyClosedException, InsufficientPermissionsException, Repositor [KyyException[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004hffrom src.repository.interfaces.i_account_repository import IAccou [KnntRepository[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004hffrom src.services.account_service import AccountService[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004hffrom src.api.accounts import customer_router, admin_router[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004hffrom src.auth.oauth2 import get_current_user, require_bank_employ [Keee[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004h[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004h## Quick model validation[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004haa = AccountCreate(account_type=AccountType.SAVINGS, currency='USD [K'', initial_deposit='500.00')[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004hpprint('AccountCreate:', a.account_type, a.currency)[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004h[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004h## Verify service depends only on interface[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004hiimport inspect[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004hssig = inspect.signature(AccountService.__init__)[?1l>[?2004l
+[0m[27m[24m[Jcmdand dquote> [K[?1h=[?2004hpprint('AccountService ctor param:', list(sig.parameters.keys()))f [Krrom src.models.account import AccountCreate, AccountResponse, AccountAdminRespon [Ksse, AccountCloseRequest, Accountoufrom src.exceptions.domain_exceptions impo[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  python3 -m py_compile src/models/account.py src/exc [Keeptions/domain_exceptions.py src/repository/interfaces/i_account_repository.py s [Krrc/services/account_service.py src/api/accounts.py src/auth/oauth2.py src/reposi [Kttory/cosmos_account_repository.py src/main.py src/repository/interfaces/__init__ [K..py src/repository/__init__.py src/models/__init__.py && echo "ALL 11 FILES: syn [Kttax clean"[?1l>[?2004l
+]2;python3 -m py_compile src/models/account.py   src/services/account_service.py]1;python3ALL 11 FILES: syntax clean
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  cd /Users/sachinkhilari/Documents/D/MyRepos/azure-c [Koontainer-apps/banking-system/fastapi-azure-app[?1l>[?2004l
+]2;cd ]1;cd[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004hmmkdir -p tests/test_exceptions tests/test_services t [Keests/test_api tests/test_auth tests/test_repository[?1l>[?2004l
+]2;mkdir -p tests/test_exceptions tests/test_services tests/test_api  ]1;mkdir[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/conftest.py[?1l>[?2004l
+]2;echo "# placeholder" > tests/conftest.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/test_exceptions/__init_ [K__.py[?1l>[?2004l
+]2;echo "# placeholder" > tests/test_exceptions/__init__.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/test_exceptions/test_do [Kmmain_exceptions.py[?1l>[?2004l
+]2;echo "# placeholder" > tests/test_exceptions/test_domain_exceptions.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/test_services/__init__. [Kppy[?1l>[?2004l
+]2;echo "# placeholder" > tests/test_services/__init__.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/test_services/test_acco [Kuunt_service.py[?1l>[?2004l
+]2;echo "# placeholder" > tests/test_services/test_account_service.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/test_api/__init__.py[?1l>[?2004l
+]2;echo "# placeholder" > tests/test_api/__init__.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/test_api/test_accounts. [Kppy[?1l>[?2004l
+]2;echo "# placeholder" > tests/test_api/test_accounts.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/test_auth/__init__.py[?1l>[?2004l
+]2;echo "# placeholder" > tests/test_auth/__init__.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/test_auth/test_oauth2.p [Ky[?1l>[?2004l
+]2;echo "# placeholder" > tests/test_auth/test_oauth2.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/test_repository/__init_ [K__.py[?1l>[?2004l
+]2;echo "# placeholder" > tests/test_repository/__init__.py]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004heecho "# placeholder" > tests/test_repository/test_co [Kssmos_account_repository.py[?1l>[?2004l
+]2;echo "# placeholder" > tests/test_repository/test_cosmos_account_repository.p]1;echo[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004hffind tests -name "*.py" | sort[?1l>[?2004l
+]2;find tests -name "*.py" | sort]1;findtests/conftest.py
+tests/test_api/__init__.py
+tests/test_api/test_accounts.py
+tests/test_auth.py
+tests/test_auth/__init__.py
+tests/test_auth/test_oauth2.py
+tests/test_exceptions/__init__.py
+tests/test_exceptions/test_domain_exceptions.py
+tests/test_health.py
+tests/test_repository/__init__.py
+tests/test_repository/test_cosmos_account_repository.py
+tests/test_services/__init__.py
+tests/test_services/test_account_service.py
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  python3 --version && pip3 show pytest pytest-asynci [Koo httpx 2>/dev/null | grep -E "^Name|^Version"[?1l>[?2004l
+]2;python3 --version && pip3 show pytest pytest-asyncio httpx 2> /dev/null | gre]1;python3Python 3.9.6
+[01;31m[KName[m[K: httpx
+[01;31m[KVersion[m[K: 0.25.2
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  pip3 install -q pytest pytest-asyncio pytest-cov py [Kttest-mock fastapi httpx python-jose passlib opentelemetry-api opentelemetry-sdk  [Kppydantic azure-cosmos azure-identity 2>&1 | tail -5[?1l>[?2004l
+]2;pip3 install -q pytest pytest-asyncio pytest-cov pytest-mock fastapi httpx   ]1;pip3  WARNING: The scripts py.test and pytest are installed in '/Users/sachinkhilari/Library/Python/3.9/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  NOTE: The current PATH contains path(s) starting with `~`, which may not be expanded by all applications.
+WARNING: You are using pip version 21.2.4; however, version 26.0.1 is available.
+You should consider upgrading via the '/Library/Developer/CommandLineTools/usr/bin/python3 -m pip install --upgrade pip' command.
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  python3 -m pytest --version && python3 -m pytest_as [Kyyncio --version 2>/dev/null || python3 -c "import pytest_asyncio; print('pytest- [Kaasyncio:', pytest_asyncio.__version__)"[?1l>[?2004l
+]2;python3 -m pytest --version && python3 -m pytest_asyncio --version 2>  ||  -c]1;python3pytest 8.4.2
+pytest-asyncio: 1.2.0
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  python3 -m pytest tests/ -v --cov=src --cov-report= [Ktterm-missing --cov-fail-under=85 2>&1[?1l>[?2004l
+]2;python3 -m pytest tests/ -v --cov=src --cov-report=term-missing  2>&1]1;python3[31mImportError while loading conftest '/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/conftest.py'.[0m
+[31mtests/conftest.py:26: in <module>[0m
+[31m    from src.api.accounts import admin_router, customer_router, get_account_service  # noqa: E402[0m
+[31msrc/api/accounts.py:16: in <module>[0m
+[31m    from src.auth.oauth2 import get_current_user, require_bank_employee[0m
+[31msrc/auth/oauth2.py:151: in <module>[0m
+[31m    "hashed_password": pwd_context.hash("secret"),[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/context.py:2258: in hash[0m
+[31m    return record.hash(secret, **kwds)[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:779: in hash[0m
+[31m    self.checksum = self._calc_checksum(secret)[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/handlers/bcrypt.py:591: in _calc_checksum[0m
+[31m    self._stub_requires_backend()[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:2254: in _stub_requires_backend[0m
+[31m    cls.set_backend()[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:2156: in set_backend[0m
+[31m    return owner.set_backend(name, dryrun=dryrun)[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:2176: in set_backend[0m
+[31m    raise default_error[0m
+[31mE   passlib.exc.MissingBackendError: bcrypt: no backends available -- recommend you install one (e.g. 'pip install bcrypt')[0m
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  pip install bcrypt -q && python3 -m pytest tests/ - [Kvv --cov=src --cov-report=term-missing --cov-fail-under=85 2>&1[?1l>[?2004l
+]2;pip install bcrypt -q && python3 -m pytest tests/ -v --cov=src   2>&1]1;pip[31mImportError while loading conftest '/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/conftest.py'.[0m
+[31mtests/conftest.py:26: in <module>[0m
+[31m    from src.api.accounts import admin_router, customer_router, get_account_service  # noqa: E402[0m
+[31msrc/api/accounts.py:16: in <module>[0m
+[31m    from src.auth.oauth2 import get_current_user, require_bank_employee[0m
+[31msrc/auth/oauth2.py:151: in <module>[0m
+[31m    "hashed_password": pwd_context.hash("secret"),[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/context.py:2258: in hash[0m
+[31m    return record.hash(secret, **kwds)[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:779: in hash[0m
+[31m    self.checksum = self._calc_checksum(secret)[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/handlers/bcrypt.py:591: in _calc_checksum[0m
+[31m    self._stub_requires_backend()[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:2254: in _stub_requires_backend[0m
+[31m    cls.set_backend()[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:2156: in set_backend[0m
+[31m    return owner.set_backend(name, dryrun=dryrun)[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:2176: in set_backend[0m
+[31m    raise default_error[0m
+[31mE   passlib.exc.MissingBackendError: bcrypt: no backends available -- recommend you install one (e.g. 'pip install bcrypt')[0m
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  pip install bcrypt==4.0.1 passlib[bcrypt] -q && pyt [Khhon3 -c "from passlib.context import CryptContext; ctx = CryptContext(schemes=[' [Kbbcrypt']); print(ctx.hash('test'))" 2>&1[?1l>[?2004l
+]2;pip install bcrypt==4.0.1 passlib[bcrypt] -q && python3 -c  2>&1]1;pipzsh: no matches found: passlib[bcrypt]
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  pip install "passlib[bcrypt]" "bcrypt==4.0.1" -q 2> [K&&1[?1l>[?2004l
+]2;pip install "passlib[bcrypt]" "bcrypt==4.0.1" -q 2>&1]1;pip[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  python3 -m pytest tests/ -v --cov=src --cov-report= [Ktterm-missing --cov-fail-under=85 2>&1[?1l>[?2004l
+]2;python3 -m pytest tests/ -v --cov=src --cov-report=term-missing  2>&1]1;python3[31mImportError while loading conftest '/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/conftest.py'.[0m
+[31mtests/conftest.py:26: in <module>[0m
+[31m    from src.api.accounts import admin_router, customer_router, get_account_service  # noqa: E402[0m
+[31msrc/api/accounts.py:16: in <module>[0m
+[31m    from src.auth.oauth2 import get_current_user, require_bank_employee[0m
+[31msrc/auth/oauth2.py:151: in <module>[0m
+[31m    "hashed_password": pwd_context.hash("secret"),[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/context.py:2258: in hash[0m
+[31m    return record.hash(secret, **kwds)[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:779: in hash[0m
+[31m    self.checksum = self._calc_checksum(secret)[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/handlers/bcrypt.py:591: in _calc_checksum[0m
+[31m    self._stub_requires_backend()[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:2254: in _stub_requires_backend[0m
+[31m    cls.set_backend()[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:2156: in set_backend[0m
+[31m    return owner.set_backend(name, dryrun=dryrun)[0m
+[31m../../../../../../Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py:2176: in set_backend[0m
+[31m    raise default_error[0m
+[31mE   passlib.exc.MissingBackendError: bcrypt: no backends available -- recommend you install one (e.g. 'pip install bcrypt')[0m
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  pip install "bcrypt==3.2.2" -q 2>&1 && python3 -c " [Kffrom passlib.context import CryptContext; ctx = CryptContext(schemes=['bcrypt']) [K;; print('OK:', ctx.hash('test')[:10])"[?1l>[?2004l
+]2;pip install "bcrypt==3.2.2" -q 2>&1 && python3 -c ]1;pipTraceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/Users/sachinkhilari/Library/Python/3.9/lib/python/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sachinkhilari/Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sachinkhilari/Library/Python/3.9/lib/python/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sachinkhilari/Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sachinkhilari/Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sachinkhilari/Library/Python/3.9/lib/python/site-packages/passlib/utils/handlers.py", line 2176, in set_backend
+    raise default_error
+passlib.exc.MissingBackendError: bcrypt: no backends available -- recommend you install one (e.g. 'pip install bcrypt')
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  python3 -c "import bcrypt; print(bcrypt.__version__ [K,, bcrypt.__file__)" && python3 -c "import passlib; print(passlib.__version__, pa [Kssslib.__file__)"[?1l>[?2004l
+]2;python3 -c "import bcrypt; print(bcrypt.__version__, bcrypt.__file__)" &&  -c]1;python3Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'bcrypt'
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  which python3 && which pip && pip show bcrypt 2>&1  [K|| head -5[?1l>[?2004l
+]2;which python3 && which pip && pip show bcrypt 2>&1 | head -5]1;which/usr/bin/python3
+/opt/homebrew/Caskroom/miniforge/base/bin/pip
+Name: bcrypt
+Version: 3.2.2
+Summary: Modern password hashing for your software and your servers
+Home-page: https://github.com/pyca/bcrypt/
+Author: The Python Cryptographic Authority developers
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  which python && python --version && python -c "impo [Krrt bcrypt; print('bcrypt ok', bcrypt.__version__)"[?1l>[?2004l
+]2;which python && python --version && python -c ]1;which/opt/homebrew/bin/python
+Python 3.13.7
+Traceback (most recent call last):
+  File [35m"<string>"[0m, line [35m1[0m, in [35m<module>[0m
+    [1;31mimport bcrypt[0m; print('bcrypt ok', bcrypt.__version__)
+    [1;31m^^^^^^^^^^^^^[0m
+[1;35mModuleNotFoundError[0m: [35mNo module named 'bcrypt'[0m
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -- [Kvversion && /opt/homebrew/Caskroom/miniforge/base/bin/python -c "import bcrypt; p [Krrint('bcrypt ok'); import passlib; print('passlib ok')"[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python --version &&  -c ]1;/opt/homebrew/Caskroom/miniforge/base/bin/pythonPython 3.12.11
+bcrypt ok
+passlib ok
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=85 2>&1[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ -v --cov=sr]1;/opt/homebrew/Caskroom/miniforge/base/bin/python/opt/homebrew/Caskroom/miniforge/base/bin/python: No module named pytest
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/pip insta [Klll pytest pytest-asyncio pytest-cov pytest-mock httpx fastapi pydantic python-jo [Ksse opentelemetry-api azure-cosmos azure-identity 2>&1 | tail -5[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/pip install pytest pytest-asyncio  ]1;/opt/homebrew/Caskroom/miniforge/base/bin/pipUsing cached iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Using cached pygments-2.19.2-py3-none-any.whl (1.2 MB)
+Installing collected packages: pygments, iniconfig, coverage, pytest, pytest-mock, pytest-cov, pytest-asyncio
+
+Successfully installed coverage-7.13.4 iniconfig-2.3.0 pygments-2.19.2 pytest-9.0.2 pytest-asyncio-1.3.0 pytest-cov-7.0.0 pytest-mock-3.15.1
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=85 2>&1[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ -v --cov=sr]1;/opt/homebrew/Caskroom/miniforge/base/bin/python[1m============================= test session starts ==============================[0m
+platform darwin -- Python 3.12.11, pytest-9.0.2, pluggy-1.6.0
+rootdir: /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app
+configfile: pytest.ini
+plugins: mock-3.15.1, anyio-4.11.0, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+[1mcollecting ... [0m[1mcollected 32 items / 1 error                                                   [0m
+
+==================================== ERRORS ====================================
+[31m[1m_____________________ ERROR collecting tests/test_auth.py ______________________[0m
+[31mimport file mismatch:
+imported module 'test_auth' has this __file__ attribute:
+  /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/test_auth
+which is not the same as the test file we want to collect:
+  /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/test_auth.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules[0m
+[36m[1m=========================== short test summary info ============================[0m
+[31mERROR[0m tests/test_auth.py
+[31m!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!![0m
+[31m========================= [33m4 warnings[0m, [31m[1m1 error[0m[31m in 0.05s[0m[31m =========================[0m
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ --tb=short -q --cov=src --cov-report=term-missing 2>&1 | head -10 [K0[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ --tb=short ]1;/opt/homebrew/Caskroom/miniforge/base/bin/python
+==================================== ERRORS ====================================
+_____________________ ERROR collecting tests/test_auth.py ______________________
+import file mismatch:
+imported module 'test_auth' has this __file__ attribute:
+  /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/test_auth
+which is not the same as the test file we want to collect:
+  /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/test_auth.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+=========================== short test summary info ============================
+ERROR tests/test_auth.py
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  timeout 60 /opt/homebrew/Caskroom/miniforge/base/bi [Knn/python -m pytest tests/test_health.py -v 2>&1[?1l>[?2004l
+]2;timeout 60 /opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest  -v 2>&]1;timeoutzsh: command not found: timeout
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/test_health.py -v 2>&1[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest  -v 2>&1]1;/opt/homebrew/Caskroom/miniforge/base/bin/python[1m============================= test session starts ==============================[0m
+platform darwin -- Python 3.12.11, pytest-9.0.2, pluggy-1.6.0
+rootdir: /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app
+configfile: pytest.ini
+plugins: mock-3.15.1, anyio-4.11.0, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+[1mcollecting ... [0m[1mcollected 4 items                                                              [0m
+
+tests/test_health.py [32m.[0m[32m.[0m[32m.[0m[32m.[0m[33m                                                [100%][0m
+
+[33m======================== [32m4 passed[0m, [33m[1m4 warnings[0m[33m in 0.03s[0m[33m =========================[0m
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ -v --tb=short 2>&1 | tail -80[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ -v  2>&1 | ]1;/opt/homebrew/Caskroom/miniforge/base/bin/python============================= test session starts ==============================
+platform darwin -- Python 3.12.11, pytest-9.0.2, pluggy-1.6.0
+rootdir: /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app
+configfile: pytest.ini
+plugins: mock-3.15.1, anyio-4.11.0, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 32 items / 1 error
+
+==================================== ERRORS ====================================
+_____________________ ERROR collecting tests/test_auth.py ______________________
+import file mismatch:
+imported module 'test_auth' has this __file__ attribute:
+  /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/test_auth
+which is not the same as the test file we want to collect:
+  /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/test_auth.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+=========================== short test summary info ============================
+ERROR tests/test_auth.py
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+========================= 4 warnings, 1 error in 0.01s =========================
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  touch tests/__init__.py tests/test_auth/__init__.py [K  tests/test_api/__init__.py tests/test_services/__init__.py tests/test_exception [Kss/__init__.py tests/test_repository/__init__.py && find tests -name __pycache__  [K--exec rm -rf {} + 2>/dev/null; echo "done"[?1l>[?2004l
+]2;touch tests/__init__.py tests/test_auth/__init__.py tests/test_api/__init__.p]1;touchdone
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ -v --tb=short 2>&1 | tail -100[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ -v  2>&1 | ]1;/opt/homebrew/Caskroom/miniforge/base/bin/python============================= test session starts ==============================
+platform darwin -- Python 3.12.11, pytest-9.0.2, pluggy-1.6.0
+rootdir: /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app
+configfile: pytest.ini
+plugins: mock-3.15.1, anyio-4.11.0, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 32 items / 1 error
+
+==================================== ERRORS ====================================
+_____________________ ERROR collecting tests/test_auth.py ______________________
+import file mismatch:
+imported module 'tests.test_auth' has this __file__ attribute:
+  /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/test_auth
+which is not the same as the test file we want to collect:
+  /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/tests/test_auth.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+=========================== short test summary info ============================
+ERROR tests/test_auth.py
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+========================= 4 warnings, 1 error in 0.02s =========================
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  mv tests/test_auth.py tests/test_auth_basic.py && e [Kccho "renamed"[?1l>[?2004l
+]2;mv tests/test_auth.py tests/test_auth_basic.py && echo "renamed"]1;mvrenamed
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ -v --tb=short 2>&1 | tail -120[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ -v  2>&1 | ]1;/opt/homebrew/Caskroom/miniforge/base/bin/python============================= test session starts ==============================
+platform darwin -- Python 3.12.11, pytest-9.0.2, pluggy-1.6.0
+rootdir: /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app
+configfile: pytest.ini
+plugins: mock-3.15.1, anyio-4.11.0, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 148 items
+
+tests/test_api/test_accounts.py .........................                [ 16%]
+tests/test_auth/test_oauth2.py .......                                   [ 21%]
+tests/test_auth_basic.py ................                                [ 32%]
+tests/test_exceptions/test_domain_exceptions.py ........................ [ 48%]
+........                                                                 [ 54%]
+tests/test_health.py ....                                                [ 56%]
+tests/test_repository/test_cosmos_account_repository.py ................ [ 67%]
+..........                                                               [ 74%]
+tests/test_services/test_account_service.py ............................ [ 93%]
+..........                                                               [100%]
+
+======================= 148 passed, 4 warnings in 1.56s ========================
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ --tb=short -q 2>&1[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ --tb=short ]1;/opt/homebrew/Caskroom/miniforge/base/bin/python[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[33m [ 48%]
+[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[33m [ 97%]
+[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[33m                                                                     [100%][0m
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ --tb=short -q 2>&1 | grep -E "passed|failed|error|warning"[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ --tb=short ]1;/opt/homebrew/Caskroom/miniforge/base/bin/python[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ --tb=short -q --co -q 2>&1 | tail -5[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ --tb=short ]1;/opt/homebrew/Caskroom/miniforge/base/bin/pythontests/test_exceptions/test_domain_exceptions.py: 32
+tests/test_health.py: 4
+tests/test_repository/test_cosmos_account_repository.py: 26
+tests/test_services/test_account_service.py: 38
+
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ --co -q 2>&1 | grep "selected"[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ --co -q 2>&]1;/opt/homebrew/Caskroom/miniforge/base/bin/python[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroad/miniforge/base/bin/python -m [K  pytest tests/ --cov=src --cov-report=term-missing -q 2>/tmp/pytest_out.txt; cat [K  /tmp/pytest_out.txt[?1l>[?2004l
+]2;/opt/homebrew/Caskroad/miniforge/base/bin/python -m pytest tests/ --cov=src  ]1;/opt/homebrew/Caskroad/miniforge/base/bin/pythonzsh: no such file or directory: /opt/homebrew/Caskroad/miniforge/base/bin/python
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  /opt/homebrew/Caskroom/miniforge/base/bin/python -m [K  pytest tests/ --cov=src --cov-report=term-missing -q > /tmp/pytest_out.txt 2>&1 [K;; cat /tmp/pytest_out.txt[?1l>[?2004l
+]2;/opt/homebrew/Caskroom/miniforge/base/bin/python -m pytest tests/ --cov=src  ]1;/opt/homebrew/Caskroom/miniforge/base/bin/python........................................................................ [ 48%]
+........................................................................ [ 97%]
+....                                                                     [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.11-final-0 _______________
+
+Name                                                Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------------
+src/api/accounts.py                                    58      4    93%   41, 66, 90-91
+src/api/health.py                                       5      0   100%
+src/auth/oauth2.py                                     42      0   100%
+src/exceptions/domain_exceptions.py                    34      0   100%
+src/main.py                                            22     22     0%   7-75
+src/models/__init__.py                                  2      0   100%
+src/models/account.py                                  39      0   100%
+src/repository/__init__.py                              1      0   100%
+src/repository/cosmos_account_repository.py            99     69    30%   65-66, 139-150, 167-181, 200-227, 243-268, 289-327
+src/repository/interfaces/__init__.py                   2      0   100%
+src/repository/interfaces/i_account_repository.py      14      0   100%
+src/services/__init__.py                                0      0   100%
+src/services/account_service.py                        79      0   100%
+---------------------------------------------------------------------------------
+TOTAL                                                 397     95    76%
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;31m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h  PYTEST=/opt/homebrew/Caskroom/miniforge/base/bin/py [Ktthon && cd /Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking [K--system/fastapi-azure-app && $PYTEST -m pytest tests/ --cov=src --cov-report=ter [Kmm-missing 2>&1[?1l>[?2004l
+]2;PYTEST=/opt/homebrew/Caskroom/miniforge/base/bin/python  && cd  && $PYTEST -m]1;&&[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[33m [ 48%]
+[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[33m [ 97%]
+[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[33m                                                                     [100%][0m
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.11-final-0 _______________
+
+Name                                                Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------------
+src/api/accounts.py                                    58      4    93%   41, 66, 90-91
+src/api/health.py                                       5      0   100%
+src/auth/oauth2.py                                     42      0   100%
+src/exceptions/domain_exceptions.py                    34      0   100%
+src/main.py                                            22     22     0%   7-75
+src/models/__init__.py                                  2      0   100%
+src/models/account.py                                  39      0   100%
+src/repository/__init__.py                              1      0   100%
+src/repository/cosmos_account_repository.py            99     69    30%   65-66, 139-150, 167-181, 200-227, 243-268, 289-327
+src/repository/interfaces/__init__.py                   2      0   100%
+src/repository/interfaces/i_account_repository.py      14      0   100%
+src/services/__init__.py                                0      0   100%
+src/services/account_service.py                        79      0   100%
+---------------------------------------------------------------------------------
+TOTAL                                                 397     95    76%
+[33m[32m148 passed[0m, [33m[1m4 warnings[0m[33m in 1.88s[0m[0m
+[1m[7m%[27m[1m[0m                                                                                ]2;sachinkhilari@sachins-MacBook-Air:~/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app]1;..api-azure-app]7;file://sachins-MacBook-Air.local/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app\[0m[27m[24m[J(base) [01;32m➜  [36mfastapi-azure-app[00m [K[?1h=[?2004h

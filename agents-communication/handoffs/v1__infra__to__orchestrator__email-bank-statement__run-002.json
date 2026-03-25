@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "run_id": "002",
+  "task_slug": "email-bank-statement",
+  "sender": "infra-devops-agent",
+  "receiver": "orchestrator-agent",
+  "completed_at": "2026-03-20T04:53:54Z",
+  "overall_status": "completed",
+  "tasks_completed": [
+    {
+      "task_id": "INFRA-001",
+      "status": "completed",
+      "notes": "Updated container_app module outputs to use canonical ingress FQDN from azurerm_container_app ingress and added explicit active revision output; wired new output through dev/prod environment outputs."
+    },
+    {
+      "task_id": "INFRA-002",
+      "status": "completed",
+      "notes": "Enhanced tf-infra-apply pipeline with live deployment verification using az containerapp show (canonical ingress fqdn + latestReadyRevisionName), active-revision alignment checks, and health probe validation; exported live deployment metadata variables for summary/handoff use."
+    },
+    {
+      "task_id": "INFRA-003",
+      "status": "completed",
+      "notes": "Updated infra-devops agent instructions to require live Azure inspection before writing completion reports, and to always include canonical ingress fqdn + active revision while prohibiting stale revision-host reporting unless it matches latest ready revision."
+    }
+  ],
+  "deployment": {
+    "environment": "dev",
+    "container_app_name": "ca-bankapi-dev",
+    "resource_group": "rg-bankapi-dev",
+    "fqdn": "ca-bankapi-dev.agreeablesea-384c7fb5.eastus.azurecontainerapps.io",
+    "image_tag": "bank-api:fix-bcrypt-20260318021423",
+    "active_revision": "ca-bankapi-dev--0000002"
+  },
+  "terraform_outputs": {
+    "acr_login_server": "acrbankapidevc8775a.azurecr.io",
+    "container_app_fqdn": "ca-bankapi-dev.agreeablesea-384c7fb5.eastus.azurecontainerapps.io",
+    "container_app_active_revision": "ca-bankapi-dev--0000002"
+  },
+  "security_scan": {
+    "trivy_status": "skipped",
+    "critical_findings": 0,
+    "high_findings": 0
+  }
+}

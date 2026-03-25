@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "run_id": "001",
+  "task_slug": "update-user-profile",
+  "sender": "planning-agent",
+  "receiver": "infra-devops-agent",
+  "created_at": "2026-03-19T10:00:00Z",
+  "status": "pending",
+  "retry": false,
+  "target_env": "dev",
+  "tasks": [
+    {
+      "task_id": "INFRA-001",
+      "type": "update_resource",
+      "module_path": "infra/modules/cosmosdb/main.tf",
+      "description": "Add a new 'azurerm_cosmosdb_sql_container' resource named 'user_profiles' to infra/modules/cosmosdb/main.tf, directly after the existing 'accounts' container resource. The new container must have: name = 'user_profiles', resource_group_name = var.resource_group_name, account_name = azurerm_cosmosdb_account.cosmos.name, database_name = azurerm_cosmosdb_sql_database.db.name, partition_key_paths = [\"/owner_id\"], partition_key_version = 2. Apply the same dynamic 'autoscale_settings' block as the accounts container (skipped in serverless mode). Apply the same 'indexing_policy' block structure as the accounts container (indexing_mode = 'consistent', include all paths '/*', exclude _etag). Do not modify any existing resource, variable, or output. No new Terraform variables are needed — the container shares the existing Cosmos account and database.",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "terraform plan -var-file=infra/environments/dev/dev.tfvars shows exactly one resource to add: azurerm_cosmosdb_sql_container.user_profiles",
+        "terraform apply completes without error in the dev environment",
+        "The 'user_profiles' container appears in the Azure Portal under the existing Cosmos DB account with partition key /owner_id",
+        "No existing resources are destroyed or modified by the plan"
+      ]
+    }
+  ],
+  "skip_deploy": false,
+  "instructions_for_receiver": "You are infra-devops-agent. Validate this file against agents-communication/schemas/planner-to-infra.schema.json before proceeding. Read .github/skills/implement-tf-code/SKILL.md and its referenced sub-documents (coding-style.md, azure-patterns.md) before editing any Terraform file. INFRA-001 is the only task: add the 'user_profiles' Cosmos DB container to infra/modules/cosmosdb/main.tf following the exact same block structure as the existing 'accounts' container. Run 'terraform fmt' and 'terraform validate' after editing. Then run 'terraform plan' in infra/environments/dev/ and confirm no existing resources are impacted. Write the infra completion handoff to agents-communication/handoffs/v1__infra__to__orchestrator__update-user-profile__run-001.json when done."
+}

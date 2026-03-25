@@ -1,0 +1,14 @@
+{
+  "schema_version": "1",
+  "run_id": "004",
+  "task_slug": "lint-gate-remediation",
+  "sender": "planning-agent",
+  "receiver": "infra-devops-agent",
+  "created_at": "2026-03-23T02:10:30Z",
+  "status": "completed",
+  "retry": true,
+  "target_env": "dev",
+  "tasks": [],
+  "skip_deploy": true,
+  "instructions_for_receiver": "Validate this handoff against agents-communication/schemas/planner-to-infra.schema.json. Run-004 scope is strict application lint-gate remediation; no Terraform, pipeline, ACR, or Container App config change is planned. Publish a completed infra-to-orchestrator handoff noting no infra action was required and that deployment-health verification remains unchanged unless orchestrator requests redeploy."
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "1",
+  "run_id": "002",
+  "task_slug": "email-bank-statement",
+  "sender": "orchestrator-agent",
+  "receiver": "planning-agent",
+  "created_at": "2026-03-20T02:44:03Z",
+  "status": "completed",
+  "planned_at": "2026-03-20T03:20:00Z",
+  "requirement": {
+    "title": "Email bank statement API",
+    "description": "build the api to email the bank statement to user. user shoud provide valid email id if one not available in current record and start and end date. if not provided should provide of one month.",
+    "acceptance_criteria": [
+      "Provide an API endpoint to email a bank statement to a user.",
+      "Use a valid email from current user record when available; if missing, require a valid email in request.",
+      "Accept start and end date range for statement generation.",
+      "If dates are not provided, default statement period to one month.",
+      "Follow existing project architecture, validation, exception handling, and orchestration handoff flow."
+    ],
+    "target_env": "dev",
+    "breaking_change": false,
+    "security_sensitive": true
+  },
+  "instructions_for_receiver": "Read this file. Decompose the requirement into CODING and INFRA task streams. Write v1__planner__to__coding__email-bank-statement__run-002.json and v1__planner__to__infra__email-bank-statement__run-002.json. Mark this file status=completed when done."
+}

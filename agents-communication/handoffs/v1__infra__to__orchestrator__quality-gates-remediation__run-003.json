@@ -1,0 +1,34 @@
+{
+  "schema_version": "1",
+  "run_id": "003",
+  "task_slug": "quality-gates-remediation",
+  "sender": "infra-devops-agent",
+  "receiver": "orchestrator-agent",
+  "completed_at": "2026-03-20T05:21:04Z",
+  "overall_status": "completed",
+  "tasks_completed": [
+    {
+      "task_id": "INFRA-NOOP",
+      "status": "skipped",
+      "notes": "Planner handoff contained no infra tasks (tasks=[]), with skip_deploy=true and explicit instruction that no Terraform, pipeline, or deployment changes were required for run-003."
+    }
+  ],
+  "deployment": {
+    "environment": "dev",
+    "container_app_name": "ca-bankapi-dev",
+    "resource_group": "rg-bankapi-dev",
+    "fqdn": "ca-bankapi-dev.agreeablesea-384c7fb5.eastus.azurecontainerapps.io",
+    "image_tag": "unchanged",
+    "active_revision": "ca-bankapi-dev--0000002"
+  },
+  "terraform_outputs": {
+    "acr_login_server": "acrbankapidevc8775a.azurecr.io",
+    "container_app_fqdn": "ca-bankapi-dev.agreeablesea-384c7fb5.eastus.azurecontainerapps.io",
+    "container_app_active_revision": "ca-bankapi-dev--0000002"
+  },
+  "security_scan": {
+    "trivy_status": "skipped",
+    "critical_findings": 0,
+    "high_findings": 0
+  }
+}

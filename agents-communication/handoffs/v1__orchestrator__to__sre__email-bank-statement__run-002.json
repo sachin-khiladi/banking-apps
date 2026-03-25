@@ -1,0 +1,25 @@
+{
+  "schema_version": "1",
+  "run_id": "002",
+  "task_slug": "email-bank-statement",
+  "sender": "orchestrator-agent",
+  "receiver": "azure-sre-agent",
+  "created_at": "2026-03-20T02:59:39Z",
+  "status": "completed",
+  "failure_context": {
+    "symptom": "Deployment health verification failed: /health returned HTTP 404 for the deployed Container App FQDN during gate check.",
+    "resource_group": "rg-bankapi-dev",
+    "resource_name": "ca-bankapi-dev",
+    "resource_type": "Microsoft.App/containerApps",
+    "fqdn": "ca-bankapi-dev--0000001.agreeablesea-384c7fb5.eastus.azurecontainerapps.io",
+    "target_env": "dev",
+    "recent_changes": [
+      "Added statement email API, service logic, models, and app wiring for POST /statements/email.",
+      "Added SMTP Key Vault secret integration and container app env/secret wiring through dev/prod Terraform.",
+      "Unit/integration tests added and passing with 97.14% coverage.",
+      "Security scan found HIGH vulnerabilities in image dependencies.",
+      "Lint gate failed due existing workspace-level import/lint issues."
+    ]
+  },
+  "instructions_for_receiver": "Read this file, diagnose the deployment health failure, and write your output to agents-communication/handoffs/v1__sre__to__planner__email-bank-statement__run-002.json."
+}

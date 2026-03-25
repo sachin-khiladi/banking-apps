@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "run_id": "004",
+  "task_slug": "lint-gate-remediation",
+  "sender": "infra-devops-agent",
+  "receiver": "orchestrator-agent",
+  "completed_at": "2026-03-23T01:55:11Z",
+  "overall_status": "completed",
+  "tasks_completed": [
+    {
+      "task_id": "INFRA-NOOP",
+      "status": "skipped",
+      "notes": "Planner handoff run-004 contained no infra tasks (tasks=[]), set skip_deploy=true, and explicitly instructed no Terraform, pipeline, ACR, or Container App changes for this remediation run."
+    }
+  ],
+  "deployment": {
+    "environment": "dev",
+    "container_app_name": "ca-bankapi-dev",
+    "resource_group": "rg-bankapi-dev",
+    "fqdn": "ca-bankapi-dev.agreeablesea-384c7fb5.eastus.azurecontainerapps.io",
+    "image_tag": "unchanged",
+    "active_revision": "ca-bankapi-dev--0000002"
+  },
+  "terraform_outputs": {
+    "acr_login_server": "acrbankapidevc8775a.azurecr.io",
+    "container_app_fqdn": "ca-bankapi-dev--0000001.agreeablesea-384c7fb5.eastus.azurecontainerapps.io"
+  },
+  "security_scan": {
+    "trivy_status": "skipped",
+    "critical_findings": 0,
+    "high_findings": 0
+  }
+}

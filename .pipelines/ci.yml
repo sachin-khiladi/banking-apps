@@ -1,0 +1,80 @@
+# ============================================================
+# ci.yml — Continuous Integration Pipeline
+#
+# Purpose:  Runs on every push to main and develop.
+#           Executes the full build chain:
+#             1. Lint (pylint)
+#             2. Unit tests + coverage gate
+#             3. Docker build
+#             4. Push image to ACR with immutable :$(Build.BuildId) tag
+#             5. Trivy security scan on the pushed image
+#           On success, triggers the cd.yml pipeline.
+#
+# Template: templates/pipelines/python-ci.yml @ ado-templates v1.0.0
+#
+# To register in ADO: Pipelines → New Pipeline → Azure Repos Git
+#   → select this repo → "Existing Azure Pipelines YAML file"
+#   → path: .pipelines/ci.yml
+# ============================================================
+
+# ── Trigger: main and develop branches ────────────────────────
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+  paths:
+    exclude:
+      - '**/*.md'
+      - '.github/**'
+      - '.pipelines/variables/**'
+
+pr: none
+
+# ── Template repository resource (pinned to v1.0.0) ───────────
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: AIDemoApp/ado-templates
+      ref: refs/tags/v1.0.0
+
+# ── Variables ─────────────────────────────────────────────────
+# Global variables first, then the CI-target environment (dev ACR
+# is the canonical registry for all published images).
+variables:
+  - template: variables/global.yml
+  - template: variables/dev.yml
+
+# ── Pipeline body: pure template extension, no inline steps ───
+extends:
+  template: templates/pipelines/python-ci.yml@templates
+  parameters:
+    # ── Python / test ────────────────────────────────────────
+    pythonVersion:            $(pythonVersion)
+    pylintSrcPath:            $(pylintSrcPath)
+    pytestCoverageThreshold:  $(pytestCoverageThreshold)
+
+    # ── Docker ───────────────────────────────────────────────
+    dockerfilePath:           $(dockerfilePath)
+    dockerBuildContext:       $(dockerBuildContext)
+    imageRepository:          $(imageRepository)
+    imageTag:                 $(imageTag)
+
+    # ── Registry (dev ACR is the canonical push target) ──────
+    acrName:                  $(acrName)
+    acrLoginServer:           $(acrLoginServer)
+    azureServiceConnection:   $(azureServiceConnection)
+
+    # ── Security ─────────────────────────────────────────────
+    # trivySeverity controls which findings fail the pipeline.
+    # CRITICAL is the minimum bar; HIGH is recommended for prod-bound images.
+    trivySeverity: CRITICAL,HIGH
+
+    # ── Downstream trigger ───────────────────────────────────
+    # The CD pipeline name as registered in ADO.
+    # Templates use this to queue the release pipeline on success.
+    cdPipelineName: cd
+    buildId:           $(Build.BuildId)
+    sourceBranch:      $(Build.SourceBranch)
+    buildNumber:       $(Build.BuildNumber)

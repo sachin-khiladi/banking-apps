@@ -1,0 +1,31 @@
+{
+  "schema_version": "1",
+  "run_id": "002",
+  "task_slug": "email-bank-statement",
+  "sender": "planning-agent",
+  "receiver": "python-coding-agent",
+  "created_at": "2026-03-20T05:12:00Z",
+  "status": "pending",
+  "retry": true,
+  "tasks": [
+    {
+      "task_id": "CODING-001",
+      "type": "bug_fix",
+      "layer": "api",
+      "file_path": "src/api/health.py",
+      "description": "Perform a focused verification pass on the health endpoint contract used by deployment checks. Ensure `/health` remains a static, unversioned route and does not depend on revision-specific hostnames, request headers, or dynamic path generation. If any drift is found, normalize the handler to always return HTTP 200 with a stable `status` field for healthy runtime conditions.",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "Health endpoint remains reachable at GET /health",
+        "Successful health response returns HTTP 200 and includes `status`",
+        "No code introduces revision-specific URL assumptions in API layer"
+      ]
+    }
+  ],
+  "quality_gates": {
+    "lint_required": true,
+    "docker_build_required": true,
+    "trivy_scan_required": true
+  },
+  "instructions_for_receiver": "You are python-coding-agent. Validate against agents-communication/schemas/planner-to-coding.schema.json and complete CODING-001. Keep changes minimal and limited to the health endpoint contract. If verification shows the existing implementation already satisfies the task, avoid unrelated edits and still produce v1__coding__to__testing__email-bank-statement__run-002.json with clear notes."
+}

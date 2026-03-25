@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "planner-to-infra.schema.json",
+  "title": "Planner → Infra DevOps Agent Handoff",
+  "description": "Written by planning-agent. infra-devops-agent MUST read and validate against this schema before executing.",
+  "type": "object",
+  "required": ["schema_version", "run_id", "task_slug", "sender", "receiver", "created_at", "status", "tasks", "instructions_for_receiver"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1" },
+    "run_id": { "type": "string", "pattern": "^\\d{3}$" },
+    "task_slug": { "type": "string", "pattern": "^[a-z0-9-]{3,40}$" },
+    "sender": { "type": "string", "const": "planning-agent" },
+    "receiver": { "type": "string", "const": "infra-devops-agent" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "status": { "type": "string", "enum": ["pending", "in-progress", "completed", "failed"] },
+    "retry": { "type": "boolean" },
+    "target_env": { "type": "string", "enum": ["dev", "prod"] },
+    "tasks": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": ["task_id", "type", "description", "depends_on"],
+        "properties": {
+          "task_id": { "type": "string", "pattern": "^INFRA-\\d{3}$" },
+          "type": {
+            "type": "string",
+            "enum": ["new_resource", "update_resource", "new_app_setting", "acr_push", "container_deploy", "update_pipeline"]
+          },
+          "module_path": {
+            "type": "string",
+            "description": "Repo-relative path to the Terraform module or pipeline file. Optional for acr_push/container_deploy."
+          },
+          "description": { "type": "string", "minLength": 20, "maxLength": 600 },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^INFRA-\\d{3}$" }
+          },
+          "new_env_vars": {
+            "type": "array",
+            "description": "New environment variable names (not values!) to add to Container App.",
+            "items": {
+              "type": "object",
+              "required": ["name", "source"],
+              "properties": {
+                "name": { "type": "string" },
+                "source": { "type": "string", "enum": ["keyvault", "app_config", "direct"] },
+                "keyvault_secret_name": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "skip_deploy": {
+      "type": "boolean",
+      "default": false,
+      "description": "Set true when only Terraform plan/validation is needed, not full deploy."
+    },
+    "instructions_for_receiver": { "type": "string" }
+  },
+  "additionalProperties": false
+}

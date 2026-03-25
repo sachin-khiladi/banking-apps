@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "testing-to-orchestrator.schema.json",
+  "title": "Unit Test Agent → Orchestrator Handoff",
+  "description": "Written by unit-test-agent after all tests complete. orchestrator-agent reads this to decide next step.",
+  "type": "object",
+  "required": ["schema_version", "run_id", "task_slug", "sender", "receiver", "completed_at", "overall_status", "coverage_summary"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1" },
+    "run_id": { "type": "string", "pattern": "^\\d{3}$" },
+    "task_slug": { "type": "string", "pattern": "^[a-z0-9-]{3,40}$" },
+    "sender": { "type": "string", "const": "unit-test-agent" },
+    "receiver": { "type": "string", "const": "orchestrator-agent" },
+    "completed_at": { "type": "string", "format": "date-time" },
+    "overall_status": {
+      "type": "string",
+      "enum": ["green", "red"],
+      "description": "green = all tests pass + coverage ≥ 85%. red = any failure."
+    },
+    "coverage_summary": {
+      "type": "object",
+      "required": ["total_pct", "threshold_pct", "modules_below_threshold"],
+      "properties": {
+        "total_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "threshold_pct": { "type": "number", "const": 85 },
+        "modules_below_threshold": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["module", "coverage_pct"],
+            "properties": {
+              "module": { "type": "string" },
+              "coverage_pct": { "type": "number" },
+              "missing_lines": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "failing_tests": {
+      "type": "array",
+      "description": "Present only when overall_status = red.",
+      "items": {
+        "type": "object",
+        "required": ["test_id", "test_file", "failure_summary"],
+        "properties": {
+          "test_id": { "type": "string" },
+          "test_file": { "type": "string" },
+          "failure_summary": { "type": "string", "maxLength": 500 },
+          "likely_root_cause": {
+            "type": "string",
+            "enum": ["missing_mock", "wrong_assertion", "source_code_bug", "missing_fixture", "env_var_not_mocked", "unknown"]
+          }
+        }
+      }
+    },
+    "files_created_or_modified": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of test file paths written."
+    },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": false
+}

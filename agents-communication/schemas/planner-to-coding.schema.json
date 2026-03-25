@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "planner-to-coding.schema.json",
+  "title": "Planner → Python Coding Agent Handoff",
+  "description": "Written by planning-agent. python-coding-agent MUST read and validate against this schema before implementing.",
+  "type": "object",
+  "required": ["schema_version", "run_id", "task_slug", "sender", "receiver", "created_at", "status", "tasks", "instructions_for_receiver"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1" },
+    "run_id": { "type": "string", "pattern": "^\\d{3}$" },
+    "task_slug": { "type": "string", "pattern": "^[a-z0-9-]{3,40}$" },
+    "sender": { "type": "string", "const": "planning-agent" },
+    "receiver": { "type": "string", "const": "python-coding-agent" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "status": { "type": "string", "enum": ["pending", "in-progress", "completed", "failed"] },
+    "retry": { "type": "boolean", "description": "True when this is a re-plan after a previous failure." },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["task_id", "type", "layer", "file_path", "description", "depends_on"],
+        "properties": {
+          "task_id": { "type": "string", "pattern": "^CODING-\\d{3}$" },
+          "type": {
+            "type": "string",
+            "enum": ["new_endpoint", "new_service_method", "bug_fix", "refactor", "new_model", "new_exception", "update_existing"]
+          },
+          "layer": {
+            "type": "string",
+            "enum": ["api", "services", "models", "auth", "exceptions", "logging", "main"]
+          },
+          "file_path": { "type": "string", "description": "Repo-relative path, e.g. src/api/transfers.py" },
+          "description": { "type": "string", "minLength": 20, "maxLength": 800 },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^CODING-\\d{3}$" },
+            "description": "Task IDs that must complete before this one. Empty array = no dependencies."
+          },
+          "repository_spec": {
+            "type": "object",
+            "description": "Provided only when this task requires new Cosmos DB access. Pass verbatim to cosmosdb-repo-agent.",
+            "required": ["entity", "container", "partition_key", "database_env_var", "account_env_var", "operations"],
+            "properties": {
+              "entity": { "type": "string" },
+              "container": { "type": "string" },
+              "partition_key": { "type": "string", "pattern": "^/" },
+              "database_env_var": { "type": "string" },
+              "account_env_var": { "type": "string" },
+              "operations": {
+                "type": "array",
+                "items": { "type": "string", "enum": ["get_by_id", "list_all", "list_by_partition", "create", "update", "delete", "query"] }
+              },
+              "query_patterns": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          },
+          "acceptance_criteria": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Specific acceptance criteria for this task only."
+          }
+        }
+      }
+    },
+    "quality_gates": {
+      "type": "object",
+      "properties": {
+        "lint_required": { "type": "boolean", "default": true },
+        "docker_build_required": { "type": "boolean", "default": true },
+        "trivy_scan_required": { "type": "boolean", "default": true }
+      }
+    },
+    "instructions_for_receiver": { "type": "string" }
+  },
+  "additionalProperties": false
+}

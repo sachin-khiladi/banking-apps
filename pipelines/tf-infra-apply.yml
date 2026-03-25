@@ -1,0 +1,347 @@
+# ===========================================================================
+# TF · Infra Apply  (Azure DevOps Pipeline)
+#
+# Manual-only pipeline — no automatic trigger.
+# Run it from Azure DevOps Pipelines UI (or az pipelines run CLI).
+#
+# Deployment flow:
+#   Stage 1 — PlanPreview  (runs immediately, no gate)
+#               Runs terraform plan and writes the full output to the
+#               pipeline run summary (Pipelines → run → Summary tab).
+#               Approvers read the plan here BEFORE approving.
+#
+#   Stage 2 — Apply  (deployment job — gated by ADO Environment checks)
+#               For environment "bankapi-dev"  : no approval required.
+#               For environment "bankapi-prod" : requires manual approval
+#               (configure under Pipelines → Environments → bankapi-prod
+#               → Approvals and checks → Approvals).
+#               The stage re-plans fresh, then immediately applies to guard
+#               against state drift between preview and deploy.
+#
+# ── Parameters ────────────────────────────────────────────────────────────────
+#   environment  — dev | prod
+#   reason       — free text; recorded in run name and apply summary (audit log)
+#
+# ── Auth — Workload Identity Federation (no stored secrets) ──────────────────
+# Uses the same service connections as tf-infra-plan.yml:
+#   sc-bankapi-dev-tf   — for dev environment
+#   sc-bankapi-prod-tf  — for prod environment
+# ===========================================================================
+
+trigger: none   # Manual-only — never triggered by a push or PR
+
+parameters:
+  - name: environment
+    displayName: "Target environment"
+    type: string
+    default: dev
+    values: [dev, prod]
+
+  - name: reason
+    displayName: "Deployment reason / change ticket (audit trail)"
+    type: string
+    default: ""
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  TF_VERSION: "1.9.8"
+  SC_DEV:     "sc-bankapi-dev-tf"
+  SC_PROD:    "sc-bankapi-prod-tf"
+  # Computed convenience variables
+  TF_ENV_DIR:  >-
+    ${{ eq(parameters.environment, 'prod') && 'infra/environments/prod' || 'infra/environments/dev' }}
+  SC_NAME: >-
+    ${{ eq(parameters.environment, 'prod') && 'sc-bankapi-prod-tf' || 'sc-bankapi-dev-tf' }}
+  # ADO Environment names — must match exactly what you create in ADO
+  ADO_ENV: >-
+    ${{ eq(parameters.environment, 'prod') && 'bankapi-prod' || 'bankapi-dev' }}
+
+# Stamp the run name so it is identifiable in the pipeline history
+name: "${{ parameters.environment }}-$(Date:yyyyMMdd)-$(Rev:r)"
+
+stages:
+
+  # ============================================================
+  # Stage 1 — Plan Preview
+  # Runs immediately (no approval gate).
+  # Writes the full plan to the pipeline Summary tab so approvers
+  # can read it before approving Stage 2.
+  # ============================================================
+  - stage: PlanPreview
+    displayName: "Plan Preview · ${{ parameters.environment }}"
+    jobs:
+      - job: plan_preview
+        displayName: "Plan Preview · ${{ parameters.environment }}"
+        steps:
+          - checkout: self
+            fetchDepth: 1
+            displayName: "Checkout source"
+
+          - bash: |
+              set -euo pipefail
+              wget -q "https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip" \
+                   -O /tmp/tf.zip
+              unzip -q /tmp/tf.zip -d /usr/local/bin
+              terraform version
+            displayName: "Install Terraform $(TF_VERSION)"
+
+          - task: AzureCLI@2
+            displayName: "init · ${{ parameters.environment }}"
+            inputs:
+              azureSubscription: $(SC_NAME)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)/$(TF_ENV_DIR)
+              inlineScript: |
+                set -euo pipefail
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                export ARM_OIDC_TOKEN="$idToken"
+                export ARM_TENANT_ID="$tenantId"
+                export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                export ARM_USE_OIDC=true
+                terraform init -input=false
+
+          - task: AzureCLI@2
+            displayName: "validate · ${{ parameters.environment }}"
+            inputs:
+              azureSubscription: $(SC_NAME)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)/$(TF_ENV_DIR)
+              inlineScript: |
+                set -euo pipefail
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                export ARM_OIDC_TOKEN="$idToken"
+                export ARM_TENANT_ID="$tenantId"
+                export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                export ARM_USE_OIDC=true
+                terraform validate -no-color
+
+          - task: AzureCLI@2
+            displayName: "plan · ${{ parameters.environment }}"
+            inputs:
+              azureSubscription: $(SC_NAME)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              workingDirectory: $(Build.SourcesDirectory)/$(TF_ENV_DIR)
+              inlineScript: |
+                set -euo pipefail
+                export ARM_CLIENT_ID="$servicePrincipalId"
+                export ARM_OIDC_TOKEN="$idToken"
+                export ARM_TENANT_ID="$tenantId"
+                export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                export ARM_USE_OIDC=true
+                terraform plan -no-color -input=false \
+                  2>&1 | tee "$(Agent.TempDirectory)/plan-preview.txt"
+
+          # ── Write plan to pipeline Summary tab ────────────────────────────
+          # Approvers navigate to the pipeline run Summary tab to read the
+          # plan before clicking "Approve" on the Apply stage gate.
+          - bash: |
+              set -euo pipefail
+              PLAN_FILE="$(Agent.TempDirectory)/plan-preview.txt"
+              SUMMARY_FILE="$(Agent.TempDirectory)/plan-summary.md"
+              BT='```'
+
+              {
+                echo "## Terraform Plan Preview — ${{ parameters.environment }}"
+                echo ""
+                echo "| Field | Value |"
+                echo "|-------|-------|"
+                echo "| Environment | \`${{ parameters.environment }}\` |"
+                echo "| Reason | ${{ parameters.reason }} |"
+                echo "| Requested by | $(Build.RequestedFor) |"
+                echo "| Build | [$(Build.BuildNumber)]($(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)) |"
+                echo ""
+                echo "> Review the plan below, then approve the **Apply** stage to deploy."
+                echo ""
+                echo "<details open>"
+                echo "<summary>Full plan output</summary>"
+                echo ""
+                echo "${BT}hcl"
+                cat "$PLAN_FILE"
+                echo "${BT}"
+                echo ""
+                echo "</details>"
+              } > "$SUMMARY_FILE"
+
+              # Upload as pipeline Summary tab content
+              echo "##vso[task.uploadsummary]${SUMMARY_FILE}"
+            displayName: "Write plan to pipeline Summary tab"
+
+  # ============================================================
+  # Stage 2 — Apply
+  # Uses an ADO deployment job so the ADO Environment "bankapi-dev"
+  # or "bankapi-prod" gates execution.
+  #
+  # Configure approvers in ADO:
+  #   Pipelines → Environments → bankapi-prod
+  #   → Approvals and checks → + → Approvals → add approvers
+  #
+  # Approvers: go to the pipeline run → Summary tab (plan is there)
+  # → Approve or Reject the Apply stage.
+  # ============================================================
+  - stage: Apply
+    displayName: "Apply · ${{ parameters.environment }}"
+    dependsOn: PlanPreview
+    condition: succeeded('PlanPreview')
+    jobs:
+      - deployment: apply
+        displayName: "Apply · ${{ parameters.environment }}"
+        # Reference the ADO Environment — prod env has approval checks attached
+        environment: $(ADO_ENV)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                # deployment jobs do NOT check out code by default
+                - checkout: self
+                  fetchDepth: 1
+                  displayName: "Checkout source"
+
+                - bash: |
+                    set -euo pipefail
+                    wget -q "https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip" \
+                         -O /tmp/tf.zip
+                    unzip -q /tmp/tf.zip -d /usr/local/bin
+                    terraform version
+                  displayName: "Install Terraform $(TF_VERSION)"
+
+                - task: AzureCLI@2
+                  displayName: "init · ${{ parameters.environment }}"
+                  inputs:
+                    azureSubscription: $(SC_NAME)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    addSpnToEnvironment: true
+                    workingDirectory: $(Build.SourcesDirectory)/$(TF_ENV_DIR)
+                    inlineScript: |
+                      set -euo pipefail
+                      export ARM_CLIENT_ID="$servicePrincipalId"
+                      export ARM_OIDC_TOKEN="$idToken"
+                      export ARM_TENANT_ID="$tenantId"
+                      export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                      export ARM_USE_OIDC=true
+                      terraform init -input=false
+
+                # Re-plan fresh (guards against state drift since PlanPreview ran)
+                - task: AzureCLI@2
+                  displayName: "plan (pre-apply) · ${{ parameters.environment }}"
+                  inputs:
+                    azureSubscription: $(SC_NAME)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    addSpnToEnvironment: true
+                    workingDirectory: $(Build.SourcesDirectory)/$(TF_ENV_DIR)
+                    inlineScript: |
+                      set -euo pipefail
+                      export ARM_CLIENT_ID="$servicePrincipalId"
+                      export ARM_OIDC_TOKEN="$idToken"
+                      export ARM_TENANT_ID="$tenantId"
+                      export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                      export ARM_USE_OIDC=true
+                      echo "Re-running plan to guard against state drift ..."
+                      terraform plan -out=tfplan -input=false -no-color
+
+                - task: AzureCLI@2
+                  displayName: "apply · ${{ parameters.environment }}"
+                  inputs:
+                    azureSubscription: $(SC_NAME)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    addSpnToEnvironment: true
+                    workingDirectory: $(Build.SourcesDirectory)/$(TF_ENV_DIR)
+                    inlineScript: |
+                      set -euo pipefail
+                      export ARM_CLIENT_ID="$servicePrincipalId"
+                      export ARM_OIDC_TOKEN="$idToken"
+                      export ARM_TENANT_ID="$tenantId"
+                      export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                      export ARM_USE_OIDC=true
+                      terraform apply -auto-approve -input=false tfplan
+
+                - task: AzureCLI@2
+                  displayName: "verify live Container App ingress/revision + health"
+                  inputs:
+                    azureSubscription: $(SC_NAME)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    addSpnToEnvironment: true
+                    workingDirectory: $(Build.SourcesDirectory)/$(TF_ENV_DIR)
+                    inlineScript: |
+                      set -euo pipefail
+
+                      APP_NAME="ca-bankapi-${{ parameters.environment }}"
+                      RESOURCE_GROUP="rg-bankapi-${{ parameters.environment }}"
+
+                      APP_JSON="$(az containerapp show --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" -o json)"
+                      INGRESS_FQDN="$(jq -r '.properties.configuration.ingress.fqdn // empty' <<< "$APP_JSON")"
+                      LATEST_READY_REVISION="$(jq -r '.properties.latestReadyRevisionName // empty' <<< "$APP_JSON")"
+
+                      if [[ -z "$INGRESS_FQDN" ]]; then
+                        echo "ERROR: Missing properties.configuration.ingress.fqdn for $APP_NAME in $RESOURCE_GROUP."
+                        exit 1
+                      fi
+
+                      if [[ -z "$LATEST_READY_REVISION" ]]; then
+                        echo "ERROR: Missing properties.latestReadyRevisionName for $APP_NAME in $RESOURCE_GROUP."
+                        exit 1
+                      fi
+
+                      ACTIVE_REVISIONS="$(az containerapp revision list --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" --query "[?properties.active==\`true\`].name" -o tsv)"
+
+                      if ! grep -Fxq "$LATEST_READY_REVISION" <<< "$ACTIVE_REVISIONS"; then
+                        echo "ERROR: Latest ready revision '$LATEST_READY_REVISION' is not in active revisions. Active revisions: ${ACTIVE_REVISIONS:-<none>}"
+                        exit 1
+                      fi
+
+                      if [[ "$INGRESS_FQDN" == *"--"* ]]; then
+                        if [[ "$INGRESS_FQDN" != "${LATEST_READY_REVISION}."* ]]; then
+                          echo "ERROR: Probe host '$INGRESS_FQDN' does not align with latest ready revision '$LATEST_READY_REVISION'."
+                          exit 1
+                        fi
+                      fi
+
+                      PROBE_URL="https://${INGRESS_FQDN}/health"
+                      HTTP_CODE="$(curl -sS -o /dev/null -w '%{http_code}' "$PROBE_URL")"
+                      if [[ "$HTTP_CODE" != "200" ]]; then
+                        echo "ERROR: Health probe failed for '$PROBE_URL' with HTTP ${HTTP_CODE}."
+                        exit 1
+                      fi
+
+                      echo "##vso[task.setvariable variable=LIVE_CONTAINER_APP_NAME]$APP_NAME"
+                      echo "##vso[task.setvariable variable=LIVE_RESOURCE_GROUP]$RESOURCE_GROUP"
+                      echo "##vso[task.setvariable variable=LIVE_CONTAINER_APP_FQDN]$INGRESS_FQDN"
+                      echo "##vso[task.setvariable variable=LIVE_ACTIVE_REVISION]$LATEST_READY_REVISION"
+                      echo "##vso[task.setvariable variable=LIVE_HEALTH_PROBE_URL]$PROBE_URL"
+
+                # ── Apply result summary ──────────────────────────────────
+                - bash: |
+                    STATUS="${{ job.status }}"
+                    ICON=$([ "$STATUS" = "Succeeded" ] && echo "✅" || echo "❌")
+                    SUMMARY_FILE="$(Agent.TempDirectory)/apply-summary.md"
+                    {
+                      echo "## ${ICON} Terraform Apply — ${{ parameters.environment }}"
+                      echo ""
+                      echo "| Field | Value |"
+                      echo "|-------|-------|"
+                      echo "| Environment | \`${{ parameters.environment }}\` |"
+                      echo "| Status | ${STATUS} |"
+                      echo "| Reason | ${{ parameters.reason }} |"
+                      echo "| Applied by | $(Build.RequestedFor) |"
+                      echo "| Build | [$(Build.BuildNumber)]($(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)) |"
+                      echo "| Commit | \`$(Build.SourceVersion)\` |"
+                      echo "| Container App | $(LIVE_CONTAINER_APP_NAME) |"
+                      echo "| Resource Group | $(LIVE_RESOURCE_GROUP) |"
+                      echo "| Canonical ingress FQDN | $(LIVE_CONTAINER_APP_FQDN) |"
+                      echo "| Active revision | $(LIVE_ACTIVE_REVISION) |"
+                      echo "| Health probe | $(LIVE_HEALTH_PROBE_URL) |"
+                    } > "$SUMMARY_FILE"
+                    echo "##vso[task.uploadsummary]${SUMMARY_FILE}"
+                  displayName: "Write apply summary"
+                  condition: always()

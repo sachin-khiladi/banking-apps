@@ -1,0 +1,60 @@
+{
+  "schema_version": "1",
+  "run_id": "003",
+  "task_slug": "quality-gates-remediation",
+  "sender": "planning-agent",
+  "receiver": "python-coding-agent",
+  "created_at": "2026-03-20T06:20:00Z",
+  "status": "pending",
+  "retry": true,
+  "tasks": [
+    {
+      "task_id": "CODING-001",
+      "type": "bug_fix",
+      "layer": "main",
+      "file_path": "src/main.py",
+      "description": "Remediate lint findings introduced by current dependency-wiring and import flow while preserving runtime wiring behavior for accounts, profile, and statement services. Remove or refactor unused exception variables and any lint warnings tied to placeholder repository branches, and keep fallback behavior unchanged when repositories are unavailable. Keep route registration and dependency override contracts intact so the email-bank-statement endpoint behavior does not regress.",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "pylint no longer reports new issues in src/main.py related to this feature wiring",
+        "Dependency overrides for get_account_service, get_profile_service, and get_statement_service remain functionally equivalent",
+        "No HTTP contract changes for existing endpoints"
+      ]
+    },
+    {
+      "task_id": "CODING-002",
+      "type": "bug_fix",
+      "layer": "services",
+      "file_path": "src/services/statement_service.py",
+      "description": "Address lint issues in statement email business logic with targeted refactors that do not alter request/response behavior. Focus on long-line complexity, branch readability, and exception-handling clarity in helper methods and SMTP send flow while retaining the same validation outcomes and error classes. Preserve OpenTelemetry span attributes and existing default date-range semantics.",
+      "depends_on": [],
+      "acceptance_criteria": [
+        "pylint passes for src/services/statement_service.py under current repo lint configuration",
+        "StatementService.email_statement returns the same response model and status semantics",
+        "ValidationException and RepositoryException mapping behavior remains unchanged"
+      ]
+    },
+    {
+      "task_id": "CODING-003",
+      "type": "update_existing",
+      "layer": "main",
+      "file_path": "requirements.txt",
+      "description": "Remediate HIGH/CRITICAL image vulnerabilities by upgrading or pinning Python dependencies to secure versions and align the Docker build with those versions. Update requirements and Docker build inputs minimally to remove known vulnerable transitive packages without changing application feature behavior. Ensure the resulting image can still run the FastAPI app and pass security scanning expectations for HIGH/CRITICAL findings.",
+      "depends_on": [
+        "CODING-001",
+        "CODING-002"
+      ],
+      "acceptance_criteria": [
+        "docker build -t bankapi . succeeds after dependency updates",
+        "trivy image --exit-code 1 --severity HIGH,CRITICAL bankapi returns zero HIGH/CRITICAL findings",
+        "No functional changes to email-bank-statement request/response contract"
+      ]
+    }
+  ],
+  "quality_gates": {
+    "lint_required": true,
+    "docker_build_required": true,
+    "trivy_scan_required": true
+  },
+  "instructions_for_receiver": "Validate this handoff against agents-communication/schemas/planner-to-coding.schema.json before implementation. Execute CODING-001 and CODING-002 first to stabilize lint in feature-touched source files, then complete CODING-003 for dependency hardening. Keep scope strictly to lint/security remediation and preserve existing endpoint behavior, then produce the coding-to-testing handoff with executed commands and results."
+}

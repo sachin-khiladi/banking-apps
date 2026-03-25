@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "run_id": "001",
+  "task_slug": "add-transfer-api",
+  "sender": "azure-sre-agent",
+  "receiver": "planning-agent",
+  "completed_at": "2026-03-19T12:25:00Z",
+  "root_cause_classification": "missing_env_var",
+  "confidence": "high",
+  "evidence": [
+    {
+      "source": "container_logs",
+      "excerpt": "ERROR: KeyError: 'COSMOS_ACCOUNT_URL' at cosmos_transfer_repository.py:34. The env var COSMOS_ACCOUNT_URL is not set in container env. App startup fails during health check because TransferRepository init is called at startup."
+    },
+    {
+      "source": "applens",
+      "excerpt": "AppLens diagnosis: Container App revision ca-bankapi-dev--xk9p2qw shows repeated restarts (3 in last 10 min). Startup probe failing. Probable cause: application exception on startup."
+    },
+    {
+      "source": "resource_health",
+      "excerpt": "Resource health: Degraded. Platform health: Healthy. Issue is application-level."
+    }
+  ],
+  "remediation_actions": [
+    {
+      "action_id": "SRE-001",
+      "owner": "infra-devops-agent",
+      "description": "Add COSMOS_ACCOUNT_URL environment variable to Container App ca-bankapi-dev in infra/modules/container_app/main.tf. Value must be sourced from Key Vault secret 'cosmos-account-url' (already exists in kv-bankapi-dev). Use secretRef pattern, not direct value.",
+      "urgency": "critical",
+      "specific_change": {
+        "resource_type": "Microsoft.App/containerApps",
+        "setting": "env.COSMOS_ACCOUNT_URL",
+        "current_value": "not set",
+        "desired_value": "secretRef:cosmos-account-url from kv-bankapi-dev"
+      }
+    }
+  ],
+  "rollback_recommendation": {
+    "recommended": false,
+    "target_revision": "ca-bankapi-dev--3g2oklf",
+    "reason": "Not recommended — the fix is a single env var addition. Rollback would revert the Cosmos transfers container which is not needed."
+  },
+  "notes": "Root cause is clear: cosmos_transfer_repository.py reads COSMOS_ACCOUNT_URL at module load time (line 34) but it was not configured in the Container App. The Terraform change in INFRA-002 verified existing vars but missed that the transfer repository uses the same var name with different initialisation timing."
+}

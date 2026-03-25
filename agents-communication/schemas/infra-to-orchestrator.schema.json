@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "infra-to-orchestrator.schema.json",
+  "title": "Infra DevOps Agent → Orchestrator Handoff",
+  "description": "Written by infra-devops-agent after all infra tasks complete. orchestrator-agent reads this for deployment status.",
+  "type": "object",
+  "required": ["schema_version", "run_id", "task_slug", "sender", "receiver", "completed_at", "overall_status"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1" },
+    "run_id": { "type": "string", "pattern": "^\\d{3}$" },
+    "task_slug": { "type": "string", "pattern": "^[a-z0-9-]{3,40}$" },
+    "sender": { "type": "string", "const": "infra-devops-agent" },
+    "receiver": { "type": "string", "const": "orchestrator-agent" },
+    "completed_at": { "type": "string", "format": "date-time" },
+    "overall_status": { "type": "string", "enum": ["completed", "failed", "partial"] },
+    "tasks_completed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["task_id", "status"],
+        "properties": {
+          "task_id": { "type": "string" },
+          "status": { "type": "string", "enum": ["completed", "failed", "skipped"] },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "properties": {
+        "environment": { "type": "string" },
+        "container_app_name": { "type": "string" },
+        "resource_group": { "type": "string" },
+        "fqdn": { "type": "string" },
+        "image_tag": { "type": "string" },
+        "active_revision": { "type": "string" }
+      }
+    },
+    "terraform_outputs": {
+      "type": "object",
+      "description": "Key-value map of relevant terraform outputs. Values must not contain secrets.",
+      "additionalProperties": { "type": "string" }
+    },
+    "security_scan": {
+      "type": "object",
+      "properties": {
+        "trivy_status": { "type": "string", "enum": ["passed", "failed", "skipped"] },
+        "critical_findings": { "type": "integer" },
+        "high_findings": { "type": "integer" }
+      }
+    },
+    "failure_details": {
+      "type": "string",
+      "description": "Present when overall_status = failed. Full error message."
+    }
+  },
+  "additionalProperties": false
+}

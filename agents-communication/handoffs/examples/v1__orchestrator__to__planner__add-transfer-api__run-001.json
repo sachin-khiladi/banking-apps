@@ -1,0 +1,27 @@
+{
+  "schema_version": "1",
+  "run_id": "001",
+  "task_slug": "add-transfer-api",
+  "sender": "orchestrator-agent",
+  "receiver": "planning-agent",
+  "created_at": "2026-03-19T09:00:00Z",
+  "status": "pending",
+  "requirement": {
+    "title": "Add funds transfer API endpoint for bank accounts",
+    "description": "We need a POST /accounts/{account_id}/transfers endpoint that allows transferring funds between two accounts. The endpoint must validate that the source account has sufficient balance, deduct from source, credit to destination, and record the transfer in a Cosmos DB 'transfers' container. Both accounts must exist. Return 202 Accepted with a transfer ID on success. Return 422 if insufficient funds, 404 if either account is not found.",
+    "acceptance_criteria": [
+      "POST /accounts/{account_id}/transfers returns 202 with transfer_id on success",
+      "Returns 422 with domain error if source balance is insufficient",
+      "Returns 404 if source or destination account does not exist",
+      "Transfer is persisted to Cosmos DB transfers container",
+      "All operations are traced via OpenTelemetry",
+      "Unit test coverage ≥ 85% for all new/modified modules",
+      "pylint src/ exits 0",
+      "Docker image builds and passes trivy scan"
+    ],
+    "target_env": "dev",
+    "breaking_change": false,
+    "security_sensitive": false
+  },
+  "instructions_for_receiver": "Read this file. Decompose the requirement by reading src/api/accounts.py, src/services/account_service.py, src/repository/interfaces/i_account_repository.py, and infra/environments/dev/main.tf. Write output to: agents-communication/handoffs/v1__planner__to__coding__add-transfer-api__run-001.json and agents-communication/handoffs/v1__planner__to__infra__add-transfer-api__run-001.json. Mark this file status=completed when done."
+}

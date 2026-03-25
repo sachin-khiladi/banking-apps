@@ -1,0 +1,74 @@
+{
+  "schema_version": "1",
+  "run_id": "001",
+  "task_slug": "add-transfer-api",
+  "sender": "planning-agent",
+  "receiver": "python-coding-agent",
+  "created_at": "2026-03-19T09:05:00Z",
+  "status": "pending",
+  "retry": false,
+  "tasks": [
+    {
+      "task_id": "CODING-001",
+      "type": "new_model",
+      "layer": "models",
+      "file_path": "src/models/transfer.py",
+      "description": "Create Pydantic models: TransferRequest (source_account_id str, destination_account_id str, amount Decimal gt 0, currency str default 'USD'), TransferResponse (transfer_id str, status str, created_at datetime), and TransferModel (all fields + partition key = source_account_id). Use field validators to ensure amount > 0 and currency is 3-char ISO code.",
+      "depends_on": [],
+      "acceptance_criteria": ["All fields annotated", "Google docstring on class", "Decimal used for amount (not float)"]
+    },
+    {
+      "task_id": "CODING-002",
+      "type": "new_exception",
+      "layer": "exceptions",
+      "file_path": "src/exceptions/domain_exceptions.py",
+      "description": "Add two new exception classes to the existing domain_exceptions.py: InsufficientFundsException(account_id: str, requested: Decimal, available: Decimal) and TransferNotFoundException(transfer_id: str). Both must inherit from the existing base domain exception class. Include error_code, message, and HTTP status code attributes.",
+      "depends_on": [],
+      "acceptance_criteria": ["Inherit from existing base exception", "HTTP status codes: InsufficientFunds=422, TransferNotFound=404"]
+    },
+    {
+      "task_id": "CODING-003",
+      "type": "new_service_method",
+      "layer": "services",
+      "file_path": "src/services/account_service.py",
+      "description": "Add async method create_transfer(self, source_id: str, request: TransferRequest) -> TransferResponse to AccountService. The method must: (1) fetch source account using existing get_account method, raise AccountNotFoundException if not found; (2) fetch destination account, raise AccountNotFoundException if not found; (3) check source balance >= request.amount, raise InsufficientFundsException if not; (4) call self._transfer_repo.create(transfer_model) to persist; (5) return TransferResponse. Depend on ITransferRepository via constructor injection.",
+      "depends_on": ["CODING-001", "CODING-002"],
+      "repository_spec": {
+        "entity": "Transfer",
+        "container": "transfers",
+        "partition_key": "/sourceAccountId",
+        "database_env_var": "COSMOS_DB_NAME",
+        "account_env_var": "COSMOS_ACCOUNT_URL",
+        "operations": ["create", "get_by_id", "list_by_partition"],
+        "query_patterns": [
+          "list_by_source_account(source_account_id: str) -> list[TransferModel]"
+        ]
+      },
+      "acceptance_criteria": ["Service never imports CosmosClient directly", "All exceptions are domain exceptions", "OpenTelemetry span for create_transfer operation"]
+    },
+    {
+      "task_id": "CODING-004",
+      "type": "new_endpoint",
+      "layer": "api",
+      "file_path": "src/api/accounts.py",
+      "description": "Add route POST /accounts/{account_id}/transfers to the existing accounts router. Handler signature: create_transfer(account_id: str, request: TransferRequest, service: AccountService = Depends(get_account_service), current_user: dict = Depends(get_current_user)) -> TransferResponse. Return status 202. Catch InsufficientFundsException → HTTP 422, AccountNotFoundException → HTTP 404. Never expose stack traces.",
+      "depends_on": ["CODING-003"],
+      "acceptance_criteria": ["Status 202 on success", "Auth enforced via existing get_current_user dependency", "No business logic in handler"]
+    },
+    {
+      "task_id": "CODING-005",
+      "type": "update_existing",
+      "layer": "main",
+      "file_path": "src/main.py",
+      "description": "Wire TransferRepository into AccountService dependency factory function get_account_service(). Import ITransferRepository from interfaces. Inject CosmosTransferRepository (to be created by cosmosdb-repo-agent) via Depends() into the service constructor.",
+      "depends_on": ["CODING-003"],
+      "acceptance_criteria": ["No hardcoded CosmosClient in main.py", "Uses DefaultAzureCredential"]
+    }
+  ],
+  "quality_gates": {
+    "lint_required": true,
+    "docker_build_required": true,
+    "trivy_scan_required": true
+  },
+  "instructions_for_receiver": "Read this file. Implement all CODING tasks in depends_on order: 001 and 002 first (parallel), then 003, then 004 and 005. For CODING-003, invoke cosmosdb-repo-agent with the repository_spec before implementing the service method. After all tasks complete and quality gates pass, write agents-communication/handoffs/v1__coding__to__testing__add-transfer-api__run-001.json and mark this file status=completed."
+}

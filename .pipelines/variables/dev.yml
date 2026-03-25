@@ -1,0 +1,45 @@
+# ============================================================
+# dev.yml — Development-environment variables.
+#
+# Referenced by pipelines that target the dev environment:
+#   variables:
+#     - template: variables/global.yml
+#     - template: variables/dev.yml
+# ============================================================
+
+variables:
+
+  # ── Environment identity ──────────────────────────────────
+  environment: dev
+  environmentDisplayName: Development
+
+  # ── Azure subscription ────────────────────────────────────
+  # The service connection name configured in ADO Project Settings.
+  # Must use Workload Identity Federation (no secrets).
+  azureServiceConnection: sc-banking-dev
+
+  # ── Resource group ────────────────────────────────────────
+  resourceGroup: rg-banking-dev
+
+  # ── Azure Container Registry ──────────────────────────────
+  acrName: acrbanking dev               # short name (without .azurecr.io)
+  acrLoginServer: acrbankingdev.azurecr.io
+
+  # ── Azure Container Apps ──────────────────────────────────
+  containerAppName: ca-fastapi-banking-dev
+  containerAppEnvironment: cae-banking-dev
+  containerAppLocation: eastus
+
+  # ── Deployment behaviour ──────────────────────────────────
+  # dev deploys automatically — no approval gate.
+  requiresApproval: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetPort: 8000
+
+  # ── App configuration ─────────────────────────────────────
+  # Non-secret configuration. Secrets are stored in Key Vault
+  # and surfaced to the container app via secretRef, never here.
+  cosmosAccountUrl: https://cosmos-banking-dev.documents.azure.com:443/
+  cosmosDatabaseName: banking-dev
+  appInsightsConnectionString: '$(APP_INSIGHTS_CONNECTION_STRING_DEV)' # from ADO variable group

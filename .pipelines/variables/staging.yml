@@ -1,0 +1,36 @@
+# ============================================================
+# staging.yml — Staging-environment variables.
+# ============================================================
+
+variables:
+
+  # ── Environment identity ──────────────────────────────────
+  environment: staging
+  environmentDisplayName: Staging
+
+  # ── Azure subscription ────────────────────────────────────
+  azureServiceConnection: sc-banking-staging
+
+  # ── Resource group ────────────────────────────────────────
+  resourceGroup: rg-banking-staging
+
+  # ── Azure Container Registry ──────────────────────────────
+  acrName: acrbanking staging
+  acrLoginServer: acrbankingstaging.azurecr.io
+
+  # ── Azure Container Apps ──────────────────────────────────
+  containerAppName: ca-fastapi-banking-staging
+  containerAppEnvironment: cae-banking-staging
+  containerAppLocation: eastus
+
+  # ── Deployment behaviour ──────────────────────────────────
+  # Staging requires a manual approval gate before deployment.
+  requiresApproval: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetPort: 8000
+
+  # ── App configuration ─────────────────────────────────────
+  cosmosAccountUrl: https://cosmos-banking-staging.documents.azure.com:443/
+  cosmosDatabaseName: banking-staging
+  appInsightsConnectionString: '$(APP_INSIGHTS_CONNECTION_STRING_STAGING)'

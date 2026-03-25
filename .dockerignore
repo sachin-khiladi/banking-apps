@@ -1,0 +1,62 @@
+# ── Directories not needed in the production image ────────────────────────────
+tests/
+infra/
+pipelines/
+scripts/
+agents-communication/
+.github/
+
+# ── Version control ────────────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── Python byte-code and caches ────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# ── Virtual environments ───────────────────────────────────────────────────────
+env/
+venv/
+ENV/
+.venv/
+
+# ── Coverage and test artefacts ────────────────────────────────────────────────
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.log
+test-results/
+nosetests.xml
+
+# ── Build artefacts ────────────────────────────────────────────────────────────
+*.egg-info/
+dist/
+build/
+
+# ── Documentation and project meta ────────────────────────────────────────────
+*.md
+docs/
+
+# ── Local config and secrets ──────────────────────────────────────────────────
+.env
+.env.*
+*.local
+
+# ── IDE and OS artefacts ──────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Docker files (not needed inside the image) ─────────────────────────────────
+Dockerfile
+.dockerignore
+docker-compose*.yml

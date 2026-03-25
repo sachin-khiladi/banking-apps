@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sre-to-planner.schema.json",
+  "title": "SRE Agent → Planner Handoff",
+  "description": "Written by azure-sre-agent after diagnosing a deployment failure. planning-agent reads this to produce a targeted re-plan.",
+  "type": "object",
+  "required": ["schema_version", "run_id", "task_slug", "sender", "receiver", "completed_at", "root_cause_classification", "remediation_actions"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1" },
+    "run_id": { "type": "string", "pattern": "^\\d{3}$" },
+    "task_slug": { "type": "string", "pattern": "^[a-z0-9-]{3,40}$" },
+    "sender": { "type": "string", "const": "azure-sre-agent" },
+    "receiver": { "type": "string", "const": "planning-agent" },
+    "completed_at": { "type": "string", "format": "date-time" },
+    "root_cause_classification": {
+      "type": "string",
+      "enum": [
+        "application_startup_error",
+        "missing_env_var",
+        "keyvault_access_denied",
+        "cosmos_db_connection_failed",
+        "container_image_pull_error",
+        "insufficient_cpu_memory",
+        "network_ingress_misconfiguration",
+        "managed_identity_rbac_missing",
+        "app_config_missing_key",
+        "application_code_exception",
+        "unknown"
+      ]
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "description": "SRE agent's confidence in root cause."
+    },
+    "evidence": {
+      "type": "array",
+      "description": "Evidence gathered: log lines, AppLens findings, Azure Monitor alerts.",
+      "items": {
+        "type": "object",
+        "required": ["source", "excerpt"],
+        "properties": {
+          "source": { "type": "string", "enum": ["container_logs", "applens", "azure_monitor", "resource_health", "activity_log"] },
+          "excerpt": { "type": "string", "maxLength": 1000 }
+        }
+      }
+    },
+    "remediation_actions": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Concrete actions that must be taken. planning-agent maps each to INFRA or CODING tasks.",
+      "items": {
+        "type": "object",
+        "required": ["action_id", "owner", "description", "urgency"],
+        "properties": {
+          "action_id": { "type": "string", "pattern": "^SRE-\\d{3}$" },
+          "owner": { "type": "string", "enum": ["infra-devops-agent", "python-coding-agent", "manual"] },
+          "description": { "type": "string", "minLength": 20, "maxLength": 500 },
+          "urgency": { "type": "string", "enum": ["critical", "high", "medium"] },
+          "specific_change": {
+            "type": "object",
+            "description": "Structured change detail consumed directly by planning-agent.",
+            "properties": {
+              "resource_type": { "type": "string" },
+              "setting": { "type": "string" },
+              "current_value": { "type": "string" },
+              "desired_value": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "rollback_recommendation": {
+      "type": "object",
+      "properties": {
+        "recommended": { "type": "boolean" },
+        "target_revision": { "type": "string" },
+        "reason": { "type": "string" }
+      }
+    },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": false
+}

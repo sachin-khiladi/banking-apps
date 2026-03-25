@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "orchestrator-to-sre.schema.json",
+  "title": "Orchestrator → SRE Agent Handoff",
+  "description": "Written by orchestrator-agent on deployment failure. azure-sre-agent MUST read this to understand the failure context before diagnosing.",
+  "type": "object",
+  "required": ["schema_version", "run_id", "task_slug", "sender", "receiver", "created_at", "status", "failure_context", "instructions_for_receiver"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1" },
+    "run_id": { "type": "string", "pattern": "^\\d{3}$" },
+    "task_slug": { "type": "string", "pattern": "^[a-z0-9-]{3,40}$" },
+    "sender": { "type": "string", "const": "orchestrator-agent" },
+    "receiver": { "type": "string", "const": "azure-sre-agent" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "status": { "type": "string", "enum": ["pending", "in-progress", "completed"] },
+    "failure_context": {
+      "type": "object",
+      "required": ["symptom", "resource_group", "resource_name", "resource_type"],
+      "properties": {
+        "symptom": {
+          "type": "string",
+          "description": "Exact failure description, e.g. '/health returned 503 after 3 attempts' or 'Container App revision stuck in Provisioning'."
+        },
+        "resource_group": { "type": "string", "description": "e.g. rg-bankapi-dev" },
+        "resource_name": { "type": "string", "description": "e.g. ca-bankapi-dev" },
+        "resource_type": { "type": "string", "description": "e.g. Microsoft.App/containerApps" },
+        "fqdn": { "type": "string" },
+        "active_revision": { "type": "string" },
+        "target_env": { "type": "string", "enum": ["dev", "prod"] },
+        "last_successful_revision": { "type": "string" },
+        "recent_changes": {
+          "type": "array",
+          "description": "What changed in this run — from infra and coding completion reports.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "instructions_for_receiver": {
+      "type": "string",
+      "description": "Tell SRE agent exactly which file to write its output to."
+    }
+  },
+  "additionalProperties": false
+}

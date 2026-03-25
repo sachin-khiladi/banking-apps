@@ -1,0 +1,72 @@
+name: "Copilot Setup Steps"
+
+# Pre-installs all project dependencies into the ephemeral GitHub Actions
+# environment that GitHub Copilot coding agent uses when working on tasks.
+# Without this file, the agent must discover and install dependencies itself
+# via trial-and-error — costing extra tokens and slowing down task completion.
+#
+# Docs: https://docs.github.com/en/copilot/customizing-copilot/customizing-the-development-environment-for-copilot-coding-agent
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Source ──────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Python runtime ───────────────────────────────────────────────────────
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # ── Application dependencies ─────────────────────────────────────────────
+      - name: Install application dependencies
+        run: pip install -r requirements.txt
+
+      # ── Dev / test dependencies ──────────────────────────────────────────────
+      - name: Install test and lint tooling
+        run: |
+          pip install \
+            pytest \
+            pytest-cov \
+            pytest-asyncio \
+            pytest-mock \
+            httpx \
+            pylint
+
+      # ── Trivy (security scanner) ─────────────────────────────────────────────
+      - name: Install Trivy
+        run: |
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | \
+            sudo gpg --dearmor -o /usr/share/keyrings/trivy.gpg
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | \
+            sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update && sudo apt-get install -y trivy
+
+      # ── Terraform ────────────────────────────────────────────────────────────
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.6"
+
+      # ── Azure CLI ────────────────────────────────────────────────────────────
+      - name: Install Azure CLI
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      # ── Validate environment ──────────────────────────────────────────────────
+      - name: Validate setup
+        run: |
+          python --version
+          pip show fastapi pytest pylint
+          terraform version
+          trivy --version
+          az version

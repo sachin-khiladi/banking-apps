@@ -1,0 +1,14 @@
+{
+  "schema_version": "1",
+  "run_id": "003",
+  "task_slug": "quality-gates-remediation",
+  "sender": "planning-agent",
+  "receiver": "infra-devops-agent",
+  "created_at": "2026-03-20T06:20:00Z",
+  "status": "completed",
+  "retry": true,
+  "target_env": "dev",
+  "tasks": [],
+  "skip_deploy": true,
+  "instructions_for_receiver": "Validate this handoff against agents-communication/schemas/planner-to-infra.schema.json. No Terraform, pipeline, or deployment changes are planned for run-003 because the active remediation scope is lint and container image dependency security in application code. Record a completed infra-to-orchestrator handoff stating no infra actions were required and that deployment verification remains unchanged from prior healthy run."
+}

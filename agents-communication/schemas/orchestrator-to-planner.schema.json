@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "orchestrator-to-planner.schema.json",
+  "title": "Orchestrator → Planner Handoff",
+  "description": "Written by orchestrator-agent. Planning-agent MUST read and validate against this schema before decomposing.",
+  "type": "object",
+  "required": ["schema_version", "run_id", "task_slug", "sender", "receiver", "created_at", "status", "requirement", "instructions_for_receiver"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1" },
+    "run_id": { "type": "string", "pattern": "^\\d{3}$", "description": "Zero-padded 3-digit integer. Increment per retry." },
+    "task_slug": { "type": "string", "pattern": "^[a-z0-9-]{3,40}$", "description": "Kebab-case task identifier shared across all handoffs for this feature." },
+    "sender": { "type": "string", "const": "orchestrator-agent" },
+    "receiver": { "type": "string", "const": "planning-agent" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "status": { "type": "string", "enum": ["pending", "in-progress", "completed", "failed"] },
+    "retry_reason": {
+      "type": "string",
+      "enum": ["test_failures", "deployment_failure", "lint_failure", "security_scan_failure"],
+      "description": "Present only on retry runs."
+    },
+    "previous_run_issues": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of failure messages from a previous run. Present only on retries."
+    },
+    "requirement": {
+      "type": "object",
+      "required": ["title", "description", "acceptance_criteria", "target_env", "breaking_change", "security_sensitive"],
+      "properties": {
+        "title": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "description": "Full user requirement verbatim." },
+        "acceptance_criteria": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "target_env": { "type": "string", "enum": ["dev", "prod"] },
+        "breaking_change": { "type": "boolean" },
+        "security_sensitive": { "type": "boolean" }
+      }
+    },
+    "instructions_for_receiver": {
+      "type": "string",
+      "description": "Explicit instructions for planning-agent. Must reference the output file paths to create."
+    }
+  },
+  "additionalProperties": false
+}

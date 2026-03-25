@@ -1,0 +1,42 @@
+{
+  "schema_version": "1",
+  "run_id": "001",
+  "task_slug": "add-transfer-api",
+  "sender": "planning-agent",
+  "receiver": "infra-devops-agent",
+  "created_at": "2026-03-19T09:05:00Z",
+  "status": "pending",
+  "retry": false,
+  "target_env": "dev",
+  "tasks": [
+    {
+      "task_id": "INFRA-001",
+      "type": "new_resource",
+      "module_path": "infra/modules/cosmosdb",
+      "description": "Add a new Cosmos DB container named 'transfers' to the existing cosmosdb module. Partition key: /sourceAccountId. Indexing policy: index on /destinationAccountId, /status, /createdAt. Default TTL: -1 (no expiry). Throughput: serverless (inherit from account). Update infra/environments/dev/main.tf to pass the new container name.",
+      "depends_on": []
+    },
+    {
+      "task_id": "INFRA-002",
+      "type": "new_app_setting",
+      "module_path": "infra/modules/container_app",
+      "description": "No new env vars are required for this feature — COSMOS_DB_NAME and COSMOS_ACCOUNT_URL already exist in the Container App environment. Verify they are present in the current container_app module definition. If missing, add them pointing to Key Vault secret references.",
+      "depends_on": ["INFRA-001"],
+      "new_env_vars": []
+    },
+    {
+      "task_id": "INFRA-003",
+      "type": "acr_push",
+      "description": "Build and push the updated Docker image to Azure Container Registry after the Cosmos DB container is created. Run trivy scan on the image. Block deployment if CRITICAL or HIGH vulnerabilities found.",
+      "depends_on": ["INFRA-001", "INFRA-002"]
+    },
+    {
+      "task_id": "INFRA-004",
+      "type": "container_deploy",
+      "description": "Update Container App ca-bankapi-dev in resource group rg-bankapi-dev with the new image pushed in INFRA-003. Wait for the revision to become active (traffic = 100%). Record active revision name and FQDN in the completion report.",
+      "depends_on": ["INFRA-003"]
+    }
+  ],
+  "skip_deploy": false,
+  "instructions_for_receiver": "Read this file. Execute INFRA tasks in depends_on order: 001 first (Terraform), then 002 (verify env vars), then 003 (ACR push), then 004 (deploy). Read .github/skills/implement-tf-code/SKILL.md before any Terraform edits. After all tasks complete, write agents-communication/handoffs/v1__infra__to__orchestrator__add-transfer-api__run-001.json and mark this file status=completed."
+}

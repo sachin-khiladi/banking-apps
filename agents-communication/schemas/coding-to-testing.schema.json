@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "coding-to-testing.schema.json",
+  "title": "Python Coding Agent → Unit Test Agent Handoff",
+  "description": "Written by python-coding-agent after implementation is complete. unit-test-agent MUST read this before writing tests.",
+  "type": "object",
+  "required": ["schema_version", "run_id", "task_slug", "sender", "receiver", "created_at", "status", "changed_files", "instructions_for_receiver"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1" },
+    "run_id": { "type": "string", "pattern": "^\\d{3}$" },
+    "task_slug": { "type": "string", "pattern": "^[a-z0-9-]{3,40}$" },
+    "sender": { "type": "string", "const": "python-coding-agent" },
+    "receiver": { "type": "string", "const": "unit-test-agent" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "status": { "type": "string", "enum": ["pending", "in-progress", "completed", "failed"] },
+    "changed_files": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Every src/ file created or modified. Used to determine which test files to create/update.",
+      "items": {
+        "type": "object",
+        "required": ["file_path", "change_type", "public_interface_summary"],
+        "properties": {
+          "file_path": { "type": "string", "description": "e.g. src/api/transfers.py" },
+          "change_type": { "type": "string", "enum": ["created", "modified", "deleted"] },
+          "public_interface_summary": {
+            "type": "string",
+            "description": "2-4 sentences describing new/changed public functions, classes, or methods. Used by test agent to know what to test without reading the full file."
+          },
+          "new_exceptions_raised": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of domain exception class names that this module can now raise."
+          },
+          "new_env_vars_required": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "New env var names used by this file. Test agent must monkeypatch these."
+          }
+        }
+      }
+    },
+    "quality_gate_results": {
+      "type": "object",
+      "properties": {
+        "pylint": { "type": "string", "enum": ["passed", "failed", "skipped"] },
+        "docker_build": { "type": "string", "enum": ["passed", "failed", "skipped"] },
+        "trivy_scan": { "type": "string", "enum": ["passed", "failed", "skipped", "warnings_only"] }
+      }
+    },
+    "instructions_for_receiver": { "type": "string" }
+  },
+  "additionalProperties": false
+}
