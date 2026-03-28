@@ -10,7 +10,7 @@ from datetime import timedelta
 
 import pytest
 from fastapi import HTTPException
-from jose import jwt
+import jwt
 
 from src.auth.oauth2 import (
     ALGORITHM,
