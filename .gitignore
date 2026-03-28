@@ -25,3 +25,8 @@ infra/.terraform/
 infra/*.tfstate
 infra/*.tfstate.backup
 infra/.terraform.lock.hcl
+
+# UI (node_modules and build output are in ui/.gitignore but belt-and-suspenders)
+ui/node_modules/
+ui/dist/
+ui/.env.local
