@@ -36,7 +36,7 @@
 #   Each stage is individually conditioned:
 #     condition: and(succeeded(), contains(parameters.deployTo, 'dev'))
 #
-# Template per stage: templates/stages/deploy-container-app.yml @ ado-templates v1.0.0
+# Template per stage: templates/stages/deploy-container-app.yml @ devops-templates v1.0
 #   → Each stage calls the SAME single-environment template.
 #   → No combined multi-env template; orchestration lives here.
 #
@@ -86,13 +86,13 @@ resources:
             - main
             - develop
 
-  # Shared template repository, pinned to v1.0.0.
+  # Shared template repository, pinned to v1.0.
   # Update ref: here (and templateRepoRef in global.yml) to upgrade templates.
   repositories:
     - repository: templates
       type: git
-      name: AIDemoApp/ado-templates
-      ref: refs/tags/v1.0.0
+      name: $(templateRepoName)
+      ref: $(templateRepoRef)
 
 # ── Global variables (shared across all stages) ────────────────
 # Environment-specific files are loaded INSIDE each stage template

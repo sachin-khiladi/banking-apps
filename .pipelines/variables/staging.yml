@@ -15,7 +15,7 @@ variables:
   resourceGroup: rg-banking-staging
 
   # ── Azure Container Registry ──────────────────────────────
-  acrName: acrbanking staging
+  acrName: acrbankingstaging
   acrLoginServer: acrbankingstaging.azurecr.io
 
   # ── Azure Container Apps ──────────────────────────────────

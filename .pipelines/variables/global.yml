@@ -40,5 +40,5 @@ variables:
   # Keep these in one place so every pipeline references the
   # same tag. The actual resource declaration lives in each
   # pipeline file; update both together when upgrading templates.
-  templateRepoName: AIDemoApp/ado-templates
-  templateRepoRef: refs/tags/v1.0.0
+  templateRepoName: sachin-khiladi/devops-templates
+  templateRepoRef: refs/tags/v1.0
