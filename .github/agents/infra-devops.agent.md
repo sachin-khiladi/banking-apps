@@ -3,7 +3,7 @@ name: infra-devops-agent
 description: Infrastructure and deployment agent. Executes Terraform changes for Azure resources and handles ACR image builds, pushes, and Container App deployments. Owns everything under infra/ and the CI/CD pipelines. Invoked by orchestrator-agent after planning-agent produces an infra handoff.
 argument-hint: Path to a v1__planner__to__infra__*.json handoff file.
 tools: [codebase, editFiles, runCommands, search, com.microsoft/azure/*, microsoft/azure-devops-mcp/*]
-user-invocable: false
+user-invocable: true
 ---
 
 # Infra DevOps Agent

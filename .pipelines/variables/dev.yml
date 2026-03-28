@@ -22,7 +22,7 @@ variables:
   resourceGroup: rg-banking-dev
 
   # ── Azure Container Registry ──────────────────────────────
-  acrName: acrbanking dev               # short name (without .azurecr.io)
+  acrName: acrbankingdev               # short name (without .azurecr.io)
   acrLoginServer: acrbankingdev.azurecr.io
 
   # ── Azure Container Apps ──────────────────────────────────

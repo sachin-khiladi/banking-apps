@@ -1,0 +1,23 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - '**/*.md'
+      - '.github/**'
+      - '.pipelines/variables/**'
+
+permissions:
+  contents: read
+
+jobs:
+  pr-validation:
+    name: Lint and test
+    uses: sachin-khiladi/devops-templates/.github/workflows/pr-validation.yml@v1.0
+    with:
+      python_version: '3.11'
+      pylint_src_path: 'src/'
+      pytest_coverage_threshold: 85

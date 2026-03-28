@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - '**/*.md'
+      - '.github/**'
+      - '.pipelines/variables/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  ci:
+    name: Build, test, and publish image
+    uses: sachin-khiladi/devops-templates/.github/workflows/python-ci.yml@v1.0
+    with:
+      python_version: '3.11'
+      pylint_src_path: 'src/'
+      pytest_coverage_threshold: 85
+      dockerfile_path: 'Dockerfile'
+      docker_build_context: '.'
+      image_repository: 'banking-system/fastapi-azure-app'
+      image_tag: ${{ github.run_id }}
+      trivy_severity: 'CRITICAL,HIGH'
+      acr_name: ${{ vars.ACR_NAME_DEV }}
+      acr_login_server: ${{ vars.ACR_LOGIN_SERVER_DEV }}
+      azure_client_id: ${{ vars.AZURE_CLIENT_ID_DEV }}
+      azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
+      azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    secrets: inherit
