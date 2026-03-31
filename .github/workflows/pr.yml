@@ -15,9 +15,9 @@ permissions:
 
 jobs:
   pr-validation:
-    name: Lint and test
-    uses: sachin-khiladi/devops-templates/.github/workflows/pr-validation.yml@v1.0
+    name: Validate Python source
+    uses: sachin-khiladi/devops-templates/templates/github/python/workflow-build-v1.0.0.yml@v1.0
     with:
       python_version: '3.11'
-      pylint_src_path: 'src/'
-      pytest_coverage_threshold: 85
+      working_directory: '.'
+      release_environment: dev
