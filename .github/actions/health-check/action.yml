@@ -1,0 +1,48 @@
+name: Container App Health Check
+description: Polls the /health endpoint of an Azure Container App until it returns HTTP 200.
+
+inputs:
+  container_app_name:
+    description: Name of the Azure Container App
+    required: true
+  resource_group:
+    description: Azure Resource Group name
+    required: true
+  health_path:
+    description: Health check path
+    required: false
+    default: /health
+  max_attempts:
+    description: Maximum number of retry attempts
+    required: false
+    default: '10'
+  retry_interval:
+    description: Seconds to wait between retries
+    required: false
+    default: '15'
+
+runs:
+  using: composite
+  steps:
+    - name: Poll health endpoint
+      shell: bash
+      run: |
+        APP_URL=$(az containerapp show \
+          --name "${{ inputs.container_app_name }}" \
+          --resource-group "${{ inputs.resource_group }}" \
+          --query properties.configuration.ingress.fqdn \
+          --output tsv)
+        echo "Checking health at https://${APP_URL}${{ inputs.health_path }}"
+        for i in $(seq 1 "${{ inputs.max_attempts }}"); do
+          HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://${APP_URL}${{ inputs.health_path }}" 2>/dev/null) \
+            || HTTP_RESPONSE="connection_failed"
+          if [ "$HTTP_RESPONSE" = "200" ]; then
+            echo "Health check passed (HTTP 200)"
+            exit 0
+          fi
+          echo "Attempt $i/${{ inputs.max_attempts }}: HTTP $HTTP_RESPONSE — retrying in ${{ inputs.retry_interval }}s..."
+          sleep "${{ inputs.retry_interval }}"
+        done
+        echo "Health check failed after ${{ inputs.max_attempts }} attempts"
+        exit 1

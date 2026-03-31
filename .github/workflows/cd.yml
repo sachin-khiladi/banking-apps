@@ -40,24 +40,31 @@ jobs:
         (github.event_name == 'workflow_run' || inputs.deploy_to == 'dev' || inputs.deploy_to == 'all')
       }}
     name: Deploy dev
-    uses: sachin-khiladi/devops-templates/.github/workflows/deploy-container-app.yml@v1.0
-    with:
-      environment_name: banking-dev
-      azure_client_id: ${{ vars.AZURE_CLIENT_ID_DEV }}
-      azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
-      azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      resource_group: ${{ vars.AZURE_RESOURCE_GROUP_DEV }}
-      acr_login_server: ${{ vars.ACR_LOGIN_SERVER_DEV }}
-      image_repository: 'banking-system/fastapi-azure-app'
-      image_tag: ${{ env.RESOLVED_IMAGE_TAG }}
-      container_app_name: ${{ vars.CONTAINER_APP_NAME_DEV }}
-      container_app_environment: ${{ vars.CONTAINER_APP_ENV_DEV }}
-      container_app_location: ${{ vars.CONTAINER_APP_LOCATION_DEV }}
-      target_port: 8000
-      min_replicas: 1
-      max_replicas: 3
-      health_check_path: /health
-    secrets: inherit
+    runs-on: ubuntu-latest
+    environment: banking-dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_DEV }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Container App (dev)
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP_DEV }}
+          containerAppName: ${{ vars.CONTAINER_APP_NAME_DEV }}
+          imageToDeploy: ${{ vars.ACR_LOGIN_SERVER_DEV }}/banking-system/fastapi-azure-app:${{ env.RESOLVED_IMAGE_TAG }}
+
+      - name: Health check (dev)
+        uses: ./.github/actions/health-check
+        with:
+          container_app_name: ${{ vars.CONTAINER_APP_NAME_DEV }}
+          resource_group: ${{ vars.AZURE_RESOURCE_GROUP_DEV }}
 
   deploy_staging:
     if: >-
@@ -68,24 +75,31 @@ jobs:
     needs:
       - deploy_dev
     name: Deploy staging
-    uses: sachin-khiladi/devops-templates/.github/workflows/deploy-container-app.yml@v1.0
-    with:
-      environment_name: banking-staging
-      azure_client_id: ${{ vars.AZURE_CLIENT_ID_STAGING }}
-      azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
-      azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      resource_group: ${{ vars.AZURE_RESOURCE_GROUP_STAGING }}
-      acr_login_server: ${{ vars.ACR_LOGIN_SERVER_STAGING }}
-      image_repository: 'banking-system/fastapi-azure-app'
-      image_tag: ${{ env.RESOLVED_IMAGE_TAG }}
-      container_app_name: ${{ vars.CONTAINER_APP_NAME_STAGING }}
-      container_app_environment: ${{ vars.CONTAINER_APP_ENV_STAGING }}
-      container_app_location: ${{ vars.CONTAINER_APP_LOCATION_STAGING }}
-      target_port: 8000
-      min_replicas: 1
-      max_replicas: 5
-      health_check_path: /health
-    secrets: inherit
+    runs-on: ubuntu-latest
+    environment: banking-staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_STAGING }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Container App (staging)
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP_STAGING }}
+          containerAppName: ${{ vars.CONTAINER_APP_NAME_STAGING }}
+          imageToDeploy: ${{ vars.ACR_LOGIN_SERVER_STAGING }}/banking-system/fastapi-azure-app:${{ env.RESOLVED_IMAGE_TAG }}
+
+      - name: Health check (staging)
+        uses: ./.github/actions/health-check
+        with:
+          container_app_name: ${{ vars.CONTAINER_APP_NAME_STAGING }}
+          resource_group: ${{ vars.AZURE_RESOURCE_GROUP_STAGING }}
 
   deploy_prod:
     if: >-
@@ -96,21 +110,28 @@ jobs:
     needs:
       - deploy_staging
     name: Deploy prod
-    uses: sachin-khiladi/devops-templates/.github/workflows/deploy-container-app.yml@v1.0
-    with:
-      environment_name: banking-prod
-      azure_client_id: ${{ vars.AZURE_CLIENT_ID_PROD }}
-      azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
-      azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      resource_group: ${{ vars.AZURE_RESOURCE_GROUP_PROD }}
-      acr_login_server: ${{ vars.ACR_LOGIN_SERVER_PROD }}
-      image_repository: 'banking-system/fastapi-azure-app'
-      image_tag: ${{ env.RESOLVED_IMAGE_TAG }}
-      container_app_name: ${{ vars.CONTAINER_APP_NAME_PROD }}
-      container_app_environment: ${{ vars.CONTAINER_APP_ENV_PROD }}
-      container_app_location: ${{ vars.CONTAINER_APP_LOCATION_PROD }}
-      target_port: 8000
-      min_replicas: 2
-      max_replicas: 10
-      health_check_path: /health
-    secrets: inherit
+    runs-on: ubuntu-latest
+    environment: banking-prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_PROD }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Container App (prod)
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP_PROD }}
+          containerAppName: ${{ vars.CONTAINER_APP_NAME_PROD }}
+          imageToDeploy: ${{ vars.ACR_LOGIN_SERVER_PROD }}/banking-system/fastapi-azure-app:${{ env.RESOLVED_IMAGE_TAG }}
+
+      - name: Health check (prod)
+        uses: ./.github/actions/health-check
+        with:
+          container_app_name: ${{ vars.CONTAINER_APP_NAME_PROD }}
+          resource_group: ${{ vars.AZURE_RESOURCE_GROUP_PROD }}
