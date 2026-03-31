@@ -16,7 +16,7 @@ permissions:
 jobs:
   pr-validation:
     name: Validate Python source
-    uses: sachin-khiladi/devops-templates/templates/github/python/workflow-build-v1.0.0.yml@v1.0
+    uses: ./.github/workflows/workflow-build-v1.0.0.yml
     with:
       python_version: '3.11'
       working_directory: '.'

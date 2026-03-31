@@ -1,0 +1,140 @@
+# reusable GitHub Actions workflow template: python build
+name: python-build-template-v1.0.0
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        required: false
+        type: string
+        default: '3.11'
+      working_directory:
+        required: false
+        type: string
+        default: '.'
+      release_environment:
+        required: false
+        type: string
+        default: 'dev'
+      docker_image_ref:
+        required: false
+        type: string
+        default: ''
+      additional_release_tags:
+        required: false
+        type: string
+        default: ''
+      container_registry_url:
+        required: false
+        type: string
+        default: ''
+      container_image_repository:
+        required: false
+        type: string
+        default: ''
+      sign_image:
+        required: false
+        type: boolean
+        default: true
+      generate_sbom:
+        required: false
+        type: boolean
+        default: true
+    secrets:
+      registry_username:
+        required: false
+      registry_password:
+        required: false
+      cosign_key:
+        required: false
+      cosign_password:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  python-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Validate Python Source
+        run: python -m compileall .
+
+      - name: Enforce Main Branch For Production
+        run: |
+          if [[ "${{ inputs.release_environment }}" == "prd" && "${GITHUB_REF}" != "refs/heads/main" ]]; then
+            echo "Production release is only allowed from main branch"
+            exit 1
+          fi
+
+      - name: Docker Trivy Scan
+        if: ${{ inputs.docker_image_ref != '' }}
+        working-directory: .
+        run: |
+          chmod +x scripts/docker-trivy-scan-v1.0.0.sh
+          scripts/docker-trivy-scan-v1.0.0.sh "${{ inputs.docker_image_ref }}"
+
+      - name: Create Release Stamp Metadata
+        working-directory: .
+        run: |
+          chmod +x scripts/release-stamp-v1.0.0.sh
+          scripts/release-stamp-v1.0.0.sh release-stamp.json "${{ inputs.release_environment }}" "${GITHUB_REF_NAME}" "${GITHUB_SHA}" "${GITHUB_WORKFLOW}" "${{ inputs.additional_release_tags }}"
+
+      - name: Upload Release Stamp Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-stamp
+          path: release-stamp.json
+
+      - name: Create Traceable Image Tag
+        if: ${{ inputs.container_registry_url != '' && inputs.container_image_repository != '' }}
+        run: |
+          REPO_SLUG="$(basename \"${GITHUB_REPOSITORY}\" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
+          SHORT_SHA="${GITHUB_SHA:0:12}"
+          IMAGE_TRACE_TAG="${REPO_SLUG}-${GITHUB_RUN_ID}-${SHORT_SHA}"
+          echo "IMAGE_TRACE_TAG=${IMAGE_TRACE_TAG}" >> "$GITHUB_ENV"
+          echo "Traceable image tag: ${IMAGE_TRACE_TAG}"
+
+      - name: Build Docker Image
+        if: ${{ inputs.container_registry_url != '' && inputs.container_image_repository != '' }}
+        run: |
+          IMAGE_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_TRACE_TAG}"
+          echo "Building docker image: $IMAGE_NAME"
+          docker build -t "$IMAGE_NAME" -f Dockerfile ${{ inputs.working_directory }}
+
+      - name: Push Docker Image
+        if: ${{ inputs.container_registry_url != '' && inputs.container_image_repository != '' }}
+        run: |
+          IMAGE_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_TRACE_TAG}"
+          docker login -u "${{ secrets.registry_username }}" -p "${{ secrets.registry_password }}" ${{ inputs.container_registry_url }}
+          docker push "$IMAGE_NAME"
+
+      - name: Generate SBOM
+        if: ${{ inputs.generate_sbom == true && inputs.container_registry_url != '' }}
+        working-directory: .
+        run: |
+          chmod +x scripts/generate-sbom-v1.0.0.sh
+          scripts/generate-sbom-v1.0.0.sh "${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_TRACE_TAG}" sbom.json
+
+      - name: Upload SBOM Artifact
+        if: ${{ inputs.generate_sbom == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json
