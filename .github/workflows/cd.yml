@@ -20,7 +20,7 @@ on:
           - all
         default: dev
       image_tag:
-        description: 'Image tag to deploy (optional)'
+        description: 'Image tag to deploy (leave blank to use CI build tag)'
         type: string
         default: ''
 
@@ -28,110 +28,88 @@ permissions:
   contents: read
   id-token: write
 
-env:
-  RESOLVED_IMAGE_TAG: >-
-    ${{ github.event_name == 'workflow_run' && github.event.workflow_run.run_id || (inputs.image_tag != '' && inputs.image_tag || github.run_id) }}
-
 jobs:
-  deploy_dev:
+  prepare:
+    name: Resolve image tag
+    runs-on: ubuntu-latest
     if: >-
       ${{
-        (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') &&
-        (github.event_name == 'workflow_run' || inputs.deploy_to == 'dev' || inputs.deploy_to == 'all')
+        github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
       }}
-    name: Deploy dev
-    runs-on: ubuntu-latest
-    environment: banking-dev
+    outputs:
+      image_tag: ${{ steps.set-tag.outputs.image_tag }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Compute image tag
+        id: set-tag
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            RUN_ID="${{ github.event.workflow_run.run_id }}"
+            SHORT_SHA="${{ github.event.workflow_run.head_sha }}"
+            SHORT_SHA="${SHORT_SHA:0:12}"
+            echo "image_tag=banking-apps-${RUN_ID}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          elif [[ -n "${{ inputs.image_tag }}" ]]; then
+            echo "image_tag=${{ inputs.image_tag }}" >> "$GITHUB_OUTPUT"
+          else
+            SHORT_SHA="${GITHUB_SHA:0:12}"
+            echo "image_tag=banking-apps-${{ github.run_id }}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Azure login (OIDC)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID_DEV }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Deploy to Container App (dev)
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP_DEV }}
-          containerAppName: ${{ vars.CONTAINER_APP_NAME_DEV }}
-          imageToDeploy: ${{ vars.ACR_LOGIN_SERVER_DEV }}/banking-system/fastapi-azure-app:${{ env.RESOLVED_IMAGE_TAG }}
-
-      - name: Health check (dev)
-        uses: ./.github/actions/health-check
-        with:
-          container_app_name: ${{ vars.CONTAINER_APP_NAME_DEV }}
-          resource_group: ${{ vars.AZURE_RESOURCE_GROUP_DEV }}
+  deploy_dev:
+    name: Deploy dev
+    needs: prepare
+    if: >-
+      ${{
+        github.event_name == 'workflow_run' || inputs.deploy_to == 'dev' || inputs.deploy_to == 'all'
+      }}
+    uses: sachin-khiladi/devops-templates/templates/github/deployment/workflow-deploy-aca-v1.0.0.yml@v1.0
+    with:
+      resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_DEV }}
+      container_app_name: ${{ vars.CONTAINER_APP_NAME_DEV }}
+      container_image_ref: "${{ vars.ACR_LOGIN_SERVER_DEV }}/banking-system/fastapi-azure-app:${{ needs.prepare.outputs.image_tag }}"
+      release_environment: dev
+      deployment_environment: banking-dev
+      verify_image: false
+    secrets:
+      azure_credentials: ${{ secrets.AZURE_CREDENTIALS_DEV }}
 
   deploy_staging:
+    name: Deploy staging
+    needs:
+      - prepare
+      - deploy_dev
     if: >-
       ${{
-        (inputs.deploy_to == 'staging' || inputs.deploy_to == 'all') &&
+        (github.event_name == 'workflow_run' || inputs.deploy_to == 'staging' || inputs.deploy_to == 'all') &&
         (needs.deploy_dev.result == 'success' || needs.deploy_dev.result == 'skipped')
       }}
-    needs:
-      - deploy_dev
-    name: Deploy staging
-    runs-on: ubuntu-latest
-    environment: banking-staging
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Azure login (OIDC)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID_STAGING }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Deploy to Container App (staging)
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP_STAGING }}
-          containerAppName: ${{ vars.CONTAINER_APP_NAME_STAGING }}
-          imageToDeploy: ${{ vars.ACR_LOGIN_SERVER_STAGING }}/banking-system/fastapi-azure-app:${{ env.RESOLVED_IMAGE_TAG }}
-
-      - name: Health check (staging)
-        uses: ./.github/actions/health-check
-        with:
-          container_app_name: ${{ vars.CONTAINER_APP_NAME_STAGING }}
-          resource_group: ${{ vars.AZURE_RESOURCE_GROUP_STAGING }}
+    uses: sachin-khiladi/devops-templates/templates/github/deployment/workflow-deploy-aca-v1.0.0.yml@v1.0
+    with:
+      resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_STAGING }}
+      container_app_name: ${{ vars.CONTAINER_APP_NAME_STAGING }}
+      container_image_ref: "${{ vars.ACR_LOGIN_SERVER_STAGING }}/banking-system/fastapi-azure-app:${{ needs.prepare.outputs.image_tag }}"
+      release_environment: staging
+      deployment_environment: banking-staging
+      verify_image: false
+    secrets:
+      azure_credentials: ${{ secrets.AZURE_CREDENTIALS_STAGING }}
 
   deploy_prod:
+    name: Deploy prod
+    needs:
+      - prepare
+      - deploy_staging
     if: >-
       ${{
-        (inputs.deploy_to == 'prod' || inputs.deploy_to == 'all') &&
+        (github.event_name == 'workflow_run' || inputs.deploy_to == 'prod' || inputs.deploy_to == 'all') &&
         (needs.deploy_staging.result == 'success' || needs.deploy_staging.result == 'skipped')
       }}
-    needs:
-      - deploy_staging
-    name: Deploy prod
-    runs-on: ubuntu-latest
-    environment: banking-prod
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Azure login (OIDC)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID_PROD }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Deploy to Container App (prod)
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP_PROD }}
-          containerAppName: ${{ vars.CONTAINER_APP_NAME_PROD }}
-          imageToDeploy: ${{ vars.ACR_LOGIN_SERVER_PROD }}/banking-system/fastapi-azure-app:${{ env.RESOLVED_IMAGE_TAG }}
-
-      - name: Health check (prod)
-        uses: ./.github/actions/health-check
-        with:
-          container_app_name: ${{ vars.CONTAINER_APP_NAME_PROD }}
-          resource_group: ${{ vars.AZURE_RESOURCE_GROUP_PROD }}
+    uses: sachin-khiladi/devops-templates/templates/github/deployment/workflow-deploy-aca-v1.0.0.yml@v1.0
+    with:
+      resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_PROD }}
+      container_app_name: ${{ vars.CONTAINER_APP_NAME_PROD }}
+      container_image_ref: "${{ vars.ACR_LOGIN_SERVER_PROD }}/banking-system/fastapi-azure-app:${{ needs.prepare.outputs.image_tag }}"
+      release_environment: prd
+      deployment_environment: banking-prod
+      verify_image: false
+    secrets:
+      azure_credentials: ${{ secrets.AZURE_CREDENTIALS_PROD }}
