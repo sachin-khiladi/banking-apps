@@ -1,0 +1,128 @@
+# reusable GitHub Actions workflow template: deploy to Azure Container Apps
+name: deploy-aca-template-v1.0.0
+
+on:
+  workflow_call:
+    inputs:
+      resource_group_name:
+        required: true
+        type: string
+      container_app_name:
+        required: true
+        type: string
+      container_image_ref:
+        required: true
+        type: string
+      release_environment:
+        required: false
+        type: string
+        default: 'dev'
+      verify_image:
+        required: false
+        type: boolean
+        default: true
+      verify_signature:
+        required: false
+        type: boolean
+        default: false
+      deployment_environment:
+        required: false
+        type: string
+        default: 'aca-deploy'
+      additional_deploy_args:
+        required: false
+        type: string
+        default: ''
+    secrets:
+      azure_credentials:
+        required: true
+      registry_username:
+        required: false
+      registry_password:
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-aca:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.deployment_environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download SBOM Artifact
+        uses: actions/download-artifact@v4
+        if: ${{ inputs.verify_image == true }}
+        with:
+          name: sbom
+
+      - name: Verify Release Environment Branch Policy
+        run: |
+          if [[ "${{ inputs.release_environment }}" == "prd" && "${GITHUB_REF}" != "refs/heads/main" ]]; then
+            echo "Production deployment is only allowed from main branch"
+            exit 1
+          fi
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.azure_credentials }}
+
+      - name: Verify Image Integrity & Attestation
+        if: ${{ inputs.verify_image == true }}
+        run: |
+          chmod +x ./scripts/verify-image-v1.0.0.sh
+          ./scripts/verify-image-v1.0.0.sh \
+            "${{ inputs.container_image_ref }}" \
+            --verify-signature \
+            --verify-sbom \
+            --fail-on-missing
+        env:
+          IMAGE_VERIFY_MODE: ${{ inputs.release_environment == 'prd' && 'strict' || 'standard' }}
+          SBOM_JSON_PATH: sbom/sbom.json
+
+      - name: Deploy to Azure Container Apps
+        run: |
+          echo "Deploying container image to Azure Container Apps..."
+          az containerapp update \
+            --resource-group "${{ inputs.resource_group_name }}" \
+            --name "${{ inputs.container_app_name }}" \
+            --image "${{ inputs.container_image_ref }}" \
+            ${{ inputs.additional_deploy_args }}
+          
+          echo "Waiting for deployment to complete..."
+          az containerapp show \
+            --resource-group "${{ inputs.resource_group_name }}" \
+            --name "${{ inputs.container_app_name }}" \
+            --query "properties.runningStatus" \
+            --output tsv
+
+      - name: Create Deployment Attestation
+        if: success()
+        run: |
+          cat > deployment-attestation.json <<'EOF'
+          {
+            "deployment_type": "azure-container-apps",
+            "container_app_name": "${{ inputs.container_app_name }}",
+            "resource_group": "${{ inputs.resource_group_name }}",
+            "container_image": "${{ inputs.container_image_ref }}",
+            "release_environment": "${{ inputs.release_environment }}",
+            "deployed_by": "${{ github.actor }}",
+            "deployed_at": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "deployment_id": "${{ github.run_id }}",
+            "git_commit": "${{ github.sha }}",
+            "git_branch": "${{ github.ref_name }}",
+            "image_verified": ${{ inputs.verify_image }},
+            "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          }
+          EOF
+
+      - name: Upload Deployment Attestation
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-attestation
+          path: deployment-attestation.json

@@ -61,7 +61,7 @@ jobs:
       ${{
         github.event_name == 'workflow_run' || inputs.deploy_to == 'dev' || inputs.deploy_to == 'all'
       }}
-    uses: sachin-khiladi/devops-templates/templates/github/deployment/workflow-deploy-aca-v1.0.0.yml@v1.0
+    uses: ./.github/workflows/workflow-deploy-aca-v1.0.0.yml
     with:
       resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_DEV }}
       container_app_name: ${{ vars.CONTAINER_APP_NAME_DEV }}
@@ -82,7 +82,7 @@ jobs:
         (github.event_name == 'workflow_run' || inputs.deploy_to == 'staging' || inputs.deploy_to == 'all') &&
         (needs.deploy_dev.result == 'success' || needs.deploy_dev.result == 'skipped')
       }}
-    uses: sachin-khiladi/devops-templates/templates/github/deployment/workflow-deploy-aca-v1.0.0.yml@v1.0
+    uses: ./.github/workflows/workflow-deploy-aca-v1.0.0.yml
     with:
       resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_STAGING }}
       container_app_name: ${{ vars.CONTAINER_APP_NAME_STAGING }}
@@ -103,7 +103,7 @@ jobs:
         (github.event_name == 'workflow_run' || inputs.deploy_to == 'prod' || inputs.deploy_to == 'all') &&
         (needs.deploy_staging.result == 'success' || needs.deploy_staging.result == 'skipped')
       }}
-    uses: sachin-khiladi/devops-templates/templates/github/deployment/workflow-deploy-aca-v1.0.0.yml@v1.0
+    uses: ./.github/workflows/workflow-deploy-aca-v1.0.0.yml
     with:
       resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_PROD }}
       container_app_name: ${{ vars.CONTAINER_APP_NAME_PROD }}
