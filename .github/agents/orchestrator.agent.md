@@ -1,9 +1,10 @@
 ---
 name: orchestrator-agent
-description: Top-level orchestration agent. Accepts a plain-English product requirement and drives the full multi-agent workflow: planning → coding + infra (parallel) → testing → deployment validation → SRE remediation loop. Invoke this agent to start any new feature, bug-fix, or infra change.
+description: "Top-level orchestration agent. Accepts a plain-English product requirement and drives the full multi-agent workflow: planning → coding + infra (parallel) → testing → deployment validation → SRE remediation loop. Invoke this agent to start any new feature, bug-fix, or infra change."
 argument-hint: Describe the requirement in plain English. Include what to build, why it is needed, acceptance criteria, target environment (dev/prod), and any constraints (deadline, breaking-change risk, security sensitivity).
 tools: [codebase, editFiles, runCommands, search, runSubagent]
 agents: [planning-agent, python-coding-agent, unit-test-agent, infra-devops-agent, azure-sre-agent]
+
 ---
 
 # Orchestrator Agent

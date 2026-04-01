@@ -1,0 +1,194 @@
+[
+  {
+    "address": "module.appconfig.azurerm_app_configuration.appconfig",
+    "type": "azurerm_app_configuration",
+    "name": "appcs-bankapi-dev",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.AppConfiguration/configurationStores/appcs-bankapi-dev",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": "eastus"
+  },
+  {
+    "address": "module.appconfig.azurerm_app_configuration_key.app_name",
+    "type": "azurerm_app_configuration_key",
+    "name": "app_name",
+    "id": "https://appcs-bankapi-dev.azconfig.io/kv/app:name?label=dev",
+    "resource_group_name": null,
+    "location": null
+  },
+  {
+    "address": "module.appconfig.azurerm_app_configuration_key.environment",
+    "type": "azurerm_app_configuration_key",
+    "name": "environment",
+    "id": "https://appcs-bankapi-dev.azconfig.io/kv/app:environment?label=dev",
+    "resource_group_name": null,
+    "location": null
+  },
+  {
+    "address": "module.monitoring.azurerm_application_insights.appinsights",
+    "type": "azurerm_application_insights",
+    "name": "appi-bankapi-dev",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.Insights/components/appi-bankapi-dev",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": "eastus"
+  },
+  {
+    "address": "module.container_app.azurerm_container_app.app",
+    "type": "azurerm_container_app",
+    "name": "ca-bankapi-dev",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.App/containerApps/ca-bankapi-dev",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": "eastus"
+  },
+  {
+    "address": "module.container_app.azurerm_container_app_environment.cae",
+    "type": "azurerm_container_app_environment",
+    "name": "cae-bankapi-dev",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.App/managedEnvironments/cae-bankapi-dev",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": "eastus"
+  },
+  {
+    "address": "module.acr.azurerm_container_registry.acr",
+    "type": "azurerm_container_registry",
+    "name": "acrbankapidevc8775a",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.ContainerRegistry/registries/acrbankapidevc8775a",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": "eastus"
+  },
+  {
+    "address": "module.cosmosdb.azurerm_cosmosdb_account.cosmos",
+    "type": "azurerm_cosmosdb_account",
+    "name": "cosmos-bankapi-dev-c8775a",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.DocumentDB/databaseAccounts/cosmos-bankapi-dev-c8775a",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": "eastus2"
+  },
+  {
+    "address": "module.cosmosdb.azurerm_cosmosdb_sql_container.accounts",
+    "type": "azurerm_cosmosdb_sql_container",
+    "name": "accounts",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.DocumentDB/databaseAccounts/cosmos-bankapi-dev-c8775a/sqlDatabases/banking/containers/accounts",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": null
+  },
+  {
+    "address": "module.cosmosdb.azurerm_cosmosdb_sql_database.db",
+    "type": "azurerm_cosmosdb_sql_database",
+    "name": "banking",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.DocumentDB/databaseAccounts/cosmos-bankapi-dev-c8775a/sqlDatabases/banking",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": null
+  },
+  {
+    "address": "module.cosmosdb.azurerm_cosmosdb_sql_role_assignment.deployer_data_contributor",
+    "type": "azurerm_cosmosdb_sql_role_assignment",
+    "name": "bd19d16d-1d42-5c70-5da3-a43282880137",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.DocumentDB/databaseAccounts/cosmos-bankapi-dev-c8775a/sqlRoleAssignments/bd19d16d-1d42-5c70-5da3-a43282880137",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": null
+  },
+  {
+    "address": "azurerm_cosmosdb_sql_role_assignment.uami_data_contributor",
+    "type": "azurerm_cosmosdb_sql_role_assignment",
+    "name": "cce6cbed-4757-84d0-4a3b-0c5dcac3aa1f",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.DocumentDB/databaseAccounts/cosmos-bankapi-dev-c8775a/sqlRoleAssignments/cce6cbed-4757-84d0-4a3b-0c5dcac3aa1f",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": null
+  },
+  {
+    "address": "module.keyvault.azurerm_key_vault.kv",
+    "type": "azurerm_key_vault",
+    "name": "kv-bankapi-dev-c8775a",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.KeyVault/vaults/kv-bankapi-dev-c8775a",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": "eastus"
+  },
+  {
+    "address": "module.keyvault.azurerm_key_vault_secret.appinsights_connection_string",
+    "type": "azurerm_key_vault_secret",
+    "name": "appinsights-connection-string",
+    "id": "https://kv-bankapi-dev-c8775a.vault.azure.net/secrets/appinsights-connection-string/fbf7e9746f8e40a6bf2e3dd10d98ca58",
+    "resource_group_name": null,
+    "location": null
+  },
+  {
+    "address": "module.monitoring.azurerm_log_analytics_workspace.law",
+    "type": "azurerm_log_analytics_workspace",
+    "name": "log-bankapi-dev",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.OperationalInsights/workspaces/log-bankapi-dev",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": "eastus"
+  },
+  {
+    "address": "azurerm_resource_group.main",
+    "type": "azurerm_resource_group",
+    "name": "rg-bankapi-dev",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev",
+    "resource_group_name": null,
+    "location": "eastus"
+  },
+  {
+    "address": "module.keyvault.azurerm_role_assignment.kv_admin_deployer",
+    "type": "azurerm_role_assignment",
+    "name": "1a9d659e-b65c-79d0-2654-a384c37d664c",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.KeyVault/vaults/kv-bankapi-dev-c8775a/providers/Microsoft.Authorization/roleAssignments/1a9d659e-b65c-79d0-2654-a384c37d664c",
+    "resource_group_name": null,
+    "location": null
+  },
+  {
+    "address": "module.keyvault.azurerm_role_assignment.kv_secrets_user_app",
+    "type": "azurerm_role_assignment",
+    "name": "6ab6a21d-6bfa-b68f-516a-cab13f8d472c",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.KeyVault/vaults/kv-bankapi-dev-c8775a/providers/Microsoft.Authorization/roleAssignments/6ab6a21d-6bfa-b68f-516a-cab13f8d472c",
+    "resource_group_name": null,
+    "location": null
+  },
+  {
+    "address": "module.appconfig.azurerm_role_assignment.appconfig_reader_app",
+    "type": "azurerm_role_assignment",
+    "name": "74084435-8f2f-719d-918c-c3f78de90384",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.AppConfiguration/configurationStores/appcs-bankapi-dev/providers/Microsoft.Authorization/roleAssignments/74084435-8f2f-719d-918c-c3f78de90384",
+    "resource_group_name": null,
+    "location": null
+  },
+  {
+    "address": "module.acr.azurerm_role_assignment.acr_pull_uami",
+    "type": "azurerm_role_assignment",
+    "name": "891cdb39-7edf-5c31-6c3e-8a68e8474607",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.ContainerRegistry/registries/acrbankapidevc8775a/providers/Microsoft.Authorization/roleAssignments/891cdb397edf5c316c3e8a68e8474607",
+    "resource_group_name": null,
+    "location": null
+  },
+  {
+    "address": "module.appconfig.azurerm_role_assignment.appconfig_owner_deployer",
+    "type": "azurerm_role_assignment",
+    "name": "b86a7a4c-c83f-8f6d-d746-4741e11d64e3",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.AppConfiguration/configurationStores/appcs-bankapi-dev/providers/Microsoft.Authorization/roleAssignments/b86a7a4c-c83f-8f6d-d746-4741e11d64e3",
+    "resource_group_name": null,
+    "location": null
+  },
+  {
+    "address": "module.acr.azurerm_role_assignment.acr_push_deployer",
+    "type": "azurerm_role_assignment",
+    "name": "f9f8c127-c535-c16d-e02f-5e6e8d21665f",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.ContainerRegistry/registries/acrbankapidevc8775a/providers/Microsoft.Authorization/roleAssignments/f9f8c127-c535-c16d-e02f-5e6e8d21665f",
+    "resource_group_name": null,
+    "location": null
+  },
+  {
+    "address": "module.storage_account.azurerm_storage_account.main",
+    "type": "azurerm_storage_account",
+    "name": "stbankapidevc8775a",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.Storage/storageAccounts/stbankapidevc8775a",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": "eastus"
+  },
+  {
+    "address": "module.keyvault.azurerm_user_assigned_identity.app_identity",
+    "type": "azurerm_user_assigned_identity",
+    "name": "id-bankapi-dev",
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-bankapi-dev",
+    "resource_group_name": "rg-bankapi-dev",
+    "location": "eastus"
+  }
+]

@@ -1,0 +1,163 @@
+[
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/microsoft.alertsmanagement/smartDetectorAlertRules/Failure Anomalies - appi-bankapi-dev",
+    "name": "Failure Anomalies - appi-bankapi-dev",
+    "type": "microsoft.alertsmanagement/smartdetectoralertrules",
+    "location": "global",
+    "kind": null,
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer"
+    }
+  },
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.App/containerApps/ca-bankapi-dev",
+    "name": "ca-bankapi-dev",
+    "type": "microsoft.app/containerapps",
+    "location": "eastus",
+    "kind": null,
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer",
+      "application": "bankapi",
+      "environment": "dev",
+      "managed_by": "terraform",
+      "owner": "platform-team"
+    }
+  },
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.App/managedEnvironments/cae-bankapi-dev",
+    "name": "cae-bankapi-dev",
+    "type": "microsoft.app/managedenvironments",
+    "location": "eastus",
+    "kind": null,
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer",
+      "application": "bankapi",
+      "environment": "dev",
+      "managed_by": "terraform",
+      "owner": "platform-team"
+    }
+  },
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.AppConfiguration/configurationStores/appcs-bankapi-dev",
+    "name": "appcs-bankapi-dev",
+    "type": "microsoft.appconfiguration/configurationstores",
+    "location": "eastus",
+    "kind": null,
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer",
+      "application": "bankapi",
+      "environment": "dev",
+      "managed_by": "terraform",
+      "owner": "platform-team"
+    }
+  },
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.ContainerRegistry/registries/acrbankapidevc8775a",
+    "name": "acrbankapidevc8775a",
+    "type": "microsoft.containerregistry/registries",
+    "location": "eastus",
+    "kind": null,
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer",
+      "application": "bankapi",
+      "environment": "dev",
+      "managed_by": "terraform",
+      "owner": "platform-team"
+    }
+  },
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.DocumentDB/databaseAccounts/cosmos-bankapi-dev-c8775a",
+    "name": "cosmos-bankapi-dev-c8775a",
+    "type": "microsoft.documentdb/databaseaccounts",
+    "location": "eastus2",
+    "kind": "GlobalDocumentDB",
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer",
+      "application": "bankapi",
+      "environment": "dev",
+      "managed_by": "terraform",
+      "owner": "platform-team"
+    }
+  },
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.Insights/components/appi-bankapi-dev",
+    "name": "appi-bankapi-dev",
+    "type": "microsoft.insights/components",
+    "location": "eastus",
+    "kind": "web",
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer",
+      "application": "bankapi",
+      "environment": "dev",
+      "managed_by": "terraform",
+      "owner": "platform-team"
+    }
+  },
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.KeyVault/vaults/kv-bankapi-dev-c8775a",
+    "name": "kv-bankapi-dev-c8775a",
+    "type": "microsoft.keyvault/vaults",
+    "location": "eastus",
+    "kind": null,
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer",
+      "application": "bankapi",
+      "environment": "dev",
+      "managed_by": "terraform",
+      "owner": "platform-team"
+    }
+  },
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-bankapi-dev",
+    "name": "id-bankapi-dev",
+    "type": "microsoft.managedidentity/userassignedidentities",
+    "location": "eastus",
+    "kind": null,
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer",
+      "application": "bankapi",
+      "environment": "dev",
+      "managed_by": "terraform",
+      "owner": "platform-team"
+    }
+  },
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.OperationalInsights/workspaces/log-bankapi-dev",
+    "name": "log-bankapi-dev",
+    "type": "microsoft.operationalinsights/workspaces",
+    "location": "eastus",
+    "kind": null,
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer",
+      "application": "bankapi",
+      "environment": "dev",
+      "managed_by": "terraform",
+      "owner": "platform-team"
+    }
+  },
+  {
+    "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev/providers/Microsoft.Storage/storageAccounts/stbankapidevc8775a",
+    "name": "stbankapidevc8775a",
+    "type": "microsoft.storage/storageaccounts",
+    "location": "eastus",
+    "kind": "StorageV2",
+    "managedBy": null,
+    "tags": {
+      "CostCenter": "Developer",
+      "application": "bankapi",
+      "environment": "dev",
+      "managed_by": "terraform",
+      "owner": "platform-team"
+    }
+  }
+]
