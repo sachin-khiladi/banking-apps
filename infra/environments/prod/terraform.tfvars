@@ -38,8 +38,12 @@ cosmos_db_name    = "banking"
 enable_serverless = false
 
 # SMTP settings for bank statement email delivery
-smtp_host       = "smtp.office365.com"
-smtp_port       = 587
-smtp_username   = "noreply@example.com"
-smtp_from_email = "noreply@example.com"
-smtp_password   = "replace-me"
+smtp_host         = "smtp.office365.com"
+smtp_port         = 587
+smtp_username     = "noreply@example.com"
+smtp_sender_email = "noreply@example.com"
+smtp_password     = "replace-me"
+
+# Optional SMTP toggles
+smtp_use_tls         = true
+smtp_timeout_seconds = 15
