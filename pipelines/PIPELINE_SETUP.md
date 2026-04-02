@@ -196,17 +196,17 @@ This blocks PR merges until both plan-dev and plan-prod stages succeed.
 
 ---
 
-## GitHub Actions — Azure authentication and required secrets
+## GitHub Actions — Azure authentication and required repository variables
 
-The GitHub workflows use federated identity (`azure/login`) with generalized secret values.
+The GitHub workflows use federated identity (`azure/login`) with generalized repository variables.
 
-### Required repository/environment secrets for `cd.yml`, reusable ACA deploy, and `.github/workflows/infra-terraform.yml`
+### Required repository variables for `cd.yml`, reusable ACA deploy, and `.github/workflows/infra-terraform.yml`
 
 - `AZURE_CLIENT_ID`
 - `AZURE_TENANT_ID`
 - `AZURE_SUBSCRIPTION_ID`
 
-Recommended: keep these secrets at GitHub Environment scope (`banking-dev`, `banking-staging`, `banking-prod`) to align with deployment protection rules.
+Recommended: define these as repository-level variables, or environment-level variables if you later need per-environment identities.
 
 ---
 
@@ -214,7 +214,7 @@ Recommended: keep these secrets at GitHub Environment scope (`banking-dev`, `ban
 
 Azure DevOps Terraform pipelines (`pipelines/tf-infra-plan.yml`, `pipelines/tf-infra-apply.yml`) do not require ADO secret variables when using Workload Identity Federation service connections.
 
-GitHub Actions workflows require Azure auth values from GitHub Secrets (listed above), and pass them into `azure/login` and Terraform via `ARM_CLIENT_ID`, `ARM_TENANT_ID`, `ARM_SUBSCRIPTION_ID`.
+GitHub Actions workflows require Azure auth values from GitHub Variables (listed above), and pass them into `azure/login` and Terraform via `ARM_CLIENT_ID`, `ARM_TENANT_ID`, `ARM_SUBSCRIPTION_ID`.
 
 If you ever need to override the Terraform version, edit the `TF_VERSION` variable
 at the top of either YAML file (or override it as a pipeline-level variable in ADO).
