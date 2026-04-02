@@ -138,13 +138,30 @@ variable "smtp_username" {
   type        = string
 }
 
-variable "smtp_from_email" {
-  description = "From email address used by SMTP sender"
+variable "smtp_sender_email" {
+  description = "Sender email address used by SMTP"
   type        = string
 
   validation {
-    condition     = can(regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", var.smtp_from_email))
-    error_message = "smtp_from_email must be a valid email address."
+    condition     = can(regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", var.smtp_sender_email))
+    error_message = "smtp_sender_email must be a valid email address."
+  }
+}
+
+variable "smtp_use_tls" {
+  description = "Enable SMTP TLS (SMTP_USE_TLS env var)"
+  type        = bool
+  default     = true
+}
+
+variable "smtp_timeout_seconds" {
+  description = "SMTP timeout in seconds (SMTP_TIMEOUT_SECONDS env var)"
+  type        = number
+  default     = 15
+
+  validation {
+    condition     = var.smtp_timeout_seconds >= 1 && var.smtp_timeout_seconds <= 120
+    error_message = "smtp_timeout_seconds must be between 1 and 120."
   }
 }
 

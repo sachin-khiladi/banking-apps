@@ -88,6 +88,29 @@ stages:
               terraform version
             displayName: "Install Terraform $(TF_VERSION)"
 
+          - bash: |
+              set -euo pipefail
+              python3 - <<'PY'
+              import pathlib, re, sys
+              env_dir = pathlib.Path("$(Build.SourcesDirectory)/infra/environments/dev")
+              variables_tf = env_dir / "variables.tf"
+              tfvars = env_dir / "terraform.tfvars"
+
+              required = []
+              for name, body in re.findall(r'variable\s+"([^"]+)"\s*\{(.*?)\n\}', variables_tf.read_text(), re.S):
+                  if re.search(r'\bdefault\s*=', body) is None:
+                      required.append(name)
+
+              provided = set(re.findall(r'^\s*([A-Za-z0-9_]+)\s*=\s*', tfvars.read_text(), re.M))
+              missing = [name for name in required if name not in provided]
+              if missing:
+                  print(f"Missing required tfvars inputs for dev: {', '.join(missing)}")
+                  sys.exit(1)
+
+              print(f"dev tfvars validation passed ({len(required)} required inputs found).")
+              PY
+            displayName: "Validate required tfvars inputs · dev"
+
           # ── Format check (warning only, does not fail the pipeline) ───────
           - task: AzureCLI@2
             displayName: "fmt check"
@@ -156,7 +179,7 @@ stages:
                 export ARM_TENANT_ID="$tenantId"
                 export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
                 export ARM_USE_OIDC=true
-                terraform plan -no-color -input=false \
+                terraform plan -no-color -input=false -var-file=terraform.tfvars \
                   2>&1 | tee "$(Build.ArtifactStagingDirectory)/plan-dev.txt"
 
           # ── Post PR comment (ADO Git REST API) ────────────────────────────
@@ -239,6 +262,29 @@ stages:
               terraform version
             displayName: "Install Terraform $(TF_VERSION)"
 
+          - bash: |
+              set -euo pipefail
+              python3 - <<'PY'
+              import pathlib, re, sys
+              env_dir = pathlib.Path("$(Build.SourcesDirectory)/infra/environments/prod")
+              variables_tf = env_dir / "variables.tf"
+              tfvars = env_dir / "terraform.tfvars"
+
+              required = []
+              for name, body in re.findall(r'variable\s+"([^"]+)"\s*\{(.*?)\n\}', variables_tf.read_text(), re.S):
+                  if re.search(r'\bdefault\s*=', body) is None:
+                      required.append(name)
+
+              provided = set(re.findall(r'^\s*([A-Za-z0-9_]+)\s*=\s*', tfvars.read_text(), re.M))
+              missing = [name for name in required if name not in provided]
+              if missing:
+                  print(f"Missing required tfvars inputs for prod: {', '.join(missing)}")
+                  sys.exit(1)
+
+              print(f"prod tfvars validation passed ({len(required)} required inputs found).")
+              PY
+            displayName: "Validate required tfvars inputs · prod"
+
           - task: AzureCLI@2
             displayName: "fmt check"
             continueOnError: true
@@ -303,7 +349,7 @@ stages:
                 export ARM_TENANT_ID="$tenantId"
                 export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
                 export ARM_USE_OIDC=true
-                terraform plan -no-color -input=false \
+                terraform plan -no-color -input=false -var-file=terraform.tfvars \
                   2>&1 | tee "$(Build.ArtifactStagingDirectory)/plan-prod.txt"
 
           - bash: |

@@ -43,6 +43,7 @@ src/
 3. **Dependency Injection**: Use FastAPI `Depends()` or constructor injection. Never instantiate dependencies inside functions.
 4. **Testing**: Mock all Azure SDK clients (`CosmosClient`, `DefaultAzureCredential`). Never call live Azure services in unit tests.
 5. **Boundaries**: Agents own specific layers — do not cross ownership lines without explicit handoff.
+6. **Terraform Artifacts**: Never commit local Terraform runtime artifacts (`.terraform/`, `terraform.tfstate*`, `tfplan*`, `crash.log`, `*_override.tf*`). Ensure these are covered by `.gitignore` before check-in.
 
 ## Layer Ownership
 

@@ -120,8 +120,16 @@ resource "azurerm_container_app" "app" {
         value = var.smtp_username
       }
       env {
-        name  = "SMTP_FROM_EMAIL"
-        value = var.smtp_from_email
+        name  = "SMTP_SENDER_EMAIL"
+        value = var.smtp_sender_email
+      }
+      env {
+        name  = "SMTP_USE_TLS"
+        value = tostring(var.smtp_use_tls)
+      }
+      env {
+        name  = "SMTP_TIMEOUT_SECONDS"
+        value = tostring(var.smtp_timeout_seconds)
       }
       env {
         name        = "SMTP_PASSWORD"

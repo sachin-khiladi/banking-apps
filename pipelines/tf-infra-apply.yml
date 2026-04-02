@@ -87,6 +87,41 @@ stages:
               terraform version
             displayName: "Install Terraform $(TF_VERSION)"
 
+          - bash: |
+              set -euo pipefail
+              EXPECTED_DIR="infra/environments/${{ parameters.environment }}"
+              if [[ "$(TF_ENV_DIR)" != "$EXPECTED_DIR" ]]; then
+                echo "Resolved TF_ENV_DIR does not match requested environment. Expected: $EXPECTED_DIR, got: $(TF_ENV_DIR)"
+                exit 1
+              fi
+
+              ENV_DIR="$(Build.SourcesDirectory)/$(TF_ENV_DIR)"
+              if [[ ! -d "$ENV_DIR" ]]; then
+                echo "Environment directory not found: $ENV_DIR"
+                exit 1
+              fi
+
+              python3 - <<'PY'
+              import pathlib, re, sys
+              env_dir = pathlib.Path("$(Build.SourcesDirectory)/$(TF_ENV_DIR)")
+              variables_tf = env_dir / "variables.tf"
+              tfvars = env_dir / "terraform.tfvars"
+
+              required = []
+              for name, body in re.findall(r'variable\s+"([^"]+)"\s*\{(.*?)\n\}', variables_tf.read_text(), re.S):
+                  if re.search(r'\bdefault\s*=', body) is None:
+                      required.append(name)
+
+              provided = set(re.findall(r'^\s*([A-Za-z0-9_]+)\s*=\s*', tfvars.read_text(), re.M))
+              missing = [name for name in required if name not in provided]
+              if missing:
+                  print(f"Missing required tfvars inputs for ${{ parameters.environment }}: {', '.join(missing)}")
+                  sys.exit(1)
+
+              print(f"${{ parameters.environment }} tfvars validation passed ({len(required)} required inputs found).")
+              PY
+            displayName: "Validate env folder + required tfvars inputs"
+
           - task: AzureCLI@2
             displayName: "init · ${{ parameters.environment }}"
             inputs:
@@ -136,7 +171,7 @@ stages:
                 export ARM_TENANT_ID="$tenantId"
                 export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
                 export ARM_USE_OIDC=true
-                terraform plan -no-color -input=false \
+                terraform plan -no-color -input=false -var-file=terraform.tfvars \
                   2>&1 | tee "$(Agent.TempDirectory)/plan-preview.txt"
 
           # ── Write plan to pipeline Summary tab ────────────────────────────
@@ -246,7 +281,7 @@ stages:
                       export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
                       export ARM_USE_OIDC=true
                       echo "Re-running plan to guard against state drift ..."
-                      terraform plan -out=tfplan -input=false -no-color
+                      terraform plan -out=tfplan -input=false -no-color -var-file=terraform.tfvars
 
                 - task: AzureCLI@2
                   displayName: "apply · ${{ parameters.environment }}"

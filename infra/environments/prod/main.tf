@@ -198,10 +198,12 @@ module "container_app" {
   # ACR private registry — UAMI is already granted AcrPull by the acr module
   acr_login_server = module.acr.login_server
 
-  smtp_host       = var.smtp_host
-  smtp_port       = var.smtp_port
-  smtp_username   = var.smtp_username
-  smtp_from_email = var.smtp_from_email
+  smtp_host            = var.smtp_host
+  smtp_port            = var.smtp_port
+  smtp_username        = var.smtp_username
+  smtp_sender_email    = var.smtp_sender_email
+  smtp_use_tls         = var.smtp_use_tls
+  smtp_timeout_seconds = var.smtp_timeout_seconds
 
   tags = local.common_tags
 }

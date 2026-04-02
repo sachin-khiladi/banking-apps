@@ -33,9 +33,18 @@ on:
         required: false
         type: string
         default: ''
-    secrets:
-      azure_credentials:
+      azure_client_id:
         required: true
+        type: string
+      azure_tenant_id:
+        required: true
+        type: string
+      azure_subscription_id:
+        required: true
+        type: string
+    secrets:
+      azure_client_id:
+        required: false
       registry_username:
         required: false
       registry_password:
@@ -67,9 +76,11 @@ jobs:
           fi
 
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          creds: ${{ secrets.azure_credentials }}
+          client-id: ${{ inputs.azure_client_id }}
+          tenant-id: ${{ inputs.azure_tenant_id }}
+          subscription-id: ${{ inputs.azure_subscription_id }}
 
       - name: Verify Image Integrity & Attestation
         if: ${{ inputs.verify_image == true }}

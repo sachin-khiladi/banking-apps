@@ -1,0 +1,16 @@
+{
+  "id": "/subscriptions/b86177f7-23c4-4a3a-b37f-5c4c8775af34/resourceGroups/rg-bankapi-dev",
+  "location": "eastus",
+  "managedBy": null,
+  "name": "rg-bankapi-dev",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": {
+    "application": "bankapi",
+    "environment": "dev",
+    "managed_by": "terraform",
+    "owner": "platform-team"
+  },
+  "type": "Microsoft.Resources/resourceGroups"
+}
