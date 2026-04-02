@@ -7,6 +7,13 @@ Two pipelines manage infrastructure deployment:
 | **TF · Infra Plan** | `pipelines/tf-infra-plan.yml` | Every PR to `main` touching `infra/` |
 | **TF · Infra Apply** | `pipelines/tf-infra-apply.yml` | Manual only (run from ADO UI or CLI) |
 
+GitHub Actions also manages infra/app deployment:
+
+| Workflow | File | Trigger |
+|----------|------|---------|
+| **Terraform Infra (GitHub Actions)** | `.github/workflows/infra-terraform.yml` | PR to `main` (`infra/**`) + manual dispatch (`plan`/`apply`) |
+| **CD (ACA deploy)** | `.github/workflows/cd.yml` | CI workflow completion + manual dispatch |
+
 ---
 
 ## Review-before-deploy flow
@@ -189,12 +196,25 @@ This blocks PR merges until both plan-dev and plan-prod stages succeed.
 
 ---
 
+## GitHub Actions — Azure authentication and required secrets
+
+The GitHub workflows use federated identity (`azure/login`) with generalized secret values.
+
+### Required repository/environment secrets for `cd.yml`, reusable ACA deploy, and `.github/workflows/infra-terraform.yml`
+
+- `AZURE_CLIENT_ID`
+- `AZURE_TENANT_ID`
+- `AZURE_SUBSCRIPTION_ID`
+
+Recommended: keep these secrets at GitHub Environment scope (`banking-dev`, `banking-staging`, `banking-prod`) to align with deployment protection rules.
+
+---
+
 ## Variable and secret inventory
 
-No pipeline variables or secret variables are needed — all secrets are handled by the
-Workload Identity Federation service connections (`ARM_CLIENT_ID`, `ARM_OIDC_TOKEN`,
-`ARM_TENANT_ID`, `ARM_SUBSCRIPTION_ID` are injected automatically by `AzureCLI@2` with
-`addSpnToEnvironment: true`).
+Azure DevOps Terraform pipelines (`pipelines/tf-infra-plan.yml`, `pipelines/tf-infra-apply.yml`) do not require ADO secret variables when using Workload Identity Federation service connections.
+
+GitHub Actions workflows require Azure auth values from GitHub Secrets (listed above), and pass them into `azure/login` and Terraform via `ARM_CLIENT_ID`, `ARM_TENANT_ID`, `ARM_SUBSCRIPTION_ID`.
 
 If you ever need to override the Terraform version, edit the `TF_VERSION` variable
 at the top of either YAML file (or override it as a pipeline-level variable in ADO).

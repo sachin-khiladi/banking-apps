@@ -1,0 +1,277 @@
+name: Terraform Infra (GitHub Actions)
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - infra/**
+      - .github/workflows/infra-terraform.yml
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Terraform action to run
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+        default: plan
+      environment:
+        description: Target environment(s)
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+          - both
+        default: dev
+      reason:
+        description: Change ticket or deployment reason (for apply runs)
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_VERSION: "1.9.8"
+
+jobs:
+  plan_dev:
+    name: Plan dev
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        github.event_name == 'pull_request' ||
+        (github.event_name == 'workflow_dispatch' && inputs.action == 'plan' && (inputs.environment == 'dev' || inputs.environment == 'both'))
+      }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Azure Login (dev)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate required tfvars inputs (dev)
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+          env_dir = pathlib.Path("infra/environments/dev")
+          variables_tf = env_dir / "variables.tf"
+          tfvars = env_dir / "terraform.tfvars"
+
+          required = []
+          for name, body in re.findall(r'variable\s+"([^"]+)"\s*\{(.*?)\n\}', variables_tf.read_text(), re.S):
+              if re.search(r'\bdefault\s*=', body) is None:
+                  required.append(name)
+
+          provided = set(re.findall(r'^\s*([A-Za-z0-9_]+)\s*=\s*', tfvars.read_text(), re.M))
+          missing = [name for name in required if name not in provided]
+          if missing:
+              print(f"Missing required tfvars inputs for dev: {', '.join(missing)}")
+              sys.exit(1)
+
+          print(f"dev tfvars validation passed ({len(required)} required inputs found).")
+          PY
+
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive infra/
+
+      - name: Terraform init (dev)
+        working-directory: infra/environments/dev
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform init -input=false
+
+      - name: Terraform validate (dev)
+        working-directory: infra/environments/dev
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform validate -no-color
+
+      - name: Terraform plan (dev)
+        working-directory: infra/environments/dev
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform plan -input=false -no-color -var-file=terraform.tfvars
+
+  plan_prod:
+    name: Plan prod
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        github.event_name == 'pull_request' ||
+        (github.event_name == 'workflow_dispatch' && inputs.action == 'plan' && (inputs.environment == 'prod' || inputs.environment == 'both'))
+      }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Azure Login (prod)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate required tfvars inputs (prod)
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+          env_dir = pathlib.Path("infra/environments/prod")
+          variables_tf = env_dir / "variables.tf"
+          tfvars = env_dir / "terraform.tfvars"
+
+          required = []
+          for name, body in re.findall(r'variable\s+"([^"]+)"\s*\{(.*?)\n\}', variables_tf.read_text(), re.S):
+              if re.search(r'\bdefault\s*=', body) is None:
+                  required.append(name)
+
+          provided = set(re.findall(r'^\s*([A-Za-z0-9_]+)\s*=\s*', tfvars.read_text(), re.M))
+          missing = [name for name in required if name not in provided]
+          if missing:
+              print(f"Missing required tfvars inputs for prod: {', '.join(missing)}")
+              sys.exit(1)
+
+          print(f"prod tfvars validation passed ({len(required)} required inputs found).")
+          PY
+
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive infra/
+
+      - name: Terraform init (prod)
+        working-directory: infra/environments/prod
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform init -input=false
+
+      - name: Terraform validate (prod)
+        working-directory: infra/environments/prod
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform validate -no-color
+
+      - name: Terraform plan (prod)
+        working-directory: infra/environments/prod
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform plan -input=false -no-color -var-file=terraform.tfvars
+
+  apply_dev:
+    name: Apply dev
+    runs-on: ubuntu-latest
+    environment: banking-dev
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'apply' && inputs.environment == 'dev' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Azure Login (dev)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform init (dev)
+        working-directory: infra/environments/dev
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform init -input=false
+
+      - name: Terraform plan pre-apply (dev)
+        working-directory: infra/environments/dev
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform plan -out=tfplan -input=false -no-color -var-file=terraform.tfvars
+
+      - name: Terraform apply (dev)
+        working-directory: infra/environments/dev
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform apply -input=false -auto-approve tfplan
+
+  apply_prod:
+    name: Apply prod
+    runs-on: ubuntu-latest
+    environment: banking-prod
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'apply' && inputs.environment == 'prod' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Azure Login (prod)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform init (prod)
+        working-directory: infra/environments/prod
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform init -input=false
+
+      - name: Terraform plan pre-apply (prod)
+        working-directory: infra/environments/prod
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform plan -out=tfplan -input=false -no-color -var-file=terraform.tfvars
+
+      - name: Terraform apply (prod)
+        working-directory: infra/environments/prod
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: terraform apply -input=false -auto-approve tfplan

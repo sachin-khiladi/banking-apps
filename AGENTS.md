@@ -32,6 +32,7 @@ This repository contains a FastAPI application designed to run on Azure, featuri
 - Maintain code quality through linting and adherence to coding standards.
 - Document any new functionality in the README.md file.
 - Use Docker for local development and deployment.
+- Never commit Terraform local runtime artifacts. Keep `.gitignore` enforcing exclusions for `.terraform/`, `terraform.tfstate*`, `tfplan*`, and crash/override Terraform files.
 
 ## Agent Skills — Mandatory Loading Rules
 

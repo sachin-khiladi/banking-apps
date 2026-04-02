@@ -23,6 +23,7 @@ applyTo: "infra/**/*.tf"
 - All Azure resources: User-Assigned Managed Identity (UAMI), never system-assigned for new resources
 - Required tags block on every resource: `environment`, `owner`, `cost-center`
 - Remote state in Azure Blob Storage — never local state in CI/CD
+- Never commit Terraform local runtime artifacts (`.terraform/`, `terraform.tfstate*`, `tfplan*`, `crash.log`, `override.tf*`, `*_override.tf*`)
 - One module per Azure service (`container_app`, `cosmosdb`, `keyvault`, etc.)
 - Module inputs: typed with descriptions and validation blocks
 - Outputs: expose only what callers need — never expose secrets as plaintext outputs
