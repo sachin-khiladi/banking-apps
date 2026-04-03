@@ -1,4 +1,4 @@
-name: Terraform Infra (GitHub Actions)
+name: Terraform Infra Plan
 
 on:
   pull_request:
@@ -9,14 +9,6 @@ on:
       - .github/workflows/infra-terraform.yml
   workflow_dispatch:
     inputs:
-      action:
-        description: Terraform action to run
-        required: true
-        type: choice
-        options:
-          - plan
-          - apply
-        default: plan
       environment:
         description: Target environment(s)
         required: true
@@ -26,11 +18,6 @@ on:
           - prod
           - both
         default: dev
-      reason:
-        description: Change ticket or deployment reason (for apply runs)
-        required: false
-        type: string
-        default: ""
 
 permissions:
   contents: read
@@ -48,7 +35,7 @@ jobs:
     if: >-
       ${{
         github.event_name == 'pull_request' ||
-        (github.event_name == 'workflow_dispatch' && inputs.action == 'plan' && (inputs.environment == 'dev' || inputs.environment == 'both'))
+        (github.event_name == 'workflow_dispatch' && (inputs.environment == 'dev' || inputs.environment == 'both'))
       }}
     steps:
       - name: Checkout
@@ -121,7 +108,7 @@ jobs:
     if: >-
       ${{
         github.event_name == 'pull_request' ||
-        (github.event_name == 'workflow_dispatch' && inputs.action == 'plan' && (inputs.environment == 'prod' || inputs.environment == 'both'))
+        (github.event_name == 'workflow_dispatch' && (inputs.environment == 'prod' || inputs.environment == 'both'))
       }}
     steps:
       - name: Checkout
@@ -188,92 +175,3 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
         run: terraform plan -input=false -no-color -var-file=terraform.tfvars
 
-  apply_dev:
-    name: Apply dev
-    runs-on: ubuntu-latest
-    environment: banking-dev
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'apply' && inputs.environment == 'dev' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Azure Login (dev)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Terraform init (dev)
-        working-directory: infra/environments/dev
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        run: terraform init -input=false
-
-      - name: Terraform plan pre-apply (dev)
-        working-directory: infra/environments/dev
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        run: terraform plan -out=tfplan -input=false -no-color -var-file=terraform.tfvars
-
-      - name: Terraform apply (dev)
-        working-directory: infra/environments/dev
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        run: terraform apply -input=false -auto-approve tfplan
-
-  apply_prod:
-    name: Apply prod
-    runs-on: ubuntu-latest
-    environment: banking-prod
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'apply' && inputs.environment == 'prod' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Azure Login (prod)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Terraform init (prod)
-        working-directory: infra/environments/prod
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        run: terraform init -input=false
-
-      - name: Terraform plan pre-apply (prod)
-        working-directory: infra/environments/prod
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        run: terraform plan -out=tfplan -input=false -no-color -var-file=terraform.tfvars
-
-      - name: Terraform apply (prod)
-        working-directory: infra/environments/prod
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        run: terraform apply -input=false -auto-approve tfplan
