@@ -2,6 +2,10 @@
 
 Initialises the app, registers middleware, mounts routers, and
 wires all dependency-injection bindings.
+
+The application startup path remains intentionally decoupled from CI/CD
+or Terraform workflow sequencing. Deployment probes depend on the `/health`
+route contract and do not require pipeline-state inputs.
 """
 
 from __future__ import annotations

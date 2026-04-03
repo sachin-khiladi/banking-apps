@@ -14,7 +14,7 @@ jobs:
   prepare:
     name: Resolve image tag
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
     outputs:
       image_tag: ${{ steps.set-tag.outputs.image_tag }}
     steps:
@@ -28,7 +28,7 @@ jobs:
   deploy_dev:
     name: Deploy dev
     needs: prepare
-    if: ${{ github.event.workflow_run.name == 'Terraform Infra Apply Dev' }}
+    if: ${{ github.event.workflow_run.name == 'Terraform Infra Apply Dev' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
     uses: ./.github/workflows/workflow-deploy-aca-v1.0.0.yml
     with:
       resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_DEV }}
@@ -44,7 +44,7 @@ jobs:
   deploy_prod:
     name: Deploy prod
     needs: prepare
-    if: ${{ github.event.workflow_run.name == 'Terraform Infra Apply Prod' }}
+    if: ${{ github.event.workflow_run.name == 'Terraform Infra Apply Prod' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
     uses: ./.github/workflows/workflow-deploy-aca-v1.0.0.yml
     with:
       resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_PROD }}

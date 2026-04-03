@@ -1,6 +1,15 @@
 name: Terraform Infra Apply Prod
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - infra/**
+      - .github/workflows/infra-apply-dev.yml
+      - .github/workflows/infra-apply-prod.yml
+      - .github/workflows/infra-terraform.yml
+      - .github/workflows/cd.yml
   workflow_dispatch:
     inputs:
       reason:

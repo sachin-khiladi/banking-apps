@@ -6,6 +6,15 @@
 env      = "dev"
 location = "eastus"
 
+# Optional override for deployment principal object ID used by bootstrap/deployer RBAC.
+# Set to null to use the currently authenticated principal.
+deployment_principal_object_id = null
+
+# RBAC bootstrap (required for roleAssignments/write sequencing before downstream RBAC)
+rbac_bootstrap_enabled               = true
+rbac_bootstrap_role_definition_names = ["User Access Administrator", "Contributor"]
+rbac_bootstrap_skip_sp_aad_check     = true
+
 # ---------------------------------------------------------------------------
 # Container image
 # Dev defaults to the app image in ACR (must already exist):

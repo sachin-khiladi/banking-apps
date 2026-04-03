@@ -44,6 +44,7 @@ src/
 4. **Testing**: Mock all Azure SDK clients (`CosmosClient`, `DefaultAzureCredential`). Never call live Azure services in unit tests.
 5. **Boundaries**: Agents own specific layers — do not cross ownership lines without explicit handoff.
 6. **Terraform Artifacts**: Never commit local Terraform runtime artifacts (`.terraform/`, `terraform.tfstate*`, `tfplan*`, `crash.log`, `*_override.tf*`). Ensure these are covered by `.gitignore` before check-in.
+7. **Infra-First Deploy Orchestration**: For GitHub Actions, infrastructure apply workflows must complete successfully before any app deployment workflow runs. Enforce this through top-level `workflow_run` dependencies (for example, CD depends on infra apply workflows), not direct CI-to-CD deployment triggering.
 
 ## Layer Ownership
 

@@ -13,6 +13,41 @@ variable "location" {
   description = "Azure region for all resources"
 }
 
+variable "deployment_principal_object_id" {
+  type        = string
+  description = "Object ID of the deployment principal used for bootstrap and deployer RBAC assignments. Defaults to the current principal when null."
+  default     = null
+  nullable    = true
+}
+
+variable "rbac_bootstrap_enabled" {
+  type        = bool
+  description = "Enable bootstrap RBAC role assignments for the deployment principal at resource-group scope."
+  default     = true
+}
+
+variable "rbac_bootstrap_role_definition_names" {
+  type        = list(string)
+  description = "Built-in role names assigned to the deployment principal during bootstrap."
+  default     = ["User Access Administrator", "Contributor"]
+
+  validation {
+    condition     = contains(var.rbac_bootstrap_role_definition_names, "User Access Administrator")
+    error_message = "rbac_bootstrap_role_definition_names must include 'User Access Administrator'."
+  }
+
+  validation {
+    condition     = contains(var.rbac_bootstrap_role_definition_names, "Contributor")
+    error_message = "rbac_bootstrap_role_definition_names must include 'Contributor'."
+  }
+}
+
+variable "rbac_bootstrap_skip_sp_aad_check" {
+  type        = bool
+  description = "Skip AAD service-principal propagation checks while creating bootstrap role assignments."
+  default     = true
+}
+
 variable "container_image" {
   type        = string
   description = "Container image to deploy (registry/image:tag)"

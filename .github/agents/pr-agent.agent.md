@@ -2,7 +2,7 @@
 name: pr-agent
 description: Pull request automation agent. Prepares branch state from main, conditionally creates a feature branch only when currently on main, composes a high-signal PR description, creates the PR, and returns the PR URL.
 argument-hint: Describe the change set to summarize in the PR (scope, intent, testing done, risks, linked work item).
-tools: [codebase, search, runCommands, getChangedFiles, io.github.github/github-mcp-server/*]
+tools: [codebase, search, runCommands, io.github.github/github-mcp-server/*]
 user-invocable: true
 ---
 
@@ -21,11 +21,12 @@ Your responsibilities are to:
 
 ## Branching Rules (Non-Negotiable)
 
+0. Read `.github/skills/create-github-pr/SKILL.md` before taking PR actions.
 1. Detect current branch first (`git branch --show-current`).
-2. Always update main before any branch decision:
-   - `git fetch origin`
+2. Always update upstream first, then update local main/current branch:
+   - `git fetch upstream --prune`
    - `git checkout main`
-   - `git pull --ff-only origin main`
+   - `git pull --ff-only upstream main`
 3. Branch creation rule:
    - If the original branch was `main`: create and checkout a feature branch.
    - If the original branch was not `main`: do **not** create a feature branch; continue on the current branch.
@@ -36,10 +37,12 @@ Your responsibilities are to:
 ### Feature Branch Naming
 
 When branch creation is required, use:
-- `feature/<short-kebab-scope>-<yyyymmdd-hhmm>`
+- `feat/<short-kebab-scope>` for feature work
+- `fix/<short-kebab-scope>` for bug fixes
 
 Example:
-- `feature/email-bank-statement-20260325-1030`
+- `feat/email-bank-statement`
+- `fix/cd-yaml-syntax`
 
 ---
 
