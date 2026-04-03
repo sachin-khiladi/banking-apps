@@ -1,0 +1,86 @@
+name: Terraform Infra Apply Prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Change ticket or deployment reason
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_VERSION: "1.9.8"
+  ARM_USE_OIDC: true
+  ARM_USE_AZUREAD: true
+
+jobs:
+  apply_prod:
+    name: Apply prod
+    runs-on: ubuntu-latest
+    environment: banking-prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Azure Login (prod)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate required tfvars inputs (prod)
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+          env_dir = pathlib.Path("infra/environments/prod")
+          variables_tf = env_dir / "variables.tf"
+          tfvars = env_dir / "terraform.tfvars"
+
+          required = []
+          for name, body in re.findall(r'variable\s+"([^"]+)"\s*\{(.*?)\n\}', variables_tf.read_text(), re.S):
+              if re.search(r'\bdefault\s*=', body) is None:
+                  required.append(name)
+
+          provided = set(re.findall(r'^\s*([A-Za-z0-9_]+)\s*=\s*', tfvars.read_text(), re.M))
+          missing = [name for name in required if name not in provided]
+          if missing:
+              print(f"Missing required tfvars inputs for prod: {', '.join(missing)}")
+              sys.exit(1)
+
+          print(f"prod tfvars validation passed ({len(required)} required inputs found).")
+          PY
+
+      - name: Terraform init (prod)
+        working-directory: infra/environments/prod
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform init -input=false
+
+      - name: Terraform plan pre-apply (prod)
+        working-directory: infra/environments/prod
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform plan -out=tfplan -input=false -no-color -var-file=terraform.tfvars
+
+      - name: Terraform apply (prod)
+        working-directory: infra/environments/prod
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform apply -input=false -auto-approve tfplan

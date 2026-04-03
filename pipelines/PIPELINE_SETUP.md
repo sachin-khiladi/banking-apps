@@ -11,8 +11,16 @@ GitHub Actions also manages infra/app deployment:
 
 | Workflow | File | Trigger |
 |----------|------|---------|
-| **Terraform Infra (GitHub Actions)** | `.github/workflows/infra-terraform.yml` | PR to `main` (`infra/**`) + manual dispatch (`plan`/`apply`) |
-| **CD (ACA deploy)** | `.github/workflows/cd.yml` | CI workflow completion + manual dispatch |
+| **Terraform Infra Plan** | `.github/workflows/infra-terraform.yml` | PR to `main` (`infra/**`) + manual dispatch (plan only) |
+| **Terraform Infra Apply Dev** | `.github/workflows/infra-apply-dev.yml` | Manual dispatch |
+| **Terraform Infra Apply Prod** | `.github/workflows/infra-apply-prod.yml` | Manual dispatch |
+| **CD (ACA deploy)** | `.github/workflows/cd.yml` | Workflow dependency on successful infra apply workflows |
+
+GitHub deployment order is now strict infra-first:
+
+1. Run `Terraform Infra Apply Dev` or `Terraform Infra Apply Prod`
+2. On success, `CD` is triggered automatically via `workflow_run`
+3. CD deploys app image for the same commit SHA using deterministic tag `sha-<12-char-sha>`
 
 ---
 
@@ -193,6 +201,15 @@ This blocks PR merges until both plan-dev and plan-prod stages succeed.
 | Deploy to dev | Run **TF · Infra Apply** → `environment=dev` → fill reason → auto-proceeds |
 | Deploy to prod | Run **TF · Infra Apply** → `environment=prod` → fill reason → approver reads plan in Summary tab → approves |
 | Check what would change without a PR | Run **TF · Infra Plan** manually → pick environment |
+
+GitHub Actions reference:
+
+| Situation | Action |
+|-----------|--------|
+| Validate infra changes on PR | `Terraform Infra Plan` runs automatically |
+| Deploy app after infra in dev | Run `Terraform Infra Apply Dev` (CD auto-triggers on success) |
+| Deploy app after infra in prod | Run `Terraform Infra Apply Prod` (CD auto-triggers on success) |
+| CI build/test only | `CI` runs independently and does not trigger deployment |
 
 ---
 

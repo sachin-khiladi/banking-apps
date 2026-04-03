@@ -108,22 +108,28 @@ jobs:
           REPO_SLUG="$(basename \"${GITHUB_REPOSITORY}\" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
           SHORT_SHA="${GITHUB_SHA:0:12}"
           IMAGE_TRACE_TAG="${REPO_SLUG}-${GITHUB_RUN_ID}-${SHORT_SHA}"
+          IMAGE_SHA_TAG="sha-${SHORT_SHA}"
           echo "IMAGE_TRACE_TAG=${IMAGE_TRACE_TAG}" >> "$GITHUB_ENV"
+          echo "IMAGE_SHA_TAG=${IMAGE_SHA_TAG}" >> "$GITHUB_ENV"
           echo "Traceable image tag: ${IMAGE_TRACE_TAG}"
+          echo "Deterministic image tag: ${IMAGE_SHA_TAG}"
 
       - name: Build Docker Image
         if: ${{ inputs.container_registry_url != '' && inputs.container_image_repository != '' }}
         run: |
-          IMAGE_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_TRACE_TAG}"
-          echo "Building docker image: $IMAGE_NAME"
-          docker build -t "$IMAGE_NAME" -f Dockerfile ${{ inputs.working_directory }}
+          IMAGE_TRACE_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_TRACE_TAG}"
+          IMAGE_SHA_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_SHA_TAG}"
+          echo "Building docker image: $IMAGE_TRACE_NAME"
+          docker build -t "$IMAGE_TRACE_NAME" -t "$IMAGE_SHA_NAME" -f Dockerfile ${{ inputs.working_directory }}
 
       - name: Push Docker Image
         if: ${{ inputs.container_registry_url != '' && inputs.container_image_repository != '' }}
         run: |
-          IMAGE_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_TRACE_TAG}"
+          IMAGE_TRACE_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_TRACE_TAG}"
+          IMAGE_SHA_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_SHA_TAG}"
           docker login -u "${{ secrets.registry_username }}" -p "${{ secrets.registry_password }}" ${{ inputs.container_registry_url }}
-          docker push "$IMAGE_NAME"
+          docker push "$IMAGE_TRACE_NAME"
+          docker push "$IMAGE_SHA_NAME"
 
       - name: Generate SBOM
         if: ${{ inputs.generate_sbom == true && inputs.container_registry_url != '' }}
