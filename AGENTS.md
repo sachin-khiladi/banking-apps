@@ -33,6 +33,7 @@ This repository contains a FastAPI application designed to run on Azure, featuri
 - Document any new functionality in the README.md file.
 - Use Docker for local development and deployment.
 - Never commit Terraform local runtime artifacts. Keep `.gitignore` enforcing exclusions for `.terraform/`, `terraform.tfstate*`, `tfplan*`, and crash/override Terraform files.
+- For GitHub Actions deployment orchestration, enforce infra-first ordering: infra apply workflows run before app deployment workflows, wired via `workflow_run` dependencies.
 
 ## Agent Skills — Mandatory Loading Rules
 
@@ -45,6 +46,7 @@ Summaries are a convenience — the skill file is the authoritative source.
 |---|---|---|---|
 | Terraform (write, review, fix, refactor, state) | "terraform", "tf code", "module", "variables", "outputs", "provider", "infra", "review tf", "best practices" | `infra-devops-agent`, `planning-agent` | `.github/skills/implement-tf-code/SKILL.md` |
 | Cosmos DB repository (new entity, container, query) | "cosmos", "repository", "data access", "new container", "partition key", "async sdk" | `cosmosdb-repo-agent`, `python-coding-agent` | Invoked automatically via `repository_spec` in coding handoff |
+| GitHub PR creation (branch, sync, commit, PR) | "create pr", "open pr", "pull request", "branch from main", "upstream sync", "github pr" | `pr-agent`, `orchestrator-agent` | `.github/skills/create-github-pr/SKILL.md` |
 
 ### Loading procedure
 

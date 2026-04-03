@@ -42,3 +42,5 @@ to the task at hand.
 - Workspace layout: `infra/environments/<env>/` (root modules) and
   `infra/modules/<name>/` (child modules).
 - Focus is **code quality** — no deployment commands, no pipeline steps.
+- Environment root-module `terraform plan` and `terraform apply` are pipeline-owned operations only.
+  Execute them on demand through existing CI/CD workflows, not from local workstations.

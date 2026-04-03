@@ -5,6 +5,12 @@
 > - [HashiCorp – `moved` block](https://developer.hashicorp.com/terraform/language/modules/develop/refactoring)
 > - [HashiCorp – `import` block](https://developer.hashicorp.com/terraform/language/import)
 
+## Execution Policy (Repository)
+
+- Root-module `terraform plan`/`terraform apply` execution is pipeline-owned.
+- Trigger apply only through approved pipeline workflows (manual/on-demand where configured).
+- Local CLI examples in this document are for reference semantics and state concepts, not a directive to execute locally.
+
 ---
 
 ## 1. Remote State Backend (Azure Blob Storage)

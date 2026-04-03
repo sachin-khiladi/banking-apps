@@ -26,6 +26,14 @@ code or test files.
 
 ---
 
+## Deployment Orchestration Policy (mandatory)
+
+1. Enforce infra-first GitHub Actions ordering: infra apply workflows must succeed before app deployment workflows run.
+2. Enforce this via top-level workflow dependency (`workflow_run`) from app CD to infra apply workflows.
+3. Do not wire app deployment directly to CI completion.
+4. CI remains independent for build/test quality checks and must not be the deployment ordering controller.
+5. Root-module Terraform `plan/apply` must execute through pipeline workflows only (on-demand/manual or approved trigger), not local workstation CLI runs.
+
 ## Mandatory Pre-Work
 
 1. Read your input handoff file — path provided by orchestrator.

@@ -2,7 +2,7 @@
 name: orchestrator-agent
 description: "Top-level orchestration agent. Accepts a plain-English product requirement and drives the full multi-agent workflow: planning → coding + infra (parallel) → testing → deployment validation → SRE remediation loop. Invoke this agent to start any new feature, bug-fix, or infra change."
 argument-hint: Describe the requirement in plain English. Include what to build, why it is needed, acceptance criteria, target environment (dev/prod), and any constraints (deadline, breaking-change risk, security sensitivity).
-tools: [codebase, editFiles, runCommands, search, runSubagent]
+tools: [codebase, editFiles, runCommands, search, runSubagent, agent]
 agents: [planning-agent, python-coding-agent, unit-test-agent, infra-devops-agent, azure-sre-agent]
 
 ---
@@ -76,6 +76,15 @@ User Requirement
                           │
   [Step 8] Write run-summary file → done
 ```
+
+## GitHub Deployment Ordering (mandatory)
+
+When orchestration includes GitHub workflow updates for deployment:
+
+1. Ensure infrastructure apply workflows complete before app deployment workflows start.
+2. Enforce ordering through top-level `workflow_run` dependencies (CD depends on infra apply workflow success).
+3. Keep CI independent for quality validation; do not make CI the direct app deployment trigger.
+4. If workflow files violate this ordering, route remediation through planning + infra streams before marking run successful.
 
 ---
 

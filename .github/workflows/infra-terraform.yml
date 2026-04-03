@@ -7,6 +7,10 @@ on:
     paths:
       - infra/**
       - .github/workflows/infra-terraform.yml
+      - .github/workflows/infra-apply-dev.yml
+      - .github/workflows/infra-apply-prod.yml
+      - .github/workflows/cd.yml
+      - .github/workflows/workflow-deploy-aca-v1.0.0.yml
   workflow_dispatch:
     inputs:
       environment:

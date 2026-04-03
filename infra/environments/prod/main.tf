@@ -10,6 +10,10 @@ data "azurerm_client_config" "current" {}
 locals {
   app_name      = "bankapi"
   unique_suffix = substr(data.azurerm_client_config.current.subscription_id, 27, 6)
+  deployment_principal_object_id = coalesce(
+    var.deployment_principal_object_id,
+    data.azurerm_client_config.current.object_id,
+  )
 
   common_tags = {
     environment = var.env
@@ -23,6 +27,19 @@ resource "azurerm_resource_group" "main" {
   name     = "rg-${local.app_name}-${var.env}"
   location = var.location
   tags     = local.common_tags
+}
+
+# ---------------------------------------------------------------------------
+# RBAC bootstrap for deployment principal (management-plane role assignment rights)
+# ---------------------------------------------------------------------------
+module "rbac_bootstrap" {
+  source = "../../modules/rbac_bootstrap"
+
+  enabled                          = var.rbac_bootstrap_enabled
+  resource_group_id                = azurerm_resource_group.main.id
+  deployment_principal_object_id   = local.deployment_principal_object_id
+  role_definition_names            = var.rbac_bootstrap_role_definition_names
+  skip_service_principal_aad_check = var.rbac_bootstrap_skip_sp_aad_check
 }
 
 # ---------------------------------------------------------------------------
@@ -74,7 +91,7 @@ module "cosmosdb" {
   unique_suffix       = local.unique_suffix
   enable_serverless   = var.enable_serverless
   db_name             = var.cosmos_db_name
-  deployer_object_id  = data.azurerm_client_config.current.object_id
+  deployer_object_id  = local.deployment_principal_object_id
   tags                = local.common_tags
 }
 
@@ -84,13 +101,15 @@ module "cosmosdb" {
 module "keyvault" {
   source = "../../modules/keyvault"
 
+  depends_on = [module.rbac_bootstrap]
+
   resource_group_name            = azurerm_resource_group.main.name
   location                       = azurerm_resource_group.main.location
   app_name                       = local.app_name
   env                            = var.env
   unique_suffix                  = local.unique_suffix
   tenant_id                      = data.azurerm_client_config.current.tenant_id
-  deployer_object_id             = data.azurerm_client_config.current.object_id
+  deployer_object_id             = local.deployment_principal_object_id
   kv_sku                         = var.kv_sku
   kv_soft_delete_retention_days  = var.kv_soft_delete_retention_days
   purge_protection_enabled       = var.purge_protection_enabled
@@ -122,11 +141,13 @@ resource "azurerm_cosmosdb_sql_role_assignment" "uami_data_contributor" {
 module "appconfig" {
   source = "../../modules/appconfig"
 
+  depends_on = [module.rbac_bootstrap]
+
   resource_group_name        = azurerm_resource_group.main.name
   location                   = azurerm_resource_group.main.location
   app_name                   = local.app_name
   env                        = var.env
-  deployer_object_id         = data.azurerm_client_config.current.object_id
+  deployer_object_id         = local.deployment_principal_object_id
   app_identity_principal_id  = module.keyvault.uami_principal_id
   app_config_sku             = var.app_config_sku
   soft_delete_retention_days = var.app_config_soft_delete_days
@@ -146,7 +167,7 @@ module "acr" {
   unique_suffix       = local.unique_suffix
   acr_sku             = var.acr_sku
   uami_principal_id   = module.keyvault.uami_principal_id
-  deployer_object_id  = data.azurerm_client_config.current.object_id
+  deployer_object_id  = local.deployment_principal_object_id
   tags                = local.common_tags
 
   # UAMI must exist before we can assign the AcrPull role

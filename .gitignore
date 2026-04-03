@@ -38,3 +38,6 @@ infra/.terraform.lock.hcl
 ui/node_modules/
 ui/dist/
 ui/.env.local
+
+# Agent orchestration handoffs
+agents-communication/handoffs/
