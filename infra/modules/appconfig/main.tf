@@ -15,11 +15,28 @@ resource "azurerm_app_configuration" "appconfig" {
 
 # ---------------------------------------------------------------------------
 # RBAC — deploying principal → Data Owner (write key-values via Terraform)
+# The deployer is a CI/CD service principal; skip_service_principal_aad_check
+# prevents the provider from polling AAD for propagation, which avoids
+# intermittent 400/403 errors when the identity was recently created or
+# re-granted.
 # ---------------------------------------------------------------------------
 resource "azurerm_role_assignment" "appconfig_owner_deployer" {
   scope                = azurerm_app_configuration.appconfig.id
   role_definition_name = "App Configuration Data Owner"
   principal_id         = var.deployer_object_id
+
+  skip_service_principal_aad_check = true
+
+  lifecycle {
+    ignore_changes = [
+      # Provider-only flag; Azure never persists it — ignore to prevent
+      # perpetual "update" cycles after import or provider version changes.
+      skip_service_principal_aad_check,
+      # Computed alongside role_definition_name; may vary across provider
+      # versions without a real config change.
+      role_definition_id,
+    ]
+  }
 }
 
 # ---------------------------------------------------------------------------
