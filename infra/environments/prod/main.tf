@@ -80,9 +80,14 @@ module "monitoring" {
 # ---------------------------------------------------------------------------
 # Cosmos DB — account, database, container + deployer RBAC
 # Provisioned throughput (enable_serverless = false) for predictable prod perf.
+# Depends on rbac_bootstrap so the deployment principal holds the Contributor
+# role (needed for Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments/write)
+# before the Cosmos DB SQL role assignment is attempted.
 # ---------------------------------------------------------------------------
 module "cosmosdb" {
   source = "../../modules/cosmosdb"
+
+  depends_on = [module.rbac_bootstrap]
 
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location

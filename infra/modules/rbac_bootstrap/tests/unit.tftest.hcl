@@ -55,3 +55,39 @@ run "disabled_module_creates_no_assignments" {
     error_message = "Bootstrap module must create no role assignments when enabled = false."
   }
 }
+
+run "uaa_condition_applied_only_to_user_access_administrator" {
+  command = plan
+
+  variables {
+    uaa_condition = "!(ActionMatches{'Microsoft.Authorization/roleAssignments/write'}) OR @Request[Microsoft.Authorization/roleAssignments:RoleDefinitionId] ForAnyOfAnyValues:GuidEquals {b24988ac-6180-42a0-ab88-20f7382dd24c}"
+  }
+
+  assert {
+    condition     = azurerm_role_assignment.bootstrap["User Access Administrator"].condition != null
+    error_message = "ABAC condition must be set on the User Access Administrator role assignment when uaa_condition is provided."
+  }
+
+  assert {
+    condition     = azurerm_role_assignment.bootstrap["User Access Administrator"].condition == "!(ActionMatches{'Microsoft.Authorization/roleAssignments/write'}) OR @Request[Microsoft.Authorization/roleAssignments:RoleDefinitionId] ForAnyOfAnyValues:GuidEquals {b24988ac-6180-42a0-ab88-20f7382dd24c}"
+    error_message = "ABAC condition value must match the uaa_condition input variable."
+  }
+
+  assert {
+    condition     = azurerm_role_assignment.bootstrap["Contributor"].condition == null
+    error_message = "ABAC condition must NOT be set on the Contributor role assignment."
+  }
+}
+
+run "uaa_condition_is_null_by_default" {
+  command = plan
+
+  variables {
+    role_definition_names = ["User Access Administrator", "Contributor"]
+  }
+
+  assert {
+    condition     = azurerm_role_assignment.bootstrap["User Access Administrator"].condition == null
+    error_message = "ABAC condition must be null for User Access Administrator when uaa_condition is not provided."
+  }
+}

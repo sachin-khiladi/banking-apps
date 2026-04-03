@@ -10,6 +10,12 @@ resource "azurerm_role_assignment" "bootstrap" {
   role_definition_name = each.value
   principal_id         = var.deployment_principal_object_id
 
+  # ABAC condition applied only to User Access Administrator to constrain which
+  # roles the grantee may assign — prevents privilege escalation.
+  # Requires uaa_condition to be non-null; null disables the condition.
+  condition_version = each.value == "User Access Administrator" && var.uaa_condition != null ? "2.0" : null
+  condition         = each.value == "User Access Administrator" && var.uaa_condition != null ? var.uaa_condition : null
+
   # Deployment principal is typically a service principal used by CI/CD.
   skip_service_principal_aad_check = var.skip_service_principal_aad_check
 
