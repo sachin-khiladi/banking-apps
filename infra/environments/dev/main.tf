@@ -104,6 +104,15 @@ module "cosmosdb" {
 # ---------------------------------------------------------------------------
 # Key Vault + UAMI + Secrets
 # ---------------------------------------------------------------------------
+
+# Import the appinsights-connection-string secret that was provisioned outside
+# of the current Terraform state (pre-existing secret in Azure KV).
+# Remove this block after the first successful apply that records it in state.
+import {
+  to = module.keyvault.azurerm_key_vault_secret.appinsights_connection_string
+  id = "https://kv-bankapi-dev-c8775a.vault.azure.net/secrets/appinsights-connection-string/fbf7e9746f8e40a6bf2e3dd10d98ca58"
+}
+
 module "keyvault" {
   source = "../../modules/keyvault"
 
