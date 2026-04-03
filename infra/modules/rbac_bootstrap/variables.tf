@@ -21,18 +21,14 @@ variable "deployment_principal_object_id" {
 
 variable "role_definition_names" {
   type        = list(string)
-  description = "Built-in role names assigned to the deployment principal at resource-group scope."
+  description = "Built-in role names assigned to the deployment principal at resource-group scope. Typically 'User Access Administrator' (for roleAssignments/write) and 'Contributor' (for resource provisioning). NOTE: the principal executing Terraform must already hold roleAssignments/write at subscription or management-group scope — this module cannot self-bootstrap that permission."
   default     = ["User Access Administrator", "Contributor"]
+}
 
-  validation {
-    condition     = contains(var.role_definition_names, "User Access Administrator")
-    error_message = "role_definition_names must include 'User Access Administrator'."
-  }
-
-  validation {
-    condition     = contains(var.role_definition_names, "Contributor")
-    error_message = "role_definition_names must include 'Contributor' for provisioning coverage."
-  }
+variable "uaa_condition" {
+  type        = string
+  description = "ABAC condition expression (condition_version 2.0) applied to the User Access Administrator role assignment to constrain which role definition IDs the grantee may assign. Set to null to create an unconditioned assignment — only acceptable when the grantee scope is already tightly controlled. See: https://learn.microsoft.com/azure/role-based-access-control/conditions-overview"
+  default     = null
 }
 
 variable "skip_service_principal_aad_check" {

@@ -10,8 +10,12 @@ location = "eastus"
 # Set to null to use the currently authenticated principal.
 deployment_principal_object_id = null
 
-# RBAC bootstrap (required for roleAssignments/write sequencing before downstream RBAC)
-rbac_bootstrap_enabled               = true
+# RBAC bootstrap — disabled because the CI/CD service principal cannot
+# self-assign roleAssignments/write (circular bootstrap deadlock).
+# Prerequisite: grant the CI SP 'User Access Administrator' (with ABAC condition)
+# or 'Owner' at subscription scope via the Azure portal or az CLI before enabling.
+# See: infra/modules/rbac_bootstrap/README.md
+rbac_bootstrap_enabled               = false
 rbac_bootstrap_role_definition_names = ["User Access Administrator", "Contributor"]
 rbac_bootstrap_skip_sp_aad_check     = true
 
