@@ -81,10 +81,14 @@ module "monitoring" {
 
 # ---------------------------------------------------------------------------
 # Cosmos DB — account, database, container + deployer RBAC
-# No dependency on other modules (only needs RG + deployer identity).
+# Depends on rbac_bootstrap so the deployment principal holds the Contributor
+# role (needed for Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments/write)
+# before the Cosmos DB SQL role assignment is attempted.
 # ---------------------------------------------------------------------------
 module "cosmosdb" {
   source = "../../modules/cosmosdb"
+
+  depends_on = [module.rbac_bootstrap]
 
   resource_group_name = azurerm_resource_group.main.name
   location            = local.cosmos_location

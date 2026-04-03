@@ -33,3 +33,25 @@ run "default_assignments_count_is_two" {
     error_message = "Bootstrap module must create exactly two role assignments by default."
   }
 }
+
+run "skip_sp_aad_check_is_true_by_default" {
+  command = plan
+
+  assert {
+    condition     = alltrue([for ra in azurerm_role_assignment.bootstrap : ra.skip_service_principal_aad_check == true])
+    error_message = "All bootstrap role assignments must have skip_service_principal_aad_check = true to avoid AAD propagation delays for CI/CD service principals."
+  }
+}
+
+run "disabled_module_creates_no_assignments" {
+  command = plan
+
+  variables {
+    enabled = false
+  }
+
+  assert {
+    condition     = length(output.role_assignment_ids) == 0
+    error_message = "Bootstrap module must create no role assignments when enabled = false."
+  }
+}

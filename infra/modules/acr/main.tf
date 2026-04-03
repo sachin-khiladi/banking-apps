@@ -61,15 +61,29 @@ resource "azurerm_role_assignment" "acr_pull_uami" {
 
 # ---------------------------------------------------------------------------
 # RBAC — deploying principal → AcrPush
-# Allows the CI/CD pipeline (or developer) to push images via:
+# Allows the CI/CD service-principal pipeline to push images via:
 #   az acr login --name <acr_name>
 #   docker push <acr_login_server>/bank-api:<tag>
+# The deployer is a service principal in CI/CD; skip_service_principal_aad_check
+# prevents the provider from polling AAD for propagation, which avoids
+# intermittent 400/403 errors when the identity was recently created or
+# re-granted.
 # ---------------------------------------------------------------------------
 resource "azurerm_role_assignment" "acr_push_deployer" {
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPush"
   principal_id         = var.deployer_object_id
 
-  # deployer_object_id is a User principal — do NOT set skip_service_principal_aad_check
-  # which would incorrectly mark the principal type as ServicePrincipal and cause a 400.
+  skip_service_principal_aad_check = true
+
+  lifecycle {
+    ignore_changes = [
+      # Provider-only flag; Azure never persists it — ignore to prevent
+      # perpetual "update" cycles after import or provider version changes.
+      skip_service_principal_aad_check,
+      # Computed alongside role_definition_name; may vary across provider
+      # versions without a real config change.
+      role_definition_id,
+    ]
+  }
 }

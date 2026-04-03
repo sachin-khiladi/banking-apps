@@ -51,3 +51,12 @@ run "smtp_secret_output_is_versionless" {
     error_message = "smtp_password_secret_versionless_id must be a Key Vault secret URI."
   }
 }
+
+run "kv_admin_deployer_skips_aad_check" {
+  command = plan
+
+  assert {
+    condition     = azurerm_role_assignment.kv_admin_deployer.skip_service_principal_aad_check == true
+    error_message = "kv_admin_deployer role assignment must set skip_service_principal_aad_check = true for CI/CD service principal deployers to avoid AAD propagation delays."
+  }
+}
