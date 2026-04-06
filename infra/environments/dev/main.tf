@@ -194,6 +194,14 @@ module "acr" {
 # ---------------------------------------------------------------------------
 # Container App Environment + Container App
 # ---------------------------------------------------------------------------
+# Import existing Container App into state when it was created out-of-band.
+# Remove this block after a successful apply.
+# ---------------------------------------------------------------------------
+import {
+  to = module.container_app.azurerm_container_app.app
+  id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_resource_group.main.name}/providers/Microsoft.App/containerApps/ca-${local.app_name}-${var.env}"
+}
+
 module "container_app" {
   source = "../../modules/container_app"
 
