@@ -70,6 +70,29 @@ jobs:
           print(f"dev tfvars validation passed ({len(required)} required inputs found).")
           PY
 
+      - name: Remove failed Container App if present (pre-flight cleanup)
+        # The azurerm provider returns 400 when refreshing a Container App that is
+        # in ProvisioningState 'Failed', blocking both plan and apply.  Delete it
+        # here so Terraform can re-create it cleanly.  This step is a no-op when
+        # the app does not exist or is already in a healthy provisioning state.
+        run: |
+          STATE=$(az containerapp show \
+            --name "ca-bankapi-dev" \
+            --resource-group "rg-bankapi-dev" \
+            --query "properties.provisioningState" \
+            --output tsv 2>/dev/null || echo "NotFound")
+          echo "Container App 'ca-bankapi-dev' provisioning state: ${STATE}"
+          if [ "$STATE" = "Failed" ]; then
+            echo "Deleting failed Container App to allow Terraform clean re-creation..."
+            az containerapp delete \
+              --name "ca-bankapi-dev" \
+              --resource-group "rg-bankapi-dev" \
+              --yes
+            echo "Deletion complete."
+          else
+            echo "No pre-flight cleanup required."
+          fi
+
       - name: Terraform init (dev)
         working-directory: infra/environments/dev
         env:

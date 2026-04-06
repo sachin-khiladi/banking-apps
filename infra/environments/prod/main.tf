@@ -84,6 +84,32 @@ module "monitoring" {
 # role (needed for Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments/write)
 # before the Cosmos DB SQL role assignment is attempted.
 # ---------------------------------------------------------------------------
+
+# Import existing Cosmos DB resources into Terraform state.
+# The account and its children were provisioned in a previous apply run whose
+# state was subsequently lost. These blocks bring them back under Terraform
+# management without destroying any production data.
+# Remove these blocks after the first successful apply records them in state.
+import {
+  to = module.cosmosdb.azurerm_cosmosdb_account.cosmos
+  id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/rg-${local.app_name}-${var.env}/providers/Microsoft.DocumentDB/databaseAccounts/cosmos-${local.app_name}-${var.env}-${local.unique_suffix}"
+}
+
+import {
+  to = module.cosmosdb.azurerm_cosmosdb_sql_database.db
+  id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/rg-${local.app_name}-${var.env}/providers/Microsoft.DocumentDB/databaseAccounts/cosmos-${local.app_name}-${var.env}-${local.unique_suffix}/sqlDatabases/${var.cosmos_db_name}"
+}
+
+import {
+  to = module.cosmosdb.azurerm_cosmosdb_sql_container.accounts
+  id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/rg-${local.app_name}-${var.env}/providers/Microsoft.DocumentDB/databaseAccounts/cosmos-${local.app_name}-${var.env}-${local.unique_suffix}/sqlDatabases/${var.cosmos_db_name}/containers/accounts"
+}
+
+import {
+  to = module.cosmosdb.azurerm_cosmosdb_sql_container.user_profiles
+  id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/rg-${local.app_name}-${var.env}/providers/Microsoft.DocumentDB/databaseAccounts/cosmos-${local.app_name}-${var.env}-${local.unique_suffix}/sqlDatabases/${var.cosmos_db_name}/containers/user_profiles"
+}
+
 module "cosmosdb" {
   source = "../../modules/cosmosdb"
 
