@@ -84,6 +84,7 @@ module "monitoring" {
 # role (needed for Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments/write)
 # before the Cosmos DB SQL role assignment is attempted.
 # ---------------------------------------------------------------------------
+
 module "cosmosdb" {
   source = "../../modules/cosmosdb"
 
