@@ -1,0 +1,128 @@
+name: Terraform Infra Destroy
+
+# Dedicated, on-demand destroy workflow.
+# Requires explicit operator confirmation and a protected environment approval
+# before terraform destroy is executed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment to destroy
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+      reason:
+        description: Change ticket or destruction reason
+        required: true
+        type: string
+      confirm_destroy:
+        description: Type 'destroy' to confirm irreversible destruction
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_VERSION: "1.9.8"
+  ARM_USE_OIDC: true
+  ARM_USE_AZUREAD: true
+
+jobs:
+  validate_request:
+    name: Validate destroy request
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Check confirmation input
+        run: |
+          if [ "${{ inputs.confirm_destroy }}" != "destroy" ]; then
+            echo "Invalid confirm_destroy value. Type exactly 'destroy' to proceed."
+            exit 1
+          fi
+
+  approval_gate:
+    name: Approval gate
+    runs-on: ubuntu-latest
+    needs: validate_request
+    environment: ${{ inputs.environment == 'prod' && 'banking-prod' || 'banking-dev' }}
+    steps:
+      - name: Await environment approval
+        run: echo "Destroy request approved for ${{ inputs.environment }}"
+
+  destroy:
+    name: Destroy ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    needs: approval_gate
+    concurrency:
+      group: infra-destroy-${{ inputs.environment }}-${{ github.ref_name }}
+      cancel-in-progress: false
+    env:
+      TARGET_ENV: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate required tfvars inputs
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+
+          target_env = "${{ inputs.environment }}"
+          env_dir = pathlib.Path(f"infra/environments/{target_env}")
+          variables_tf = env_dir / "variables.tf"
+          tfvars = env_dir / "terraform.tfvars"
+
+          required = []
+          for name, body in re.findall(r'variable\s+"([^"]+)"\s*\{(.*?)\n\}', variables_tf.read_text(), re.S):
+              if re.search(r'\bdefault\s*=', body) is None:
+                  required.append(name)
+
+          provided = set(re.findall(r'^\s*([A-Za-z0-9_]+)\s*=\s*', tfvars.read_text(), re.M))
+          missing = [name for name in required if name not in provided]
+          if missing:
+              print(f"Missing required tfvars inputs for {target_env}: {', '.join(missing)}")
+              sys.exit(1)
+
+          print(f"{target_env} tfvars validation passed ({len(required)} required inputs found).")
+          PY
+
+      - name: Terraform init
+        working-directory: infra/environments/${{ inputs.environment }}
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform init -input=false
+
+      - name: Terraform plan destroy
+        working-directory: infra/environments/${{ inputs.environment }}
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform plan -destroy -out=tfdestroy -input=false -no-color -var-file=terraform.tfvars
+
+      - name: Terraform destroy
+        working-directory: infra/environments/${{ inputs.environment }}
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform apply -input=false -auto-approve tfdestroy
