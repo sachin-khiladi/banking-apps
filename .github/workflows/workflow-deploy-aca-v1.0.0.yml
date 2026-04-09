@@ -58,6 +58,9 @@ jobs:
   deploy-aca:
     runs-on: ubuntu-latest
     environment: ${{ inputs.deployment_environment }}
+    concurrency:
+      group: deploy-${{ inputs.deployment_environment }}
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -1,15 +1,10 @@
 name: Terraform Infra Apply Prod
 
+# Prod infra is a promotion step.
+# It only runs by manual dispatch and relies on the banking-prod environment
+# for human approval before infrastructure changes are applied.
+
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - infra/**
-      - .github/workflows/infra-apply-dev.yml
-      - .github/workflows/infra-apply-prod.yml
-      - .github/workflows/infra-terraform.yml
-      - .github/workflows/cd.yml
   workflow_dispatch:
     inputs:
       reason:
@@ -32,6 +27,10 @@ jobs:
     name: Apply prod
     runs-on: ubuntu-latest
     environment: banking-prod
+    if: ${{ github.ref == 'refs/heads/main' }}
+    concurrency:
+      group: infra-prod-${{ github.ref_name }}
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
