@@ -30,6 +30,7 @@ variables {
   tenant_id                      = "00000000-0000-0000-0000-000000000001"
   deployer_object_id             = "00000000-0000-0000-0000-000000000002"
   app_insights_connection_string = "InstrumentationKey=mock"
+  jwt_secret_key                 = "mock-jwt-secret"
   smtp_password                  = "mock-smtp-password"
   tags                           = {}
 }
@@ -43,12 +44,30 @@ run "smtp_secret_name" {
   }
 }
 
-run "smtp_secret_output_is_versionless" {
+run "jwt_secret_name" {
   command = plan
 
   assert {
-    condition     = startswith(output.smtp_password_secret_versionless_id, "https://") && strcontains(output.smtp_password_secret_versionless_id, "/secrets/")
-    error_message = "smtp_password_secret_versionless_id must be a Key Vault secret URI."
+    condition     = azurerm_key_vault_secret.jwt_secret_key.name == "jwt-secret-key"
+    error_message = "JWT Key Vault secret name must be 'jwt-secret-key'."
+  }
+}
+
+run "appinsights_secret_name" {
+  command = plan
+
+  assert {
+    condition     = azurerm_key_vault_secret.appinsights_connection_string.name == "appinsights-connection-string"
+    error_message = "App Insights Key Vault secret name must be 'appinsights-connection-string'."
+  }
+}
+
+run "key_vault_uses_rbac_authorization" {
+  command = plan
+
+  assert {
+    condition     = azurerm_key_vault.kv.enable_rbac_authorization == true
+    error_message = "Key Vault must use RBAC authorization."
   }
 }
 

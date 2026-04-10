@@ -16,11 +16,21 @@ variable "app_name" {
 variable "env" {
   description = "Deployment environment (dev | prod)"
   type        = string
+
+  validation {
+    condition     = contains(["dev", "staging", "prod"], var.env)
+    error_message = "env must be one of: dev, staging, prod."
+  }
 }
 
 variable "unique_suffix" {
   description = "Short suffix to guarantee globally unique Cosmos account names (e.g. last 6 chars of subscription ID)"
   type        = string
+
+  validation {
+    condition     = can(regex("^[a-z0-9]{6}$", var.unique_suffix))
+    error_message = "unique_suffix must be exactly 6 lowercase alphanumeric characters."
+  }
 }
 
 variable "enable_serverless" {
@@ -67,6 +77,19 @@ variable "max_throughput" {
 variable "deployer_object_id" {
   description = "Object ID of the principal running Terraform; granted Cosmos DB Built-in Data Contributor for local dev access"
   type        = string
+}
+
+variable "app_uami_principal_id" {
+  description = "Principal ID of the Container App user-assigned managed identity; when set, receives Cosmos DB Built-in Data Contributor at account scope"
+  type        = string
+  default     = null
+  nullable    = true
+}
+
+variable "assign_app_cosmosdb_role" {
+  description = "When true, creates the Cosmos DB Built-in Data Contributor role assignment for the app UAMI. Must be a literal bool so Terraform can resolve count at plan time."
+  type        = bool
+  default     = false
 }
 
 variable "tags" {

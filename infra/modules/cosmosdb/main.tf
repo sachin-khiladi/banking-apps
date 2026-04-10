@@ -47,6 +47,13 @@ resource "azurerm_cosmosdb_account" "cosmos" {
   }
 
   tags = var.tags
+
+  lifecycle {
+    precondition {
+      condition     = !(var.env == "prod" && var.enable_serverless)
+      error_message = "Production Cosmos DB deployments must use provisioned throughput; set enable_serverless = false."
+    }
+  }
 }
 
 # ── SQL Database ──────────────────────────────────────────────────────────────
@@ -135,6 +142,22 @@ resource "azurerm_cosmosdb_sql_role_assignment" "deployer_data_contributor" {
   # Built-in role: 00000000-0000-0000-0000-000000000002 = Data Contributor
   role_definition_id = "${azurerm_cosmosdb_account.cosmos.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
   principal_id       = var.deployer_object_id
+  scope              = azurerm_cosmosdb_account.cosmos.id
+
+  lifecycle {
+    ignore_changes = [role_definition_id]
+  }
+}
+
+resource "azurerm_cosmosdb_sql_role_assignment" "app_data_contributor" {
+  count = var.assign_app_cosmosdb_role ? 1 : 0
+
+  resource_group_name = var.resource_group_name
+  account_name        = azurerm_cosmosdb_account.cosmos.name
+
+  # Built-in role: 00000000-0000-0000-0000-000000000002 = Data Contributor
+  role_definition_id = "${azurerm_cosmosdb_account.cosmos.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
+  principal_id       = var.app_uami_principal_id
   scope              = azurerm_cosmosdb_account.cosmos.id
 
   lifecycle {

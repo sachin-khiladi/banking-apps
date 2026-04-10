@@ -32,6 +32,13 @@ resource "azurerm_key_vault" "kv" {
   purge_protection_enabled  = var.purge_protection_enabled
 
   tags = var.tags
+
+  lifecycle {
+    precondition {
+      condition     = length("kv-${var.app_name}-${var.env}-${var.unique_suffix}") <= 24
+      error_message = "The generated Key Vault name exceeds Azure's 24-character limit. Shorten app_name/env or change the naming strategy before apply."
+    }
+  }
 }
 
 # ---------------------------------------------------------------------------
@@ -52,7 +59,7 @@ resource "azurerm_role_assignment" "kv_admin_deployer" {
   lifecycle {
     ignore_changes = [
       # Provider-only flag; Azure never persists it — ignore to prevent
-      # perpetual "update" cycles after import or provider version changes.
+      # perpetual "update" cycles after provider version changes.
       skip_service_principal_aad_check,
       # Computed alongside role_definition_name; may vary across provider
       # versions without a real config change.
@@ -87,6 +94,33 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
     azurerm_role_assignment.kv_admin_deployer,
     azurerm_role_assignment.kv_secrets_user_app,
   ]
+
+  lifecycle {
+    precondition {
+      condition     = trimspace(var.app_insights_connection_string) != ""
+      error_message = "app_insights_connection_string must not be empty before creating the Key Vault secret."
+    }
+  }
+}
+
+resource "azurerm_key_vault_secret" "jwt_secret_key" {
+  name         = "jwt-secret-key"
+  value        = var.jwt_secret_key
+  key_vault_id = azurerm_key_vault.kv.id
+
+  tags = var.tags
+
+  depends_on = [
+    azurerm_role_assignment.kv_admin_deployer,
+    azurerm_role_assignment.kv_secrets_user_app,
+  ]
+
+  lifecycle {
+    precondition {
+      condition     = trimspace(var.jwt_secret_key) != ""
+      error_message = "jwt_secret_key must not be empty before creating the Key Vault secret."
+    }
+  }
 }
 
 resource "azurerm_key_vault_secret" "smtp_password" {
@@ -100,6 +134,13 @@ resource "azurerm_key_vault_secret" "smtp_password" {
     azurerm_role_assignment.kv_admin_deployer,
     azurerm_role_assignment.kv_secrets_user_app,
   ]
+
+  lifecycle {
+    precondition {
+      condition     = trimspace(var.smtp_password) != ""
+      error_message = "smtp_password must not be empty before creating the Key Vault secret."
+    }
+  }
 }
 
 # cosmos-connection-string secret intentionally omitted:

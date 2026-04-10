@@ -18,13 +18,13 @@ terraform {
     storage_account_name = "strgtfbackendb86177"
     container_name       = "bank-api-tfstate"
     key                  = "bankapi-dev-tf.tfstate"
+    use_azuread_auth     = true
+    use_oidc             = true
   }
 }
 
 provider "azurerm" {
   resource_provider_registrations = "none"
-  subscription_id                 = "b86177f7-23c4-4a3a-b37f-5c4c8775af34"
-  tenant_id                       = "47f8c7cd-1273-45b1-85c6-61d06e329024"
   features {
     key_vault {
       purge_soft_delete_on_destroy    = false

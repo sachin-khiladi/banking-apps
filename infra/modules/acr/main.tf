@@ -38,17 +38,14 @@ resource "azurerm_role_assignment" "acr_pull_uami" {
   skip_service_principal_aad_check = true
 
   # azurerm_role_assignment does not support in-place updates.
-  # If the assignment already exists in Azure with a different GUID than what
-  # Terraform has in state (e.g. after manual recreation or provider drift),
-  # do NOT use create_before_destroy — it causes a 409 RoleAssignmentExists
-  # because Azure enforces uniqueness on scope + role + principal.
-  # Instead, fix state drift via:
-  #   terraform state rm module.acr.azurerm_role_assignment.acr_pull_uami
-  #   terraform import module.acr.azurerm_role_assignment.acr_pull_uami <full_azure_id>
+  # Do not use create_before_destroy here — Azure enforces uniqueness on
+  # scope + role + principal, so replacement attempts can fail with
+  # RoleAssignmentExists. Recovery from unexpected pre-existing assignments
+  # must follow the operator runbook rather than adding import blocks to code.
   lifecycle {
     ignore_changes = [
       # skip_service_principal_aad_check is a Terraform-only flag that Azure
-      # never persists. After any import (or provider drift), the state reads
+      # never persists. After provider drift or state refresh, the state reads
       # it back as null, which causes a perpetual "update" that AzureRM rejects
       # with "doesn't support update". Ignoring it prevents that cycle.
       skip_service_principal_aad_check,
@@ -79,7 +76,7 @@ resource "azurerm_role_assignment" "acr_push_deployer" {
   lifecycle {
     ignore_changes = [
       # Provider-only flag; Azure never persists it — ignore to prevent
-      # perpetual "update" cycles after import or provider version changes.
+      # perpetual "update" cycles after provider version changes.
       skip_service_principal_aad_check,
       # Computed alongside role_definition_name; may vary across provider
       # versions without a real config change.

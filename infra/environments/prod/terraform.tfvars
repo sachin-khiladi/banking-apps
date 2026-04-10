@@ -3,8 +3,9 @@
 # Deploy:  cd environments/prod && terraform init && terraform apply
 # ===========================================================================
 
-env      = "prod"
-location = "eastus"
+env         = "prod"
+location    = "eastus"
+cost_center = "banking-platform"
 
 # Optional override for deployment principal object ID used by bootstrap/deployer RBAC.
 # Set to null to use the currently authenticated principal.
@@ -56,6 +57,7 @@ smtp_port         = 587
 smtp_username     = "noreply@example.com"
 smtp_sender_email = "noreply@example.com"
 smtp_password     = "replace-me"
+jwt_secret_key    = "replace-me"
 
 # Optional SMTP toggles
 smtp_use_tls         = true

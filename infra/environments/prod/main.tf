@@ -19,6 +19,7 @@ locals {
     environment = var.env
     application = local.app_name
     managed_by  = "terraform"
+    cost-center = var.cost_center
     owner       = "platform-team"
   }
 }
@@ -90,15 +91,17 @@ module "cosmosdb" {
 
   depends_on = [module.rbac_bootstrap]
 
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  app_name            = local.app_name
-  env                 = var.env
-  unique_suffix       = local.unique_suffix
-  enable_serverless   = var.enable_serverless
-  db_name             = var.cosmos_db_name
-  deployer_object_id  = local.deployment_principal_object_id
-  tags                = local.common_tags
+  resource_group_name      = azurerm_resource_group.main.name
+  location                 = azurerm_resource_group.main.location
+  app_name                 = local.app_name
+  env                      = var.env
+  unique_suffix            = local.unique_suffix
+  enable_serverless        = var.enable_serverless
+  db_name                  = var.cosmos_db_name
+  deployer_object_id       = local.deployment_principal_object_id
+  app_uami_principal_id    = module.keyvault.uami_principal_id
+  assign_app_cosmosdb_role = true
+  tags                     = local.common_tags
 }
 
 # ---------------------------------------------------------------------------
@@ -120,25 +123,9 @@ module "keyvault" {
   kv_soft_delete_retention_days  = var.kv_soft_delete_retention_days
   purge_protection_enabled       = var.purge_protection_enabled
   app_insights_connection_string = module.monitoring.app_insights_connection_string
+  jwt_secret_key                 = var.jwt_secret_key
   smtp_password                  = var.smtp_password
   tags                           = local.common_tags
-}
-
-# ---------------------------------------------------------------------------
-# Cosmos DB RBAC for UAMI (runtime access from Container App)
-# ---------------------------------------------------------------------------
-resource "azurerm_cosmosdb_sql_role_assignment" "uami_data_contributor" {
-  resource_group_name = azurerm_resource_group.main.name
-  account_name        = module.cosmosdb.account_name
-
-  # Built-in: 00000000-0000-0000-0000-000000000002 = Cosmos DB Built-in Data Contributor
-  role_definition_id = "${module.cosmosdb.account_id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
-  principal_id       = module.keyvault.uami_principal_id
-  scope              = module.cosmosdb.account_id
-
-  lifecycle {
-    ignore_changes = [role_definition_id]
-  }
 }
 
 # ---------------------------------------------------------------------------
@@ -193,7 +180,6 @@ module "container_app" {
     module.appconfig,
     module.acr,
     module.cosmosdb,
-    azurerm_cosmosdb_sql_role_assignment.uami_data_contributor,
   ]
 
   resource_group_name        = azurerm_resource_group.main.name
@@ -212,8 +198,9 @@ module "container_app" {
   uami_id        = module.keyvault.uami_id
   uami_client_id = module.keyvault.uami_client_id
 
-  appinsights_secret_versionless_id   = module.keyvault.appinsights_secret_versionless_id
-  smtp_password_secret_versionless_id = module.keyvault.smtp_password_secret_versionless_id
+  appinsights_secret_versionless_id    = module.keyvault.appinsights_secret_versionless_id
+  jwt_secret_key_secret_versionless_id = module.keyvault.jwt_secret_key_secret_versionless_id
+  smtp_password_secret_versionless_id  = module.keyvault.smtp_password_secret_versionless_id
 
   # Cosmos DB — plain env vars (app uses DefaultAzureCredential, not a connection string)
   cosmos_account_url = module.cosmosdb.account_endpoint

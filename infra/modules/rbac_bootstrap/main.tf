@@ -21,7 +21,7 @@ resource "azurerm_role_assignment" "bootstrap" {
 
   lifecycle {
     ignore_changes = [
-      # Provider-only flag can drift after import and should not trigger updates.
+      # Provider-only flag can drift after provider refresh and should not trigger updates.
       skip_service_principal_aad_check,
       # Computed alongside role_definition_name and may vary by provider version.
       role_definition_id,
