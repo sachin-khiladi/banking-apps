@@ -41,3 +41,5 @@ ui/.env.local
 
 # Agent orchestration handoffs
 agents-communication/handoffs/
+infra/environments/dev/.terraform.lock.hcl
+infra/environments/dev/.terraform.lock.hcl

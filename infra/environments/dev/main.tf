@@ -91,13 +91,13 @@ module "cosmosdb" {
 
   depends_on = [module.rbac_bootstrap]
 
-  resource_group_name   = azurerm_resource_group.main.name
-  location              = local.cosmos_location
-  app_name              = local.app_name
-  env                   = var.env
-  unique_suffix         = local.unique_suffix
-  enable_serverless     = var.enable_serverless
-  db_name               = var.cosmos_db_name
+  resource_group_name      = azurerm_resource_group.main.name
+  location                 = local.cosmos_location
+  app_name                 = local.app_name
+  env                      = var.env
+  unique_suffix            = local.unique_suffix
+  enable_serverless        = var.enable_serverless
+  db_name                  = var.cosmos_db_name
   deployer_object_id       = local.deployment_principal_object_id
   app_uami_principal_id    = module.keyvault.uami_principal_id
   assign_app_cosmosdb_role = true
