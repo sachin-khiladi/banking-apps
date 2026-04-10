@@ -31,6 +31,13 @@ resource "azurerm_container_app" "app" {
   # given Azure ARM's eventual consistency on environment readiness.)
   depends_on = [azurerm_container_app_environment.cae]
 
+  lifecycle {
+    precondition {
+      condition     = var.min_replicas <= var.max_replicas
+      error_message = "min_replicas must be less than or equal to max_replicas."
+    }
+  }
+
   # UAMI — used for Key Vault + App Config RBAC at runtime
   identity {
     type         = "UserAssigned"
@@ -41,6 +48,12 @@ resource "azurerm_container_app" "app" {
   secret {
     name                = "appinsights-connection-string"
     key_vault_secret_id = var.appinsights_secret_versionless_id
+    identity            = var.uami_id
+  }
+
+  secret {
+    name                = "jwt-secret-key"
+    key_vault_secret_id = var.jwt_secret_key_secret_versionless_id
     identity            = var.uami_id
   }
 
@@ -78,6 +91,11 @@ resource "azurerm_container_app" "app" {
       env {
         name        = "APPLICATIONINSIGHTS_CONNECTION_STRING"
         secret_name = "appinsights-connection-string"
+      }
+
+      env {
+        name        = "JWT_SECRET_KEY"
+        secret_name = "jwt-secret-key"
       }
 
       # Cosmos DB — app uses DefaultAzureCredential (RBAC), not a connection string

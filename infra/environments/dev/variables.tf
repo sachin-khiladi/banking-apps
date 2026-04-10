@@ -13,6 +13,16 @@ variable "location" {
   description = "Azure region for all resources"
 }
 
+variable "cost_center" {
+  type        = string
+  description = "Cost center tag applied to all provisioned resources."
+
+  validation {
+    condition     = trimspace(var.cost_center) != ""
+    error_message = "cost_center must not be empty."
+  }
+}
+
 variable "deployment_principal_object_id" {
   type        = string
   description = "Object ID of the deployment principal used for bootstrap and deployer RBAC assignments. Defaults to the current principal when null."
@@ -51,6 +61,11 @@ variable "rbac_bootstrap_skip_sp_aad_check" {
 variable "container_image" {
   type        = string
   description = "Container image to deploy (registry/image:tag)"
+
+  validation {
+    condition     = trimspace(var.container_image) != ""
+    error_message = "container_image must not be empty."
+  }
 }
 
 variable "container_cpu" {
@@ -130,6 +145,11 @@ variable "app_config_soft_delete_days" {
   type        = number
   description = "App Configuration soft-delete retention days (1–7 for standard, 0 for free)"
   default     = 1
+
+  validation {
+    condition     = (var.app_config_sku == "free" && var.app_config_soft_delete_days == 0) || (var.app_config_sku == "standard" && var.app_config_soft_delete_days >= 1 && var.app_config_soft_delete_days <= 7)
+    error_message = "app_config_soft_delete_days must be 0 for free SKU, or between 1 and 7 for standard SKU."
+  }
 }
 
 variable "acr_sku" {
@@ -258,4 +278,20 @@ variable "smtp_password" {
   type        = string
   description = "SMTP password stored in Key Vault"
   sensitive   = true
+
+  validation {
+    condition     = trimspace(var.smtp_password) != ""
+    error_message = "smtp_password must not be empty."
+  }
+}
+
+variable "jwt_secret_key" {
+  type        = string
+  description = "JWT signing secret stored in Key Vault and injected into the Container App."
+  sensitive   = true
+
+  validation {
+    condition     = trimspace(var.jwt_secret_key) != ""
+    error_message = "jwt_secret_key must not be empty."
+  }
 }

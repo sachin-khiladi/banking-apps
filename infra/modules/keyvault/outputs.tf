@@ -33,6 +33,11 @@ output "appinsights_secret_versionless_id" {
   value       = azurerm_key_vault_secret.appinsights_connection_string.versionless_id
 }
 
+output "jwt_secret_key_secret_versionless_id" {
+  description = "Versionless KV secret URI for the JWT signing secret"
+  value       = azurerm_key_vault_secret.jwt_secret_key.versionless_id
+}
+
 output "smtp_password_secret_versionless_id" {
   description = "Versionless KV secret URI for the SMTP password"
   value       = azurerm_key_vault_secret.smtp_password.versionless_id

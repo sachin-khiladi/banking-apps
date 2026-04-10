@@ -30,7 +30,7 @@ resource "azurerm_role_assignment" "appconfig_owner_deployer" {
   lifecycle {
     ignore_changes = [
       # Provider-only flag; Azure never persists it — ignore to prevent
-      # perpetual "update" cycles after import or provider version changes.
+      # perpetual "update" cycles after provider version changes.
       skip_service_principal_aad_check,
       # Computed alongside role_definition_name; may vary across provider
       # versions without a real config change.
