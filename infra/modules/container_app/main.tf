@@ -36,6 +36,12 @@ resource "azurerm_container_app" "app" {
       condition     = var.min_replicas <= var.max_replicas
       error_message = "min_replicas must be less than or equal to max_replicas."
     }
+
+    # Terraform owns the Container App infrastructure; the CD workflow
+    # (.github/workflows/cd.yml) owns the running image and revision.
+    # Ignoring image changes here prevents every `terraform apply` from
+    # overwriting what CD deployed — enforcing separation of concerns.
+    ignore_changes = [template[0].container[0].image]
   }
 
   # UAMI — used for Key Vault + App Config RBAC at runtime

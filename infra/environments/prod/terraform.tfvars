@@ -21,9 +21,13 @@ rbac_bootstrap_role_definition_names = ["User Access Administrator", "Contributo
 rbac_bootstrap_skip_sp_aad_check     = true
 
 # ---------------------------------------------------------------------------
-# Container image
-# Replace with your ACR image before applying to production:
-#   acrbankapiprod.azurecr.io/bank-api:stable
+# Container image — placeholder for initial infrastructure provisioning only.
+# Terraform provisions the Container App with this public image so that infra
+# apply succeeds without requiring an ACR image to exist first.
+# The CD workflow (.github/workflows/cd.yml) owns the real app image
+# and will update the Container App revision after every approved deployment.
+# Terraform ignores image changes after initial provisioning
+# (lifecycle.ignore_changes in modules/container_app/main.tf).
 # ---------------------------------------------------------------------------
 container_image = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
 
