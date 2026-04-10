@@ -86,6 +86,12 @@ variable "app_uami_principal_id" {
   nullable    = true
 }
 
+variable "assign_app_cosmosdb_role" {
+  description = "When true, creates the Cosmos DB Built-in Data Contributor role assignment for the app UAMI. Must be a literal bool so Terraform can resolve count at plan time."
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)

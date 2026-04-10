@@ -150,7 +150,7 @@ resource "azurerm_cosmosdb_sql_role_assignment" "deployer_data_contributor" {
 }
 
 resource "azurerm_cosmosdb_sql_role_assignment" "app_data_contributor" {
-  count = var.app_uami_principal_id != null ? 1 : 0
+  count = var.assign_app_cosmosdb_role ? 1 : 0
 
   resource_group_name = var.resource_group_name
   account_name        = azurerm_cosmosdb_account.cosmos.name

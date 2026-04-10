@@ -98,9 +98,10 @@ module "cosmosdb" {
   unique_suffix         = local.unique_suffix
   enable_serverless     = var.enable_serverless
   db_name               = var.cosmos_db_name
-  deployer_object_id    = local.deployment_principal_object_id
-  app_uami_principal_id = module.keyvault.uami_principal_id
-  tags                  = local.common_tags
+  deployer_object_id       = local.deployment_principal_object_id
+  app_uami_principal_id    = module.keyvault.uami_principal_id
+  assign_app_cosmosdb_role = true
+  tags                     = local.common_tags
 }
 
 # ---------------------------------------------------------------------------
