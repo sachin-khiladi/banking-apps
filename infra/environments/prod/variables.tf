@@ -60,19 +60,21 @@ variable "rbac_bootstrap_skip_sp_aad_check" {
 
 variable "container_image" {
   type        = string
-  description = "Container image to deploy (registry/image:tag)"
+  description = "Container image to deploy (registry/image:tag or registry/image@sha256:digest)"
 
   validation {
-    # Allow either an ACR image (used at steady state by CD) or the well-known
+    # Allow either an ACR image with immutable identity semantics
+    # (versioned/non-latest tag or digest), or the well-known immutable
     # MCR bootstrap placeholder used during initial infra provisioning.
     # Terraform ignores image changes after first apply (lifecycle.ignore_changes
     # in modules/container_app/main.tf), so the placeholder is never deployed
     # to real traffic — CD always owns the running revision.
     condition = (
-      can(regex("^[a-z0-9]+\\.azurecr\\.io/.+:.+$", trimspace(var.container_image))) ||
-      trimspace(var.container_image) == "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
+      can(regex("^[a-z0-9]+\\.azurecr\\.io/.+:(?!latest$)[A-Za-z0-9][A-Za-z0-9._-]*$", trimspace(var.container_image))) ||
+      can(regex("^[a-z0-9]+\\.azurecr\\.io/.+@sha256:[a-fA-F0-9]{64}$", trimspace(var.container_image))) ||
+      trimspace(var.container_image) == "mcr.microsoft.com/azuredocs/containerapps-helloworld@sha256:e9b3e7c34664c7cffd7144864b0e4eec369bfde80068f9095dc63b37058bec"
     )
-    error_message = "container_image must be an ACR image (*.azurecr.io/repo:tag) or the bootstrap placeholder 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'."
+    error_message = "container_image must be an immutable ACR image (*.azurecr.io/repo:<non-latest-tag> or *.azurecr.io/repo@sha256:<digest>) or the approved bootstrap placeholder digest."
   }
 }
 

@@ -21,7 +21,7 @@ rbac_bootstrap_role_definition_names = ["User Access Administrator", "Contributo
 rbac_bootstrap_skip_sp_aad_check     = true
 
 # ---------------------------------------------------------------------------
-# Container image — placeholder for initial infrastructure provisioning only.
+# Container image — immutable bootstrap placeholder for initial infrastructure provisioning only.
 # Terraform provisions the Container App with this public image so that infra
 # apply succeeds without requiring an ACR image to exist first.
 # The CD workflow (.github/workflows/cd.yml) owns the real app image
@@ -29,7 +29,7 @@ rbac_bootstrap_skip_sp_aad_check     = true
 # Terraform ignores image changes after initial provisioning
 # (lifecycle.ignore_changes in modules/container_app/main.tf).
 # ---------------------------------------------------------------------------
-container_image = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
+container_image = "mcr.microsoft.com/azuredocs/containerapps-helloworld@sha256:e9b3e7c34664c7cffd7144864b0e4eec369bfde80068f9095dc63b37058bec"
 
 # Container sizing — larger resources for production load
 container_cpu    = 1.0
