@@ -1,0 +1,8 @@
+{
+  "hooks": [
+    {
+      "on": "session.start",
+      "run": "mkdir -p .copilot-logs && ./.github/hooks-scripts/session-start.sh"
+    }
+  ]
+}

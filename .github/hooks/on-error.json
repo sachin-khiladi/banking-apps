@@ -1,0 +1,8 @@
+{
+  "hooks": [
+    {
+      "on": "onError",
+      "run": "exec ./.github/hooks-scripts/on-error-log.sh"
+    }
+  ]
+}

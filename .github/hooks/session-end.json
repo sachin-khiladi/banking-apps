@@ -1,0 +1,8 @@
+{
+  "hooks": [
+    {
+      "on": "session.end",
+      "run": "exec ./.github/hooks-scripts/log-session-end.sh"
+    }
+  ]
+}

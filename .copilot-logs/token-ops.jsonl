@@ -1,0 +1,20 @@
+{
+  "time": "2026-04-10T07:59:28+05:30",
+  "session": "unknown",
+  "model": "unknown",
+  "tool": "unknown",
+  "masked_prompt": "",
+  "tokens_used": 0,
+  "output_size_bytes": 0
+}
+{
+  "time": "2026-04-10T07:59:48+05:30",
+  "session": "unknown",
+  "model": "unknown",
+  "tool": "unknown",
+  "masked_prompt": "",
+  "tokens_used": 0,
+  "output_size_bytes": 0
+}
+{"time":"2026-04-10T07:59:57+05:30","session":"unknown","model":"unknown","tool":"unknown","masked_prompt":"","tokens_used":0,"output_size_bytes":0}
+{"time":"2026-04-10T08:00:06+05:30","session":"unknown","model":"unknown","tool":"unknown","masked_prompt":"","tokens_used":0,"output_size_bytes":0}

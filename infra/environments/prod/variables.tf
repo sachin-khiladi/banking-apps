@@ -63,8 +63,16 @@ variable "container_image" {
   description = "Container image to deploy (registry/image:tag)"
 
   validation {
-    condition     = can(regex("^[a-z0-9]+\\.azurecr\\.io/.+:.+$", trimspace(var.container_image)))
-    error_message = "Production container_image must reference an Azure Container Registry image with an explicit tag."
+    # Allow either an ACR image (used at steady state by CD) or the well-known
+    # MCR bootstrap placeholder used during initial infra provisioning.
+    # Terraform ignores image changes after first apply (lifecycle.ignore_changes
+    # in modules/container_app/main.tf), so the placeholder is never deployed
+    # to real traffic — CD always owns the running revision.
+    condition = (
+      can(regex("^[a-z0-9]+\\.azurecr\\.io/.+:.+$", trimspace(var.container_image))) ||
+      trimspace(var.container_image) == "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
+    )
+    error_message = "container_image must be an ACR image (*.azurecr.io/repo:tag) or the bootstrap placeholder 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'."
   }
 }
 
