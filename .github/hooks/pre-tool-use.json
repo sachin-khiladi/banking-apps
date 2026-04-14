@@ -1,0 +1,8 @@
+{
+  "hooks": [
+    {
+      "on": "preToolUse",
+      "run": "exec ./.github/hooks-scripts/pre-tool-check.sh"
+    }
+  ]
+}

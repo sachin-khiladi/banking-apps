@@ -1,0 +1,8 @@
+{
+  "hooks": [
+    {
+      "on": "postToolUse",
+      "run": "exec ./.github/hooks-scripts/post-tool-log.sh"
+    }
+  ]
+}

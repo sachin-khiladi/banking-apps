@@ -52,6 +52,7 @@ jobs:
       release_environment: dev
       deployment_environment: banking-dev
       verify_image: false
+      additional_deploy_args: "--revision-suffix ${{ needs.prepare.outputs.image_tag }}"
       azure_client_id: ${{ vars.AZURE_CLIENT_ID }}
       azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
       azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -77,6 +78,7 @@ jobs:
       release_environment: prd
       deployment_environment: banking-prod
       verify_image: false
+      additional_deploy_args: "--revision-suffix ${{ needs.prepare.outputs.image_tag }}"
       azure_client_id: ${{ vars.AZURE_CLIENT_ID }}
       azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
       azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
