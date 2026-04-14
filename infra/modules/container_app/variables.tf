@@ -53,12 +53,12 @@ variable "log_analytics_workspace_id" {
 # -- Container image --------------------------------------------------------
 
 variable "container_image" {
-  description = "Container image to deploy (registry/image:tag)"
+  description = "Container image to deploy (registry/image:tag or registry/image@sha256:digest)"
   type        = string
 
   validation {
-    condition     = can(regex("^.+/.+:.+$", trimspace(var.container_image)))
-    error_message = "container_image must be in the format registry/repository:tag."
+    condition     = can(regex("^.+/.+(:[^:@\\s]+|@sha256:[a-fA-F0-9]{64})$", trimspace(var.container_image)))
+    error_message = "container_image must be in the format registry/repository:tag or registry/repository@sha256:<64-hex-digest>."
   }
 }
 

@@ -129,6 +129,37 @@ stages:
 
           # ── Init ──────────────────────────────────────────────────────────
           - task: AzureCLI@2
+            displayName: "ensure Azure resource providers · dev"
+            inputs:
+              azureSubscription: $(SC_DEV)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              inlineScript: |
+                set -euo pipefail
+                providers=(
+                  "Microsoft.App"
+                  "Microsoft.AppConfiguration"
+                  "Microsoft.Authorization"
+                  "Microsoft.ContainerRegistry"
+                  "Microsoft.DocumentDB"
+                  "Microsoft.Insights"
+                  "Microsoft.KeyVault"
+                  "Microsoft.OperationalInsights"
+                  "Microsoft.Storage"
+                )
+
+                for namespace in "${providers[@]}"; do
+                  state="$(az provider show --namespace "$namespace" --query registrationState -o tsv 2>/dev/null || echo "NotRegistered")"
+                  if [[ "$state" != "Registered" ]]; then
+                    echo "Registering provider: $namespace (current: $state)"
+                    az provider register --namespace "$namespace" --wait
+                  else
+                    echo "Provider already registered: $namespace"
+                  fi
+                done
+
+          - task: AzureCLI@2
             displayName: "init · dev"
             inputs:
               azureSubscription: $(SC_DEV)
@@ -299,6 +330,37 @@ stages:
                   echo "##vso[task.logissue type=warning]Unformatted .tf files found. Run: terraform fmt -recursive infra/"
                   echo "##vso[task.complete result=SucceededWithIssues;]"
                 fi
+
+          - task: AzureCLI@2
+            displayName: "ensure Azure resource providers · prod"
+            inputs:
+              azureSubscription: $(SC_PROD)
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              inlineScript: |
+                set -euo pipefail
+                providers=(
+                  "Microsoft.App"
+                  "Microsoft.AppConfiguration"
+                  "Microsoft.Authorization"
+                  "Microsoft.ContainerRegistry"
+                  "Microsoft.DocumentDB"
+                  "Microsoft.Insights"
+                  "Microsoft.KeyVault"
+                  "Microsoft.OperationalInsights"
+                  "Microsoft.Storage"
+                )
+
+                for namespace in "${providers[@]}"; do
+                  state="$(az provider show --namespace "$namespace" --query registrationState -o tsv 2>/dev/null || echo "NotRegistered")"
+                  if [[ "$state" != "Registered" ]]; then
+                    echo "Registering provider: $namespace (current: $state)"
+                    az provider register --namespace "$namespace" --wait
+                  else
+                    echo "Provider already registered: $namespace"
+                  fi
+                done
 
           - task: AzureCLI@2
             displayName: "init · prod"

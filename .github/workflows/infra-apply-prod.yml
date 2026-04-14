@@ -47,6 +47,31 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Ensure required Azure resource providers are registered (prod)
+        run: |
+          set -euo pipefail
+          providers=(
+            "Microsoft.App"
+            "Microsoft.AppConfiguration"
+            "Microsoft.Authorization"
+            "Microsoft.ContainerRegistry"
+            "Microsoft.DocumentDB"
+            "Microsoft.Insights"
+            "Microsoft.KeyVault"
+            "Microsoft.OperationalInsights"
+            "Microsoft.Storage"
+          )
+
+          for namespace in "${providers[@]}"; do
+            state="$(az provider show --namespace "$namespace" --query registrationState -o tsv 2>/dev/null || echo "NotRegistered")"
+            if [[ "$state" != "Registered" ]]; then
+              echo "Registering provider: $namespace (current: $state)"
+              az provider register --namespace "$namespace" --wait
+            else
+              echo "Provider already registered: $namespace"
+            fi
+          done
+
       - name: Validate required tfvars inputs (prod)
         run: |
           python3 - <<'PY'
