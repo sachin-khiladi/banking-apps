@@ -185,6 +185,19 @@ class TestGetProfileEndpoint:
         response = client.get("/profile")
         assert response.status_code == 503
 
+    def test_get_profile_unexpected_exception_returns_500(
+        self, mock_profile_service: MagicMock
+    ) -> None:
+        mock_profile_service.get_profile = AsyncMock(
+            side_effect=RuntimeError("disk full")
+        )
+        client = TestClient(
+            _make_profile_app(CUSTOMER_USER, mock_profile_service),
+            raise_server_exceptions=False,
+        )
+        response = client.get("/profile")
+        assert response.status_code == 500
+
 
 # ── PATCH /profile ─────────────────────────────────────────────────────────────
 
@@ -266,3 +279,16 @@ class TestUpdateProfileEndpoint:
         """Sending an empty body is valid — all fields are optional in PATCH."""
         response = profile_client.patch("/profile", json={})
         assert response.status_code == 200
+
+    def test_update_profile_unexpected_exception_returns_500(
+        self, mock_profile_service: MagicMock
+    ) -> None:
+        mock_profile_service.update_profile = AsyncMock(
+            side_effect=RuntimeError("unexpected")
+        )
+        client = TestClient(
+            _make_profile_app(CUSTOMER_USER, mock_profile_service),
+            raise_server_exceptions=False,
+        )
+        response = client.patch("/profile", json=VALID_PATCH_BODY)
+        assert response.status_code == 500

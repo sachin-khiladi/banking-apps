@@ -8,7 +8,8 @@ All business logic is delegated to UserProfileService.
 
 from __future__ import annotations
 
-from typing import Annotated
+import logging
+from typing import Annotated, NoReturn
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -18,6 +19,8 @@ from src.models.user_profile import UserProfileResponse, UserProfileUpdateReques
 from src.services.user_profile_service import UserProfileService
 
 # ── Router ────────────────────────────────────────────────────────────────────
+
+logger = logging.getLogger(__name__)
 
 profile_router = APIRouter(prefix="/profile", tags=["profile"])
 
@@ -44,7 +47,7 @@ CurrentUser = Annotated[dict, Depends(get_current_user)]
 # ── Domain exception to HTTP response mapping ─────────────────────────────────
 
 
-def _raise_http(exc: Exception) -> None:
+def _raise_http(exc: Exception) -> NoReturn:
     """Translate a domain exception to an HTTPException.
 
     Args:
@@ -54,11 +57,12 @@ def _raise_http(exc: Exception) -> None:
         HTTPException: Always raised with the appropriate HTTP status code.
     """
     if isinstance(exc, UserProfileNotFoundException):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    logger.exception("Unexpected exception in profile API handler", exc_info=exc)
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail="An unexpected error occurred.",
-    )
+    ) from exc
 
 
 # ── Profile routes ────────────────────────────────────────────────────────────
