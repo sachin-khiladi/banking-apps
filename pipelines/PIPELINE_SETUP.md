@@ -219,11 +219,28 @@ The GitHub workflows use federated identity (`azure/login`) with generalized rep
 
 ### Required repository variables for `cd.yml`, reusable ACA deploy, and `.github/workflows/infra-terraform.yml`
 
+The following three variables must be set manually (once) before any workflow runs:
+
 - `AZURE_CLIENT_ID`
 - `AZURE_TENANT_ID`
 - `AZURE_SUBSCRIPTION_ID`
 
 Recommended: define these as repository-level variables, or environment-level variables if you later need per-environment identities.
+
+### Auto-populated variables (set by infra-apply workflows)
+
+The following variables are written automatically by `infra-apply-dev.yml` and `infra-apply-prod.yml` after a successful `terraform apply`, using `gh variable set`. They **must not** be created manually — the infra apply step is the single source of truth.
+
+| Variable | Set by | Value source |
+|----------|--------|--------------|
+| `AZURE_RESOURCE_GROUP_DEV` | `infra-apply-dev.yml` | `terraform output resource_group_name` |
+| `CONTAINER_APP_NAME_DEV` | `infra-apply-dev.yml` | `terraform output container_app_name` |
+| `ACR_LOGIN_SERVER_DEV` | `infra-apply-dev.yml` | `terraform output acr_login_server` |
+| `AZURE_RESOURCE_GROUP_PROD` | `infra-apply-prod.yml` | `terraform output resource_group_name` |
+| `CONTAINER_APP_NAME_PROD` | `infra-apply-prod.yml` | `terraform output container_app_name` |
+| `ACR_LOGIN_SERVER_PROD` | `infra-apply-prod.yml` | `terraform output acr_login_server` |
+
+These variables are then consumed by `cd.yml` when deploying the container image to Azure Container Apps.
 
 ---
 
