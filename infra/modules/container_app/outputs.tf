@@ -3,6 +3,11 @@ output "container_app_environment_id" {
   value       = azurerm_container_app_environment.cae.id
 }
 
+output "container_app_name" {
+  description = "Container App resource name"
+  value       = azurerm_container_app.app.name
+}
+
 output "container_app_fqdn" {
   description = "Canonical ingress fully-qualified domain name of the Container App"
   value       = azurerm_container_app.app.ingress[0].fqdn

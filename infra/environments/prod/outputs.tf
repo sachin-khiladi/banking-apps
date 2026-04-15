@@ -37,6 +37,11 @@ output "container_app_url" {
   value = module.container_app.container_app_url
 }
 
+output "container_app_name" {
+  description = "Container App resource name"
+  value       = module.container_app.container_app_name
+}
+
 output "container_app_fqdn" {
   value = module.container_app.container_app_fqdn
 }
