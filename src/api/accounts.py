@@ -9,7 +9,8 @@ All business logic is delegated to AccountService.
 
 from __future__ import annotations
 
-from typing import Annotated
+import logging
+from typing import Annotated, NoReturn
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
@@ -32,6 +33,8 @@ from src.models.account import (
 from src.services.account_service import AccountService
 
 # ── Routers ───────────────────────────────────────────────────────────────────
+
+logger = logging.getLogger(__name__)
 
 customer_router = APIRouter(prefix="/accounts", tags=["accounts"])
 admin_router = APIRouter(prefix="/admin/accounts", tags=["admin-accounts"])
@@ -60,7 +63,7 @@ BankEmployee = Annotated[dict, Depends(require_bank_employee)]
 # ── Domain exception to HTTP response mapping ─────────────────────────────────
 
 
-def _raise_http(exc: Exception) -> None:
+def _raise_http(exc: Exception) -> NoReturn:
     """Translate a domain exception to an HTTPException.
 
     Args:
@@ -70,17 +73,18 @@ def _raise_http(exc: Exception) -> None:
         HTTPException: Always raised with the appropriate HTTP status code.
     """
     if isinstance(exc, AccountNotFoundException):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     if isinstance(exc, AccountTypeNotFoundException):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     if isinstance(exc, AccountAlreadyClosedException):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     if isinstance(exc, InsufficientPermissionsException):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    logger.exception("Unexpected exception in account API handler", exc_info=exc)
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail="An unexpected error occurred.",
-    )
+    ) from exc
 
 
 # ── Customer routes ───────────────────────────────────────────────────────────

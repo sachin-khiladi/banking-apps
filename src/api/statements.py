@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Annotated
+import logging
+from typing import Annotated, NoReturn
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -10,6 +11,8 @@ from src.auth.oauth2 import get_current_user
 from src.exceptions.domain_exceptions import ValidationException
 from src.models.statement import StatementEmailRequest, StatementEmailResponse
 from src.services.statement_service import StatementService
+
+logger = logging.getLogger(__name__)
 
 statement_router = APIRouter(prefix="/statements", tags=["statements"])
 
@@ -33,7 +36,7 @@ StatementServiceDep = Annotated[StatementService, Depends(get_statement_service)
 CurrentUser = Annotated[dict, Depends(get_current_user)]
 
 
-def _raise_http(exc: Exception) -> None:
+def _raise_http(exc: Exception) -> NoReturn:
     """Translate domain exceptions to HTTP responses.
 
     Args:
@@ -46,11 +49,12 @@ def _raise_http(exc: Exception) -> None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=exc.errors,
-        )
+        ) from exc
+    logger.exception("Unexpected exception in statement API handler", exc_info=exc)
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail="An unexpected error occurred.",
-    )
+    ) from exc
 
 
 @statement_router.post(
