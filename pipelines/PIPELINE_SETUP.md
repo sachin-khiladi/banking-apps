@@ -227,9 +227,9 @@ The following three variables must be set manually (once) before any workflow ru
 
 Recommended: define these as repository-level variables, or environment-level variables if you later need per-environment identities.
 
-### Auto-populated variables (set by infra-apply workflows)
+### Auto-populated variables (best-effort, set by infra-apply workflows)
 
-The following variables are written automatically by `infra-apply-dev.yml` and `infra-apply-prod.yml` after a successful `terraform apply`, using `gh variable set`. They **must not** be created manually — the infra apply step is the single source of truth.
+The following variables are written by `infra-apply-dev.yml` and `infra-apply-prod.yml` after a successful `terraform apply`, using `gh variable set`. If repository variable write permissions are restricted, the workflows continue and CD falls back to naming conventions (`rg-bankapi-<env>`, `ca-bankapi-<env>`) and resolves ACR from Azure at deploy time.
 
 | Variable | Set by | Value source |
 |----------|--------|--------------|

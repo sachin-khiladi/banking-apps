@@ -1,14 +1,14 @@
-02:27:11 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 201 Created"
-02:27:11 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 201 Created"
-02:27:11 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 422 Unprocessable Entity"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 200 OK"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 200 OK"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/CURRENT "HTTP/1.1 404 Not Found"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/INVALID "HTTP/1.1 422 Unprocessable Entity"
-02:27:11 - src.api.accounts - ERROR - Unexpected exception in account API handler
+02:30:16 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 201 Created"
+02:30:16 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 201 Created"
+02:30:16 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 422 Unprocessable Entity"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/CURRENT "HTTP/1.1 404 Not Found"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/INVALID "HTTP/1.1 422 Unprocessable Entity"
+02:30:16 - src.api.accounts - ERROR - Unexpected exception in account API handler
 Traceback (most recent call last):
   File "/home/runner/work/banking-apps/banking-apps/src/api/accounts.py", line 162, in get_balance_by_account_type
     return await service.get_balance_by_type(
@@ -19,28 +19,28 @@ Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/unittest/mock.py", line 2240, in _execute_mock_call
     raise effect
 RuntimeError: unexpected
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 500 Internal Server Error"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 404 Not Found"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 403 Forbidden"
-02:27:11 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
-02:27:11 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 409 Conflict"
-02:27:11 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 404 Not Found"
-02:27:11 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 200 OK"
-02:27:11 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 409 Conflict"
-02:27:11 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 404 Not Found"
-02:27:11 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 422 Unprocessable Entity"
-02:27:11 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 403 Forbidden"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts?include_closed=false "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 404 Not Found"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 403 Forbidden"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 503 Service Unavailable"
-02:27:12 - src.api.accounts - ERROR - Unexpected exception in account API handler
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 500 Internal Server Error"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 404 Not Found"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 403 Forbidden"
+02:30:16 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 409 Conflict"
+02:30:16 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 404 Not Found"
+02:30:16 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 409 Conflict"
+02:30:16 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 404 Not Found"
+02:30:16 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 422 Unprocessable Entity"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 403 Forbidden"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts?include_closed=false "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 200 OK"
+02:30:16 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 404 Not Found"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 403 Forbidden"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 503 Service Unavailable"
+02:30:17 - src.api.accounts - ERROR - Unexpected exception in account API handler
 Traceback (most recent call last):
   File "/home/runner/work/banking-apps/banking-apps/src/api/accounts.py", line 110, in create_account
     return await service.create_account(payload, owner_id=current_user["sub"])
@@ -51,17 +51,17 @@ Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/unittest/mock.py", line 2240, in _execute_mock_call
     raise effect
 RuntimeError: disk full
-02:27:12 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 500 Internal Server Error"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 404 Not Found"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 404 Not Found"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 401 Unauthorized"
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 503 Service Unavailable"
-02:27:12 - src.api.profile - ERROR - Unexpected exception in profile API handler
+02:30:17 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 500 Internal Server Error"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 404 Not Found"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 404 Not Found"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 401 Unauthorized"
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 503 Service Unavailable"
+02:30:17 - src.api.profile - ERROR - Unexpected exception in profile API handler
 Traceback (most recent call last):
   File "/home/runner/work/banking-apps/banking-apps/src/api/profile.py", line 95, in get_profile
     return await service.get_profile(current_user["sub"])
@@ -69,17 +69,17 @@ Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/unittest/mock.py", line 2240, in _execute_mock_call
     raise effect
 RuntimeError: disk full
-02:27:12 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 500 Internal Server Error"
-02:27:12 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
-02:27:12 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
-02:27:12 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
-02:27:12 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-02:27:12 - src.api.profile - ERROR - Unexpected exception in profile API handler
+02:30:17 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 500 Internal Server Error"
+02:30:17 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
+02:30:17 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
+02:30:17 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
+02:30:17 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+02:30:17 - src.api.profile - ERROR - Unexpected exception in profile API handler
 Traceback (most recent call last):
   File "/home/runner/work/banking-apps/banking-apps/src/api/profile.py", line 131, in update_profile
     return await service.update_profile(current_user["sub"], payload)
@@ -87,13 +87,13 @@ Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/unittest/mock.py", line 2240, in _execute_mock_call
     raise effect
 RuntimeError: unexpected
-02:27:12 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 500 Internal Server Error"
-02:27:12 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
-02:27:12 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 400 Bad Request"
-02:27:12 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 400 Bad Request"
-02:27:12 - src.api.statements - ERROR - Unexpected exception in statement API handler
+02:30:17 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 500 Internal Server Error"
+02:30:17 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 400 Bad Request"
+02:30:17 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 400 Bad Request"
+02:30:17 - src.api.statements - ERROR - Unexpected exception in statement API handler
 Traceback (most recent call last):
   File "/home/runner/work/banking-apps/banking-apps/src/api/statements.py", line 87, in email_statement
     return await service.email_statement(owner_id=owner_id, payload=payload)
@@ -101,19 +101,19 @@ Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/unittest/mock.py", line 2240, in _execute_mock_call
     raise effect
 RuntimeError: boom
-02:27:12 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 500 Internal Server Error"
-02:27:12 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 503 Service Unavailable"
-02:27:12 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 401 Unauthorized"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/healthz "HTTP/1.1 404 Not Found"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/v1/health "HTTP/1.1 404 Not Found"
-02:27:14 - httpx - INFO - HTTP Request: OPTIONS http://testserver/health "HTTP/1.1 200 OK"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
-02:27:14 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+02:30:17 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 500 Internal Server Error"
+02:30:17 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 503 Service Unavailable"
+02:30:17 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 401 Unauthorized"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/healthz "HTTP/1.1 404 Not Found"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/v1/health "HTTP/1.1 404 Not Found"
+02:30:19 - httpx - INFO - HTTP Request: OPTIONS http://testserver/health "HTTP/1.1 200 OK"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+02:30:19 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
