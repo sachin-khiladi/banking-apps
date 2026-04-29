@@ -99,6 +99,33 @@ jobs:
           fi
           echo "DEPLOY_IMAGE_REF=${image_ref}" >> "$GITHUB_ENV"
 
+      - name: Verify Image Exists in ACR
+        run: |
+          set -euo pipefail
+          # Only check ACR images (skip bootstrap/non-ACR references)
+          if [[ "${DEPLOY_IMAGE_REF}" != *".azurecr.io/"* ]]; then
+            echo "Image '${DEPLOY_IMAGE_REF}' is not an ACR image — skipping ACR existence check."
+          else
+            # Extract the ACR registry name (everything before '.azurecr.io/')
+            ACR_NAME="${DEPLOY_IMAGE_REF%%.azurecr.io/*}"
+            # Strip registry FQDN prefix to get repo:tag (e.g. "banking-system/fastapi-azure-app:sha-abc")
+            IMAGE_WITH_TAG="${DEPLOY_IMAGE_REF#*azurecr.io/}"
+            if [[ -z "${ACR_NAME}" || "${IMAGE_WITH_TAG}" == "${DEPLOY_IMAGE_REF}" ]]; then
+              echo "::error::Could not parse ACR registry name or image from '${DEPLOY_IMAGE_REF}'. Expected format: <registry>.azurecr.io/<repo>:<tag>"
+              exit 1
+            fi
+            echo "Checking image exists: ${DEPLOY_IMAGE_REF}"
+            if ! az acr repository show \
+                 --name "${ACR_NAME}" \
+                 --image "${IMAGE_WITH_TAG}" \
+                 --output none 2>/dev/null; then
+              echo "::error::Image '${DEPLOY_IMAGE_REF}' was not found in ACR '${ACR_NAME}'."
+              echo "::error::Ensure the CI build workflow ran successfully and pushed the image for this commit before triggering deployment."
+              exit 1
+            fi
+            echo "Image verified in ACR: ${DEPLOY_IMAGE_REF}"
+          fi
+
       - name: Verify Image Integrity & Attestation
         if: ${{ inputs.verify_image == true }}
         run: |

@@ -23,6 +23,7 @@ permissions:
   contents: read
   id-token: write
   actions: write
+  variables: write
 
 env:
   TF_VERSION: "1.9.8"
