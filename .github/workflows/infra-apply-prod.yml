@@ -17,7 +17,6 @@ permissions:
   contents: read
   id-token: write
   actions: write
-  variables: write
 
 env:
   TF_VERSION: "1.9.8"
@@ -144,6 +143,7 @@ jobs:
         run: terraform apply -input=false -auto-approve tfplan
 
       - name: Export Terraform outputs to GitHub repository variables (prod)
+        continue-on-error: true
         working-directory: infra/environments/prod
         env:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
@@ -151,10 +151,11 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           RG=$(terraform output -raw resource_group_name)
           CA=$(terraform output -raw container_app_name)
           ACR=$(terraform output -raw acr_login_server)
-          gh variable set AZURE_RESOURCE_GROUP_PROD --body "$RG"  --repo "$GITHUB_REPOSITORY"
-          gh variable set CONTAINER_APP_NAME_PROD   --body "$CA"  --repo "$GITHUB_REPOSITORY"
-          gh variable set ACR_LOGIN_SERVER_PROD      --body "$ACR" --repo "$GITHUB_REPOSITORY"
+          gh variable set AZURE_RESOURCE_GROUP_PROD --body "$RG" --repo "$GITHUB_REPOSITORY" || echo "::warning::Unable to set AZURE_RESOURCE_GROUP_PROD repository variable."
+          gh variable set CONTAINER_APP_NAME_PROD --body "$CA" --repo "$GITHUB_REPOSITORY" || echo "::warning::Unable to set CONTAINER_APP_NAME_PROD repository variable."
+          gh variable set ACR_LOGIN_SERVER_PROD --body "$ACR" --repo "$GITHUB_REPOSITORY" || echo "::warning::Unable to set ACR_LOGIN_SERVER_PROD repository variable."
           echo "Exported prod deployment variables: RG=${RG}, CA=${CA}, ACR=${ACR}"

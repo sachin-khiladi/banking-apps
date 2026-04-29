@@ -58,6 +58,9 @@ jobs:
   deploy-aca:
     runs-on: ubuntu-latest
     environment: ${{ inputs.deployment_environment }}
+    env:
+      DEPLOY_RESOURCE_GROUP: ${{ inputs.resource_group_name != '' && inputs.resource_group_name || format('rg-bankapi-{0}', inputs.release_environment == 'prd' && 'prod' || inputs.release_environment) }}
+      DEPLOY_CONTAINER_APP: ${{ inputs.container_app_name != '' && inputs.container_app_name || format('ca-bankapi-{0}', inputs.release_environment == 'prd' && 'prod' || inputs.release_environment) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -82,6 +85,20 @@ jobs:
           tenant-id: ${{ inputs.azure_tenant_id }}
           subscription-id: ${{ inputs.azure_subscription_id }}
 
+      - name: Resolve container image reference
+        run: |
+          set -euo pipefail
+          image_ref="${{ inputs.container_image_ref }}"
+          if [[ "$image_ref" == /* ]]; then
+            acr_login_server="$(az acr list --resource-group "${DEPLOY_RESOURCE_GROUP}" --query "[0].loginServer" --output tsv)"
+            if [[ -z "${acr_login_server}" ]]; then
+              echo "::error::Unable to resolve ACR login server from resource group '${DEPLOY_RESOURCE_GROUP}'."
+              exit 1
+            fi
+            image_ref="${acr_login_server}${image_ref}"
+          fi
+          echo "DEPLOY_IMAGE_REF=${image_ref}" >> "$GITHUB_ENV"
+
       - name: Verify Image Integrity & Attestation
         if: ${{ inputs.verify_image == true }}
         run: |
@@ -97,17 +114,18 @@ jobs:
 
       - name: Deploy to Azure Container Apps
         run: |
+          set -euo pipefail
           echo "Deploying container image to Azure Container Apps..."
           az containerapp update \
-            --resource-group "${{ inputs.resource_group_name }}" \
-            --name "${{ inputs.container_app_name }}" \
-            --image "${{ inputs.container_image_ref }}" \
+            --resource-group "${DEPLOY_RESOURCE_GROUP}" \
+            --name "${DEPLOY_CONTAINER_APP}" \
+            --image "${DEPLOY_IMAGE_REF}" \
             ${{ inputs.additional_deploy_args }}
           
           echo "Waiting for deployment to complete..."
           az containerapp show \
-            --resource-group "${{ inputs.resource_group_name }}" \
-            --name "${{ inputs.container_app_name }}" \
+            --resource-group "${DEPLOY_RESOURCE_GROUP}" \
+            --name "${DEPLOY_CONTAINER_APP}" \
             --query "properties.runningStatus" \
             --output tsv
 
@@ -117,9 +135,9 @@ jobs:
           cat > deployment-attestation.json <<'EOF'
           {
             "deployment_type": "azure-container-apps",
-            "container_app_name": "${{ inputs.container_app_name }}",
-            "resource_group": "${{ inputs.resource_group_name }}",
-            "container_image": "${{ inputs.container_image_ref }}",
+            "container_app_name": "${DEPLOY_CONTAINER_APP}",
+            "resource_group": "${DEPLOY_RESOURCE_GROUP}",
+            "container_image": "${DEPLOY_IMAGE_REF}",
             "release_environment": "${{ inputs.release_environment }}",
             "deployed_by": "${{ github.actor }}",
             "deployed_at": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
