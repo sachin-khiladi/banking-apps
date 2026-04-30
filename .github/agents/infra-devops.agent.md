@@ -102,7 +102,75 @@ az containerapp revision list \
   -o table
 ```
 
-### Step 3 — Build and Security Validation (mandatory)
+### Step 3 — GitHub Actions Workflow YAML Validation (mandatory)
+
+Whenever any `.github/workflows/*.yml` file is created or modified, run this gate **before** proceeding to the build/security step. Zero errors allowed.
+
+**3a — YAML syntax and permission-scope check:**
+```bash
+python3 - <<'EOF'
+import yaml, sys, pathlib
+
+VALID_PERMISSIONS = {
+    "actions", "checks", "contents", "deployments", "discussions",
+    "id-token", "issues", "packages", "pages", "pull-requests",
+    "repository-projects", "security-events", "statuses", "workflows"
+}
+
+errors = []
+for f in sorted(pathlib.Path(".github/workflows").glob("*.yml")):
+    try:
+        doc = yaml.safe_load(f.read_text())
+        # Top-level permissions
+        perms = doc.get("permissions", {})
+        if isinstance(perms, dict):
+            invalid = set(perms) - VALID_PERMISSIONS
+            if invalid:
+                errors.append(f"{f}: invalid top-level permission scope(s): {sorted(invalid)}")
+        # Per-job permissions
+        for job_id, job in (doc.get("jobs") or {}).items():
+            jperms = job.get("permissions", {})
+            if isinstance(jperms, dict):
+                invalid = set(jperms) - VALID_PERMISSIONS
+                if invalid:
+                    errors.append(f"{f} (job '{job_id}'): invalid permission scope(s): {sorted(invalid)}")
+    except yaml.YAMLError as exc:
+        errors.append(f"{f}: YAML parse error: {exc}")
+
+if errors:
+    print("YAML validation FAILED:")
+    for e in errors:
+        print(" ", e)
+    sys.exit(1)
+print("All workflow YAML files valid.")
+EOF
+```
+
+**3b — SHA tag truncation consistency check:**
+```bash
+# Build workflow is the source of truth for the tag format used in ACR.
+# cd.yml must use the same truncation length, or deployment will get MANIFEST_UNKNOWN.
+BUILD_LEN=$(grep -oP 'GITHUB_SHA:0:\K\d+' .github/workflows/workflow-build-v1.0.0.yml 2>/dev/null | head -1)
+CD_LEN=$(grep -oP 'SHORT_SHA:0:\K\d+' .github/workflows/cd.yml 2>/dev/null | head -1)
+if [[ -z "$BUILD_LEN" || -z "$CD_LEN" ]]; then
+  echo "WARNING: Could not find SHA truncation expressions — verify manually."
+elif [[ "$BUILD_LEN" != "$CD_LEN" ]]; then
+  echo "SHA truncation MISMATCH: workflow-build uses ${BUILD_LEN} chars, cd.yml uses ${CD_LEN} chars."
+  echo "Fix cd.yml to use :0:${BUILD_LEN} so the image tag matches what was pushed to ACR."
+  exit 1
+fi
+echo "SHA truncation consistent: ${BUILD_LEN:-N/A} chars."
+```
+
+Rules:
+- Stop at the first failure; report the exact command output in your handoff notes.
+- Invalid GitHub Actions permission scopes (e.g. `variables: write`) are not recoverable at runtime — they abort the entire workflow before any job runs.
+- A SHA length mismatch causes `MANIFEST_UNKNOWN` at deploy time regardless of a successful build.
+- Never proceed to Step 4 (build/scan) if Step 3a or 3b reports an error.
+
+---
+
+### Step 4 — Build and Security Validation (mandatory)
 
 Before writing your completion report, validate image build and security scan:
 
