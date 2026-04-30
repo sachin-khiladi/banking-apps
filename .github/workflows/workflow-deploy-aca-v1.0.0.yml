@@ -148,7 +148,7 @@ jobs:
             --name "${DEPLOY_CONTAINER_APP}" \
             --image "${DEPLOY_IMAGE_REF}" \
             ${{ inputs.additional_deploy_args }}
-          
+
           echo "Waiting for deployment to complete..."
           az containerapp show \
             --resource-group "${DEPLOY_RESOURCE_GROUP}" \

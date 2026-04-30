@@ -52,8 +52,8 @@ pool:
 
 variables:
   TF_VERSION: "1.9.8"
-  SC_DEV:     "sc-bankapi-dev-tf"   # ADO Service Connection name — dev
-  SC_PROD:    "sc-bankapi-prod-tf"  # ADO Service Connection name — prod
+  SC_DEV: "sc-bankapi-dev-tf"  # ADO Service Connection name — dev
+  SC_PROD: "sc-bankapi-prod-tf"  # ADO Service Connection name — prod
 
 stages:
 

@@ -43,8 +43,8 @@ variables:
 extends:
   template: templates/pipelines/pr-validation.yml@templates
   parameters:
-    pythonVersion:            $(pythonVersion)
-    pylintSrcPath:            $(pylintSrcPath)
-    pytestCoverageThreshold:  $(pytestCoverageThreshold)
-    buildId:                  $(Build.BuildId)
-    sourceBranch:             $(Build.SourceBranch)
+    pythonVersion: $(pythonVersion)
+    pylintSrcPath: $(pylintSrcPath)
+    pytestCoverageThreshold: $(pytestCoverageThreshold)
+    buildId: $(Build.BuildId)
+    sourceBranch: $(Build.SourceBranch)

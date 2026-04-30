@@ -47,10 +47,10 @@ pool:
 
 variables:
   TF_VERSION: "1.9.8"
-  SC_DEV:     "sc-bankapi-dev-tf"
-  SC_PROD:    "sc-bankapi-prod-tf"
+  SC_DEV: "sc-bankapi-dev-tf"
+  SC_PROD: "sc-bankapi-prod-tf"
   # Computed convenience variables
-  TF_ENV_DIR:  >-
+  TF_ENV_DIR: >-
     ${{ eq(parameters.environment, 'prod') && 'infra/environments/prod' || 'infra/environments/dev' }}
   SC_NAME: >-
     ${{ eq(parameters.environment, 'prod') && 'sc-bankapi-prod-tf' || 'sc-bankapi-dev-tf' }}
