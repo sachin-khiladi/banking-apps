@@ -246,6 +246,7 @@ Report the summary to the user.
 | Lint | `pylint src/` | Exit code 0 |
 | Tests | `pytest --cov=src --cov-fail-under=85` | All pass, coverage ≥ 85% |
 | Security | `trivy image bankapi` | Zero HIGH/CRITICAL |
+| Workflow YAML | Python permission-scope check + SHA consistency check (infra-devops-agent Step 3) | Zero invalid scopes; zero YAML errors; SHA truncation lengths match |
 | Deployment health | `curl /health` | HTTP 200 + `status: healthy` |
 
 If any gate fails, enter the appropriate failure path. Never skip a gate.
@@ -258,7 +259,7 @@ Treat quality validation as distributed ownership. Do not allow any run to concl
 |---|---|
 | `python-coding-agent` | `pip install -r requirements.txt`, `python -m black --check src`, `pylint src/` |
 | `unit-test-agent` | `python -m black --check tests`, `pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=85` |
-| `infra-devops-agent` | `docker build -t bankapi .`, `trivy image --exit-code 1 --severity HIGH,CRITICAL bankapi` |
+| `infra-devops-agent` | **Workflow YAML gate** (permission-scope validation + SHA truncation consistency check) — see Step 3 of infra-devops.agent.md; then `docker build -t bankapi .`, `trivy image --exit-code 1 --severity HIGH,CRITICAL bankapi` |
 | `orchestrator-agent` | Deployment health validation via `/health` and failure-loop routing |
 
 Execution rules:
