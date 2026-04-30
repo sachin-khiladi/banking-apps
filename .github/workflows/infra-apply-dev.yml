@@ -10,7 +10,6 @@ on:
     paths:
       - infra/**
       - .github/workflows/infra-apply-dev.yml
-      - .github/workflows/cd.yml
   workflow_dispatch:
     inputs:
       reason:
