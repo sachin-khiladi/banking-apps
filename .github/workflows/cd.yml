@@ -6,7 +6,7 @@ name: CD
 
 on:
   workflow_run:
-    workflows: ["Terraform Infra Apply Dev", "Terraform Infra Apply Prod"]
+    workflows: ["CI", "Terraform Infra Apply Dev", "Terraform Infra Apply Prod"]
     types:
       - completed
 
@@ -40,7 +40,19 @@ jobs:
   deploy_dev:
     name: Deploy dev
     needs: prepare
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.name == 'Terraform Infra Apply Dev' && (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_branch == 'main' }}
+    if: >-
+      ${{
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        (
+          github.event.workflow_run.name == 'CI' ||
+          github.event.workflow_run.name == 'Terraform Infra Apply Dev'
+        ) &&
+        (
+          github.event.workflow_run.event == 'push' ||
+          github.event.workflow_run.event == 'workflow_dispatch'
+        )
+      }}
     concurrency:
       group: deploy-banking-dev
       cancel-in-progress: false

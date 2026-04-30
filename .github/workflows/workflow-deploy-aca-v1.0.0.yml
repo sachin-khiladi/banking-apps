@@ -108,19 +108,25 @@ jobs:
           else
             # Extract the ACR registry name (everything before '.azurecr.io/')
             ACR_NAME="${DEPLOY_IMAGE_REF%%.azurecr.io/*}"
-            # Strip registry FQDN prefix to get repo:tag (e.g. "banking-system/fastapi-azure-app:sha-abc")
+            # Strip registry FQDN prefix to get repo:tag
             IMAGE_WITH_TAG="${DEPLOY_IMAGE_REF#*azurecr.io/}"
             if [[ -z "${ACR_NAME}" || "${IMAGE_WITH_TAG}" == "${DEPLOY_IMAGE_REF}" ]]; then
               echo "::error::Could not parse ACR registry name or image from '${DEPLOY_IMAGE_REF}'. Expected format: <registry>.azurecr.io/<repo>:<tag>"
               exit 1
             fi
+            IMAGE_REPO="${IMAGE_WITH_TAG%%:*}"
+            IMAGE_TAG="${IMAGE_WITH_TAG##*:}"
             echo "Checking image exists: ${DEPLOY_IMAGE_REF}"
-            if ! az acr repository show \
-                 --name "${ACR_NAME}" \
-                 --image "${IMAGE_WITH_TAG}" \
-                 --output none 2>/dev/null; then
+            # Use show-tags for a reliable tag-level existence check (avoids --output none
+            # exit-code ambiguity present in some Azure CLI versions)
+            TAG_FOUND=$(az acr repository show-tags \
+              --name "${ACR_NAME}" \
+              --repository "${IMAGE_REPO}" \
+              --query "contains(@, '${IMAGE_TAG}')" \
+              --output tsv 2>/dev/null || echo "false")
+            if [[ "${TAG_FOUND}" != "true" ]]; then
               echo "::error::Image '${DEPLOY_IMAGE_REF}' was not found in ACR '${ACR_NAME}'."
-              echo "::error::Ensure the CI build workflow ran successfully and pushed the image for this commit before triggering deployment."
+              echo "::error::Ensure the CI build workflow completed successfully and pushed the image for commit SHA '${IMAGE_TAG}' before triggering deployment."
               exit 1
             fi
             echo "Image verified in ACR: ${DEPLOY_IMAGE_REF}"
