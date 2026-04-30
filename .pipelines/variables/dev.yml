@@ -42,4 +42,4 @@ variables:
   # and surfaced to the container app via secretRef, never here.
   cosmosAccountUrl: https://cosmos-banking-dev.documents.azure.com:443/
   cosmosDatabaseName: banking-dev
-  appInsightsConnectionString: '$(APP_INSIGHTS_CONNECTION_STRING_DEV)' # from ADO variable group
+  appInsightsConnectionString: '$(APP_INSIGHTS_CONNECTION_STRING_DEV)'  # from ADO variable group

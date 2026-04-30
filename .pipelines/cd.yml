@@ -53,7 +53,7 @@
 
 # ── Trigger: only via pipeline resource (CI completion) ───────
 trigger: none
-pr:     none
+pr: none
 
 # ── Runtime parameters ─────────────────────────────────────────
 # Allows targeted deployments when running manually.
@@ -103,10 +103,7 @@ variables:
   # Resolved image tag: use the explicit parameter if provided
   # (manual hotfix), otherwise fall back to the upstream CI run ID.
   - name: resolvedImageTag
-    value: ${{ if ne(parameters.imageTag, '') }}:
-              ${{ parameters.imageTag }}
-           ${{ else }}:
-              $(resources.pipeline.ci.runID)
+    value: "${{ if ne(parameters.imageTag, '') }}${{ parameters.imageTag }}${{ else }}$(resources.pipeline.ci.runID)${{ end }}"
 
 # ══════════════════════════════════════════════════════════════
 # STAGE 1 — Development
@@ -125,26 +122,26 @@ stages:
       - template: templates/stages/deploy-container-app.yml@templates
         parameters:
           # ── Identity ───────────────────────────────────────
-          adoEnvironment:          ''            # no ADO env gate = automatic
-          azureServiceConnection:  $(azureServiceConnection)
-          resourceGroup:           $(resourceGroup)
+          adoEnvironment: ''  # no ADO env gate = automatic
+          azureServiceConnection: $(azureServiceConnection)
+          resourceGroup: $(resourceGroup)
 
           # ── Image ──────────────────────────────────────────
-          acrLoginServer:          $(acrLoginServer)
-          imageRepository:         $(imageRepository)
-          imageTag:                $(resolvedImageTag)
+          acrLoginServer: $(acrLoginServer)
+          imageRepository: $(imageRepository)
+          imageTag: $(resolvedImageTag)
 
           # ── Container App ──────────────────────────────────
-          containerAppName:        $(containerAppName)
+          containerAppName: $(containerAppName)
           containerAppEnvironment: $(containerAppEnvironment)
-          containerAppLocation:    $(containerAppLocation)
-          targetPort:              $(targetPort)
-          minReplicas:             $(minReplicas)
-          maxReplicas:             $(maxReplicas)
+          containerAppLocation: $(containerAppLocation)
+          targetPort: $(targetPort)
+          minReplicas: $(minReplicas)
+          maxReplicas: $(maxReplicas)
 
           # ── Health check ───────────────────────────────────
-          healthCheckPath:         /health
-          appName:                 $(appName)
+          healthCheckPath: /health
+          appName: $(appName)
 
   # ══════════════════════════════════════════════════════════
   # STAGE 2 — Staging
@@ -173,26 +170,26 @@ stages:
           # ── Identity ───────────────────────────────────────
           # adoEnvironment maps to Pipelines → Environments → banking-staging.
           # Approval gates must be configured there, not here.
-          adoEnvironment:          banking-staging
-          azureServiceConnection:  $(azureServiceConnection)
-          resourceGroup:           $(resourceGroup)
+          adoEnvironment: banking-staging
+          azureServiceConnection: $(azureServiceConnection)
+          resourceGroup: $(resourceGroup)
 
           # ── Image ──────────────────────────────────────────
-          acrLoginServer:          $(acrLoginServer)
-          imageRepository:         $(imageRepository)
-          imageTag:                $(resolvedImageTag)
+          acrLoginServer: $(acrLoginServer)
+          imageRepository: $(imageRepository)
+          imageTag: $(resolvedImageTag)
 
           # ── Container App ──────────────────────────────────
-          containerAppName:        $(containerAppName)
+          containerAppName: $(containerAppName)
           containerAppEnvironment: $(containerAppEnvironment)
-          containerAppLocation:    $(containerAppLocation)
-          targetPort:              $(targetPort)
-          minReplicas:             $(minReplicas)
-          maxReplicas:             $(maxReplicas)
+          containerAppLocation: $(containerAppLocation)
+          targetPort: $(targetPort)
+          minReplicas: $(minReplicas)
+          maxReplicas: $(maxReplicas)
 
           # ── Health check ───────────────────────────────────
-          healthCheckPath:         /health
-          appName:                 $(appName)
+          healthCheckPath: /health
+          appName: $(appName)
 
   # ══════════════════════════════════════════════════════════
   # STAGE 3 — Production
@@ -217,23 +214,23 @@ stages:
       - template: templates/stages/deploy-container-app.yml@templates
         parameters:
           # ── Identity ───────────────────────────────────────
-          adoEnvironment:          banking-prod
-          azureServiceConnection:  $(azureServiceConnection)
-          resourceGroup:           $(resourceGroup)
+          adoEnvironment: banking-prod
+          azureServiceConnection: $(azureServiceConnection)
+          resourceGroup: $(resourceGroup)
 
           # ── Image ──────────────────────────────────────────
-          acrLoginServer:          $(acrLoginServer)
-          imageRepository:         $(imageRepository)
-          imageTag:                $(resolvedImageTag)
+          acrLoginServer: $(acrLoginServer)
+          imageRepository: $(imageRepository)
+          imageTag: $(resolvedImageTag)
 
           # ── Container App ──────────────────────────────────
-          containerAppName:        $(containerAppName)
+          containerAppName: $(containerAppName)
           containerAppEnvironment: $(containerAppEnvironment)
-          containerAppLocation:    $(containerAppLocation)
-          targetPort:              $(targetPort)
-          minReplicas:             $(minReplicas)
-          maxReplicas:             $(maxReplicas)
+          containerAppLocation: $(containerAppLocation)
+          targetPort: $(targetPort)
+          minReplicas: $(minReplicas)
+          maxReplicas: $(maxReplicas)
 
           # ── Health check ───────────────────────────────────
-          healthCheckPath:         /health
-          appName:                 $(appName)
+          healthCheckPath: /health
+          appName: $(appName)

@@ -51,20 +51,20 @@ extends:
   template: templates/pipelines/python-ci.yml@templates
   parameters:
     # ── Python / test ────────────────────────────────────────
-    pythonVersion:            $(pythonVersion)
-    pylintSrcPath:            $(pylintSrcPath)
-    pytestCoverageThreshold:  $(pytestCoverageThreshold)
+    pythonVersion: $(pythonVersion)
+    pylintSrcPath: $(pylintSrcPath)
+    pytestCoverageThreshold: $(pytestCoverageThreshold)
 
     # ── Docker ───────────────────────────────────────────────
-    dockerfilePath:           $(dockerfilePath)
-    dockerBuildContext:       $(dockerBuildContext)
-    imageRepository:          $(imageRepository)
-    imageTag:                 $(imageTag)
+    dockerfilePath: $(dockerfilePath)
+    dockerBuildContext: $(dockerBuildContext)
+    imageRepository: $(imageRepository)
+    imageTag: $(imageTag)
 
     # ── Registry (dev ACR is the canonical push target) ──────
-    acrName:                  $(acrName)
-    acrLoginServer:           $(acrLoginServer)
-    azureServiceConnection:   $(azureServiceConnection)
+    acrName: $(acrName)
+    acrLoginServer: $(acrLoginServer)
+    azureServiceConnection: $(azureServiceConnection)
 
     # ── Security ─────────────────────────────────────────────
     # trivySeverity controls which findings fail the pipeline.
@@ -75,6 +75,6 @@ extends:
     # The CD pipeline name as registered in ADO.
     # Templates use this to queue the release pipeline on success.
     cdPipelineName: cd
-    buildId:           $(Build.BuildId)
-    sourceBranch:      $(Build.SourceBranch)
-    buildNumber:       $(Build.BuildNumber)
+    buildId: $(Build.BuildId)
+    sourceBranch: $(Build.SourceBranch)
+    buildNumber: $(Build.BuildNumber)

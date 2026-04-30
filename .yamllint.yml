@@ -1,0 +1,21 @@
+---
+# yamllint configuration for banking-apps CI/CD YAML files.
+# Run: yamllint -c .yamllint.yml .
+extends: default
+
+rules:
+  # CI/CD YAML files contain long expression lines by design; do not enforce
+  # a hard limit.
+  line-length: disable
+
+  # GitHub Actions and Azure DevOps pipelines use truthy scalars (e.g. true,
+  # false, on, off) that are not quoted; disable the truthy warning.
+  truthy: disable
+
+  # Document-start marker (---) is not required by either GitHub Actions or
+  # Azure DevOps; disable the warning.
+  document-start: disable
+
+  # Inline comment spacing is enforced by the default rule; suppress the
+  # indentation-of-comment warning which is purely cosmetic for these files.
+  comments-indentation: disable
