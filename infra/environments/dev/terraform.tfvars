@@ -29,7 +29,7 @@ rbac_bootstrap_skip_sp_aad_check     = true
 # Terraform ignores image changes after initial provisioning
 # (lifecycle.ignore_changes in modules/container_app/main.tf).
 # ---------------------------------------------------------------------------
-container_image = "mcr.microsoft.com/azuredocs/containerapps-helloworld@sha256:e9b3e7c34664c7cffd7144864b0e4eec369bfde80068f9095dc63b37058bec"
+container_image = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
 
 # Container sizing — lightweight for dev
 container_cpu    = 0.5

@@ -64,14 +64,17 @@ variable "container_image" {
 
   validation {
     # Allow either an ACR image with immutable identity semantics
-    # (versioned/non-latest tag or digest), or the known immutable MCR
-    # bootstrap placeholder used during initial infra provisioning.
+    # (versioned/non-latest tag or digest), or a valid MCR image used as
+    # the bootstrap placeholder during initial infra provisioning.
+    # MCR images accept any tag (including latest) because Terraform ignores
+    # image changes after first apply (lifecycle.ignore_changes in the module);
+    # CD always owns the running revision. SHA256 digests must be 64 hex chars.
     condition = (
       can(regex("^[a-z0-9]+\\.azurecr\\.io/.+:(?!latest$)[A-Za-z0-9][A-Za-z0-9._-]*$", trimspace(var.container_image))) ||
       can(regex("^[a-z0-9]+\\.azurecr\\.io/.+@sha256:[a-fA-F0-9]{64}$", trimspace(var.container_image))) ||
-      trimspace(var.container_image) == "mcr.microsoft.com/azuredocs/containerapps-helloworld@sha256:e9b3e7c34664c7cffd7144864b0e4eec369bfde80068f9095dc63b37058bec"
+      can(regex("^mcr\\.microsoft\\.com/.+(:[A-Za-z0-9][A-Za-z0-9._-]*|@sha256:[a-fA-F0-9]{64})$", trimspace(var.container_image)))
     )
-    error_message = "container_image must be an immutable ACR image (*.azurecr.io/repo:<non-latest-tag> or *.azurecr.io/repo@sha256:<digest>) or the approved bootstrap placeholder digest."
+    error_message = "container_image must be an immutable ACR image (*.azurecr.io/repo:<non-latest-tag> or *.azurecr.io/repo@sha256:<64-char-digest>) or a valid MCR bootstrap image (mcr.microsoft.com/repo:tag or mcr.microsoft.com/repo@sha256:<64-char-digest>)."
   }
 }
 
