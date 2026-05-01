@@ -21,10 +21,8 @@ jobs:
       ${{
         github.event.workflow_run.conclusion == 'success' &&
         github.event.workflow_run.head_branch == 'main' &&
-        (
-          github.event.workflow_run.event == 'workflow_run' ||
-          github.event.workflow_run.event == 'workflow_dispatch'
-        )
+        github.event.workflow_run.name == 'Terraform Infra Apply Dev' &&
+        github.event.workflow_run.event == 'workflow_run'
       }}
     outputs:
       image_tag: ${{ steps.set-tag.outputs.image_tag }}
@@ -44,10 +42,7 @@ jobs:
         github.event.workflow_run.conclusion == 'success' &&
         github.event.workflow_run.head_branch == 'main' &&
         github.event.workflow_run.name == 'Terraform Infra Apply Dev' &&
-        (
-          github.event.workflow_run.event == 'workflow_run' ||
-          github.event.workflow_run.event == 'workflow_dispatch'
-        )
+        github.event.workflow_run.event == 'workflow_run'
       }}
     concurrency:
       group: deploy-banking-dev
