@@ -7,7 +7,6 @@ on:
       - develop
     paths-ignore:
       - '**/*.md'
-      - '.github/**'
       - '.pipelines/variables/**'
   workflow_dispatch:
 
