@@ -8,19 +8,16 @@ on:
       - infra/**
       - .github/workflows/infra-terraform.yml
       - .github/workflows/infra-apply-dev.yml
-      - .github/workflows/infra-apply-prod.yml
       - .github/workflows/cd.yml
       - .github/workflows/workflow-deploy-aca-v1.0.0.yml
   workflow_dispatch:
     inputs:
       environment:
-        description: Target environment(s)
+        description: Target environment
         required: true
         type: choice
         options:
           - dev
-          - prod
-          - both
         default: dev
 
 permissions:
@@ -39,7 +36,7 @@ jobs:
     if: >-
       ${{
         github.event_name == 'pull_request' ||
-        (github.event_name == 'workflow_dispatch' && (inputs.environment == 'dev' || inputs.environment == 'both'))
+        (github.event_name == 'workflow_dispatch' && inputs.environment == 'dev')
       }}
     steps:
       - name: Checkout
@@ -125,104 +122,6 @@ jobs:
 
       - name: Terraform plan (dev)
         working-directory: infra/environments/dev
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        run: terraform plan -input=false -no-color -var-file=terraform.tfvars
-
-  plan_prod:
-    name: Plan prod
-    runs-on: ubuntu-latest
-    if: >-
-      ${{
-        github.event_name == 'pull_request' ||
-        (github.event_name == 'workflow_dispatch' && (inputs.environment == 'prod' || inputs.environment == 'both'))
-      }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Azure Login (prod)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Ensure required Azure resource providers are registered (prod)
-        run: |
-          set -euo pipefail
-          providers=(
-            "Microsoft.App"
-            "Microsoft.AppConfiguration"
-            "Microsoft.Authorization"
-            "Microsoft.ContainerRegistry"
-            "Microsoft.DocumentDB"
-            "Microsoft.Insights"
-            "Microsoft.KeyVault"
-            "Microsoft.OperationalInsights"
-            "Microsoft.Storage"
-          )
-
-          for namespace in "${providers[@]}"; do
-            state="$(az provider show --namespace "$namespace" --query registrationState -o tsv 2>/dev/null || echo "NotRegistered")"
-            if [[ "$state" != "Registered" ]]; then
-              echo "Registering provider: $namespace (current: $state)"
-              az provider register --namespace "$namespace" --wait
-            else
-              echo "Provider already registered: $namespace"
-            fi
-          done
-
-      - name: Validate required tfvars inputs (prod)
-        run: |
-          python3 - <<'PY'
-          import pathlib, re, sys
-          env_dir = pathlib.Path("infra/environments/prod")
-          variables_tf = env_dir / "variables.tf"
-          tfvars = env_dir / "terraform.tfvars"
-
-          required = []
-          for name, body in re.findall(r'variable\s+"([^"]+)"\s*\{(.*?)\n\}', variables_tf.read_text(), re.S):
-              if re.search(r'\bdefault\s*=', body) is None:
-                  required.append(name)
-
-          provided = set(re.findall(r'^\s*([A-Za-z0-9_]+)\s*=\s*', tfvars.read_text(), re.M))
-          missing = [name for name in required if name not in provided]
-          if missing:
-              print(f"Missing required tfvars inputs for prod: {', '.join(missing)}")
-              sys.exit(1)
-
-          print(f"prod tfvars validation passed ({len(required)} required inputs found).")
-          PY
-
-      - name: Terraform fmt check
-        run: terraform fmt -check -recursive infra/
-
-      - name: Terraform init (prod)
-        working-directory: infra/environments/prod
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        run: terraform init -input=false
-
-      - name: Terraform validate (prod)
-        working-directory: infra/environments/prod
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        run: terraform validate -no-color
-
-      - name: Terraform plan (prod)
-        working-directory: infra/environments/prod
         env:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}

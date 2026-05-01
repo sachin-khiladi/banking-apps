@@ -59,8 +59,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.deployment_environment }}
     env:
-      DEPLOY_RESOURCE_GROUP: ${{ inputs.resource_group_name != '' && inputs.resource_group_name || format('rg-bankapi-{0}', inputs.release_environment == 'prd' && 'prod' || inputs.release_environment) }}
-      DEPLOY_CONTAINER_APP: ${{ inputs.container_app_name != '' && inputs.container_app_name || format('ca-bankapi-{0}', inputs.release_environment == 'prd' && 'prod' || inputs.release_environment) }}
+      DEPLOY_RESOURCE_GROUP: ${{ inputs.resource_group_name != '' && inputs.resource_group_name || format('rg-bankapi-{0}', inputs.release_environment) }}
+      DEPLOY_CONTAINER_APP: ${{ inputs.container_app_name != '' && inputs.container_app_name || format('ca-bankapi-{0}', inputs.release_environment) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,13 +70,6 @@ jobs:
         if: ${{ inputs.verify_image == true }}
         with:
           name: sbom
-
-      - name: Verify Release Environment Branch Policy
-        run: |
-          if [[ "${{ inputs.release_environment }}" == "prd" && "${GITHUB_REF}" != "refs/heads/main" ]]; then
-            echo "Production deployment is only allowed from main branch"
-            exit 1
-          fi
 
       - name: Azure Login
         uses: azure/login@v2
@@ -137,12 +130,12 @@ jobs:
         run: |
           chmod +x ./scripts/verify-image-v1.0.0.sh
           ./scripts/verify-image-v1.0.0.sh \
-            "${{ inputs.container_image_ref }}" \
+            "${DEPLOY_IMAGE_REF}" \
             --verify-signature \
             --verify-sbom \
             --fail-on-missing
         env:
-          IMAGE_VERIFY_MODE: ${{ inputs.release_environment == 'prd' && 'strict' || 'standard' }}
+          IMAGE_VERIFY_MODE: standard
           SBOM_JSON_PATH: sbom/sbom.json
 
       - name: Deploy to Azure Container Apps
@@ -155,12 +148,57 @@ jobs:
             --image "${DEPLOY_IMAGE_REF}" \
             ${{ inputs.additional_deploy_args }}
 
-          echo "Waiting for deployment to complete..."
-          az containerapp show \
+      - name: Validate active revision and health
+        run: |
+          set -euo pipefail
+
+          ACTIVE_REVISION="$(az containerapp show \
             --resource-group "${DEPLOY_RESOURCE_GROUP}" \
             --name "${DEPLOY_CONTAINER_APP}" \
-            --query "properties.runningStatus" \
-            --output tsv
+            --query "properties.latestReadyRevisionName" \
+            --output tsv)"
+
+          if [[ -z "${ACTIVE_REVISION}" || "${ACTIVE_REVISION}" == "null" ]]; then
+            echo "::error::No latest ready revision found after deployment."
+            exit 1
+          fi
+
+          IS_ACTIVE="$(az containerapp revision list \
+            --resource-group "${DEPLOY_RESOURCE_GROUP}" \
+            --name "${DEPLOY_CONTAINER_APP}" \
+            --query "[?name=='${ACTIVE_REVISION}' && properties.active==\`true\`] | length(@)" \
+            --output tsv)"
+
+          if [[ "${IS_ACTIVE}" != "1" ]]; then
+            echo "::error::Revision '${ACTIVE_REVISION}' is not active."
+            exit 1
+          fi
+
+          FQDN="$(az containerapp show \
+            --resource-group "${DEPLOY_RESOURCE_GROUP}" \
+            --name "${DEPLOY_CONTAINER_APP}" \
+            --query "properties.configuration.ingress.fqdn" \
+            --output tsv)"
+
+          if [[ -z "${FQDN}" || "${FQDN}" == "null" ]]; then
+            echo "::error::Container App ingress FQDN not found."
+            exit 1
+          fi
+
+          HEALTH_URL="https://${FQDN}/health"
+          echo "Validating health endpoint: ${HEALTH_URL}"
+          for attempt in 1 2 3 4 5; do
+            code="$(curl -s -o /dev/null -w '%{http_code}' "${HEALTH_URL}" || true)"
+            if [[ "${code}" == "200" ]]; then
+              echo "Health check passed on attempt ${attempt}."
+              exit 0
+            fi
+            echo "Health check attempt ${attempt} failed with HTTP ${code}; retrying..."
+            sleep 15
+          done
+
+          echo "::error::Health endpoint did not return HTTP 200 after deployment."
+          exit 1
 
       - name: Create Deployment Attestation
         if: success()

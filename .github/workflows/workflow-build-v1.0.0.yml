@@ -76,13 +76,6 @@ jobs:
       - name: Validate Python Source
         run: python -m compileall .
 
-      - name: Enforce Main Branch For Production
-        run: |
-          if [[ "${{ inputs.release_environment }}" == "prd" && "${GITHUB_REF}" != "refs/heads/main" ]]; then
-            echo "Production release is only allowed from main branch"
-            exit 1
-          fi
-
       - name: Docker Trivy Scan
         if: ${{ inputs.docker_image_ref != '' }}
         working-directory: .
