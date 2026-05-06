@@ -125,7 +125,6 @@ jobs:
         run: terraform apply -input=false -auto-approve tfplan
 
       - name: Export Terraform outputs to GitHub repository variables (dev)
-        continue-on-error: true
         working-directory: infra/environments/dev
         env:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
@@ -137,7 +136,7 @@ jobs:
           RG=$(terraform output -raw resource_group_name)
           CA=$(terraform output -raw container_app_name)
           ACR=$(terraform output -raw acr_login_server)
-          gh variable set AZURE_RESOURCE_GROUP_DEV --body "$RG" --repo "$GITHUB_REPOSITORY" || echo "::warning::Unable to set AZURE_RESOURCE_GROUP_DEV repository variable."
-          gh variable set CONTAINER_APP_NAME_DEV --body "$CA" --repo "$GITHUB_REPOSITORY" || echo "::warning::Unable to set CONTAINER_APP_NAME_DEV repository variable."
-          gh variable set ACR_LOGIN_SERVER_DEV --body "$ACR" --repo "$GITHUB_REPOSITORY" || echo "::warning::Unable to set ACR_LOGIN_SERVER_DEV repository variable."
+          gh variable set AZURE_RESOURCE_GROUP_DEV --body "$RG" --repo "$GITHUB_REPOSITORY"
+          gh variable set CONTAINER_APP_NAME_DEV --body "$CA" --repo "$GITHUB_REPOSITORY"
+          gh variable set ACR_LOGIN_SERVER_DEV --body "$ACR" --repo "$GITHUB_REPOSITORY"
           echo "Exported dev deployment variables: RG=${RG}, CA=${CA}, ACR=${ACR}"
