@@ -111,11 +111,12 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
         run: terraform plan -input=false -no-color -var-file=terraform.tfvars
 
+      - name: Install Trivy CLI
+        run: |
+          set -euo pipefail
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sh -s -- -b /usr/local/bin
+
       - name: Run Trivy IaC vulnerability scan
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          scan-type: config
-          scan-ref: infra/
-          severity: HIGH,CRITICAL
-          exit-code: '1'
+        run: trivy config --severity HIGH,CRITICAL --exit-code 1 --no-progress infra/
 
