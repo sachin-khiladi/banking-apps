@@ -1,23 +1,53 @@
-name: PR Validation
+name: PR Python Checks
 
 on:
   pull_request:
     branches:
       - main
       - develop
-    paths-ignore:
-      - '**/*.md'
-      - '.github/**'
-      - '.pipelines/variables/**'
+    paths:
+      - src/**
+      - tests/**
+      - requirements.txt
+      - requirements.runtime.txt
+      - pytest.ini
+      - .pylintrc
+      - .github/workflows/pr.yml
 
 permissions:
   contents: read
 
 jobs:
-  pr-validation:
-    name: Validate Python source
-    uses: ./.github/workflows/workflow-build-v1.0.0.yml
-    with:
-      python_version: '3.11'
-      working_directory: '.'
-      release_environment: dev
+  python-validation:
+    name: Lint, Validate, and Scan Python
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate Python source
+        run: python -m compileall .
+
+      - name: Run pylint
+        run: pylint src/
+
+      - name: Run unit tests with coverage gate
+        run: pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=85
+
+      - name: Run Trivy filesystem vulnerability scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: '1'

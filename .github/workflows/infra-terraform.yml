@@ -7,18 +7,6 @@ on:
     paths:
       - infra/**
       - .github/workflows/infra-terraform.yml
-      - .github/workflows/infra-apply-dev.yml
-      - .github/workflows/cd.yml
-      - .github/workflows/workflow-deploy-aca-v1.0.0.yml
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: Target environment
-        required: true
-        type: choice
-        options:
-          - dev
-        default: dev
 
 permissions:
   contents: read
@@ -31,13 +19,8 @@ env:
 
 jobs:
   plan_dev:
-    name: Plan dev
+    name: Lint, Validate, and Plan Terraform
     runs-on: ubuntu-latest
-    if: >-
-      ${{
-        github.event_name == 'pull_request' ||
-        (github.event_name == 'workflow_dispatch' && inputs.environment == 'dev')
-      }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -127,4 +110,12 @@ jobs:
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
         run: terraform plan -input=false -no-color -var-file=terraform.tfvars
+
+      - name: Run Trivy IaC vulnerability scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: config
+          scan-ref: infra/
+          severity: HIGH,CRITICAL
+          exit-code: '1'
 
