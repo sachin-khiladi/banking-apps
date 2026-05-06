@@ -95,6 +95,19 @@ jobs:
           name: release-stamp
           path: release-stamp.json
 
+      - name: Validate image publish inputs
+        if: ${{ inputs.container_image_repository != '' }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${{ inputs.container_registry_url }}" ]]; then
+            echo "::error::Image publish requested but 'container_registry_url' is empty. Set ACR_LOGIN_SERVER_DEV before running CI."
+            exit 1
+          fi
+          if [[ -z "${{ secrets.registry_username }}" || -z "${{ secrets.registry_password }}" ]]; then
+            echo "::error::Image publish requested but registry credentials are missing. Configure ACR_USERNAME and ACR_PASSWORD secrets."
+            exit 1
+          fi
+
       - name: Create Traceable Image Tag
         if: ${{ inputs.container_registry_url != '' && inputs.container_image_repository != '' }}
         run: |

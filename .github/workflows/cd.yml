@@ -27,6 +27,27 @@ jobs:
     outputs:
       image_tag: ${{ steps.set-tag.outputs.image_tag }}
     steps:
+      - name: Ensure CI succeeded for this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          api_url="https://api.github.com/repos/${REPO}/actions/runs?head_sha=${HEAD_SHA}&event=push&status=completed&per_page=100"
+          ci_success_count="$(
+            curl -fsSL -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "${api_url}" |
+            jq '[.workflow_runs[] | select(.name == "CI" and .conclusion == "success")] | length'
+          )"
+
+          if [[ "${ci_success_count}" -lt 1 ]]; then
+            echo "::error::No successful CI run found for commit '${HEAD_SHA}'."
+            echo "::error::Deployment is blocked because the image may not have been built/pushed."
+            exit 1
+          fi
+
+          echo "Found successful CI run for commit '${HEAD_SHA}'."
+
       - name: Compute image tag
         id: set-tag
         run: |
