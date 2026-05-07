@@ -101,28 +101,38 @@ jobs:
           else
             # Extract the ACR registry name (everything before '.azurecr.io/')
             ACR_NAME="${DEPLOY_IMAGE_REF%%.azurecr.io/*}"
-            # Strip registry FQDN prefix to get repo:tag
-            IMAGE_WITH_TAG="${DEPLOY_IMAGE_REF#*azurecr.io/}"
-            if [[ -z "${ACR_NAME}" || "${IMAGE_WITH_TAG}" == "${DEPLOY_IMAGE_REF}" ]]; then
-              echo "::error::Could not parse ACR registry name or image from '${DEPLOY_IMAGE_REF}'. Expected format: <registry>.azurecr.io/<repo>:<tag>"
+            IMAGE_PATH="${DEPLOY_IMAGE_REF#*azurecr.io/}"
+            if [[ -z "${ACR_NAME}" || "${IMAGE_PATH}" == "${DEPLOY_IMAGE_REF}" ]]; then
+              echo "::error::Could not parse ACR registry name or image from '${DEPLOY_IMAGE_REF}'."
               exit 1
             fi
-            IMAGE_REPO="${IMAGE_WITH_TAG%%:*}"
-            IMAGE_TAG="${IMAGE_WITH_TAG##*:}"
-            echo "Checking image exists: ${DEPLOY_IMAGE_REF}"
-            # Use show-tags for a reliable tag-level existence check (avoids --output none
-            # exit-code ambiguity present in some Azure CLI versions)
-            TAG_FOUND=$(az acr repository show-tags \
-              --name "${ACR_NAME}" \
-              --repository "${IMAGE_REPO}" \
-              --query "contains(@, '${IMAGE_TAG}')" \
-              --output tsv 2>/dev/null || echo "false")
-            if [[ "${TAG_FOUND}" != "true" ]]; then
-              echo "::error::Image '${DEPLOY_IMAGE_REF}' was not found in ACR '${ACR_NAME}'."
-              echo "::error::Ensure the CI build workflow completed successfully and pushed the image for commit SHA '${IMAGE_TAG}' before triggering deployment."
-              exit 1
+
+            if [[ "${IMAGE_PATH}" == *@sha256:* ]]; then
+              IMAGE_REPO="${IMAGE_PATH%@sha256:*}"
+              IMAGE_DIGEST="sha256:${IMAGE_PATH##*@sha256:}"
+              echo "Checking image digest exists: ${IMAGE_REPO}@${IMAGE_DIGEST}"
+              az acr repository show \
+                --name "${ACR_NAME}" \
+                --image "${IMAGE_REPO}@${IMAGE_DIGEST}" \
+                --output none
+              echo "Image digest verified in ACR: ${DEPLOY_IMAGE_REF}"
+            else
+              IMAGE_REPO="${IMAGE_PATH%%:*}"
+              IMAGE_TAG="${IMAGE_PATH##*:}"
+              echo "Checking image tag exists: ${DEPLOY_IMAGE_REF}"
+              # Use show-tags for a reliable tag-level existence check.
+              TAG_FOUND=$(az acr repository show-tags \
+                --name "${ACR_NAME}" \
+                --repository "${IMAGE_REPO}" \
+                --query "contains(@, '${IMAGE_TAG}')" \
+                --output tsv 2>/dev/null || echo "false")
+              if [[ "${TAG_FOUND}" != "true" ]]; then
+                echo "::error::Image '${DEPLOY_IMAGE_REF}' was not found in ACR '${ACR_NAME}'."
+                echo "::error::Ensure the build workflow completed successfully and pushed the image before triggering deployment."
+                exit 1
+              fi
+              echo "Image tag verified in ACR: ${DEPLOY_IMAGE_REF}"
             fi
-            echo "Image verified in ACR: ${DEPLOY_IMAGE_REF}"
           fi
 
       - name: Verify Image Integrity & Attestation

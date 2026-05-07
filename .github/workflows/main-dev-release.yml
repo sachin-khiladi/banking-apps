@@ -1,0 +1,203 @@
+name: Main Dev Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_VERSION: '1.9.8'
+  ARM_USE_OIDC: true
+  ARM_USE_AZUREAD: true
+
+jobs:
+  terraform_plan_dev:
+    name: Terraform Plan (dev)
+    runs-on: ubuntu-latest
+    outputs:
+      tf_plan_artifact: ${{ steps.set-output.outputs.tf_plan_artifact }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Azure Login (dev)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform init (dev)
+        working-directory: infra/environments/dev
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform init -input=false
+
+      - name: Terraform plan (dev)
+        working-directory: infra/environments/dev
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform plan -out=tfplan -input=false -no-color -var-file=terraform.tfvars
+
+      - name: Upload Terraform plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-dev
+          path: infra/environments/dev/tfplan
+
+      - name: Set plan artifact output
+        id: set-output
+        run: echo 'tf_plan_artifact=tfplan-dev' >> "$GITHUB_OUTPUT"
+
+  terraform_apply_dev:
+    name: Terraform Apply (dev)
+    needs: terraform_plan_dev
+    runs-on: ubuntu-latest
+    environment: banking-dev
+    outputs:
+      resource_group_name: ${{ steps.tf-outputs.outputs.resource_group_name }}
+      container_app_name: ${{ steps.tf-outputs.outputs.container_app_name }}
+      acr_login_server: ${{ steps.tf-outputs.outputs.acr_login_server }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Azure Login (dev)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform init (dev)
+        working-directory: infra/environments/dev
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform init -input=false
+
+      - name: Download Terraform plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.terraform_plan_dev.outputs.tf_plan_artifact }}
+          path: infra/environments/dev
+
+      - name: Terraform apply (dev)
+        working-directory: infra/environments/dev
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform apply -input=false -auto-approve tfplan
+
+      - name: Capture Terraform outputs
+        id: tf-outputs
+        working-directory: infra/environments/dev
+        run: |
+          echo "resource_group_name=$(terraform output -raw resource_group_name)" >> "$GITHUB_OUTPUT"
+          echo "container_app_name=$(terraform output -raw container_app_name)" >> "$GITHUB_OUTPUT"
+          echo "acr_login_server=$(terraform output -raw acr_login_server)" >> "$GITHUB_OUTPUT"
+
+  build_image:
+    name: Build Python and Publish Image
+    needs: terraform_apply_dev
+    uses: ./.github/workflows/workflow-build-v1.0.0.yml
+    with:
+      python_version: '3.11'
+      working_directory: '.'
+      release_environment: dev
+      container_registry_url: ${{ needs.terraform_apply_dev.outputs.acr_login_server }}
+      container_image_repository: 'banking-system/fastapi-azure-app'
+      generate_sbom: true
+      sign_image: false
+    secrets:
+      registry_username: ${{ secrets.ACR_USERNAME }}
+      registry_password: ${{ secrets.ACR_PASSWORD }}
+
+  prepare_deploy:
+    name: Resolve Deployment Image Metadata
+    needs:
+      - terraform_apply_dev
+      - build_image
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_image_ref: ${{ steps.resolve.outputs.deploy_image_ref }}
+      deploy_revision_suffix: ${{ steps.resolve.outputs.deploy_revision_suffix }}
+    steps:
+      - name: Download image metadata artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: image-metadata
+          path: image-metadata
+
+      - name: Resolve deployment metadata
+        id: resolve
+        run: |
+          set -euo pipefail
+          metadata_file='image-metadata/image-metadata.json'
+          if [[ ! -f "$metadata_file" ]]; then
+            echo '::error::Missing image metadata artifact from build job.'
+            exit 1
+          fi
+
+          metadata_sha="$(jq -r '.commit_sha' "$metadata_file")"
+          deploy_ref="$(jq -r '.image_digest_ref' "$metadata_file")"
+          revision_suffix="$(jq -r '.image_sha_tag' "$metadata_file")"
+
+          if [[ -z "$metadata_sha" || "$metadata_sha" == 'null' ]]; then
+            echo '::error::Missing commit SHA in image metadata.'
+            exit 1
+          fi
+          if [[ "$metadata_sha" != "${GITHUB_SHA}" ]]; then
+            echo "::error::Image metadata SHA '$metadata_sha' does not match workflow SHA '${GITHUB_SHA}'."
+            exit 1
+          fi
+          if [[ -z "$deploy_ref" || "$deploy_ref" == 'null' ]]; then
+            echo '::error::Missing digest image reference in image metadata.'
+            exit 1
+          fi
+
+          echo "deploy_image_ref=${deploy_ref}" >> "$GITHUB_OUTPUT"
+          echo "deploy_revision_suffix=${revision_suffix}" >> "$GITHUB_OUTPUT"
+
+  deploy_dev:
+    name: Deploy Dev
+    needs:
+      - terraform_apply_dev
+      - prepare_deploy
+    concurrency:
+      group: deploy-banking-dev
+      cancel-in-progress: false
+    uses: ./.github/workflows/workflow-deploy-aca-v1.0.0.yml
+    with:
+      resource_group_name: ${{ needs.terraform_apply_dev.outputs.resource_group_name }}
+      container_app_name: ${{ needs.terraform_apply_dev.outputs.container_app_name }}
+      container_image_ref: ${{ needs.prepare_deploy.outputs.deploy_image_ref }}
+      release_environment: dev
+      deployment_environment: banking-dev
+      verify_image: true
+      additional_deploy_args: "--revision-suffix ${{ needs.prepare_deploy.outputs.deploy_revision_suffix }}"
+      azure_client_id: ${{ vars.AZURE_CLIENT_ID }}
+      azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
+      azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}

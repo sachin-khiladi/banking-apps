@@ -73,6 +73,26 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+      - name: Run pylint
+        run: pylint src/
+
+      - name: Run unit tests with coverage
+        run: |
+          pytest tests/ \
+            --cov=src \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-fail-under=85 \
+            --junitxml=pytest-results.xml
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-test-results
+          path: |
+            pytest-results.xml
+            coverage.xml
+
       - name: Validate Python Source
         run: python -m compileall .
 
@@ -136,6 +156,40 @@ jobs:
           docker login -u "${{ secrets.registry_username }}" -p "${{ secrets.registry_password }}" ${{ inputs.container_registry_url }}
           docker push "$IMAGE_TRACE_NAME"
           docker push "$IMAGE_SHA_NAME"
+
+      - name: Generate image metadata
+        if: ${{ inputs.container_registry_url != '' && inputs.container_image_repository != '' }}
+        run: |
+          set -euo pipefail
+          IMAGE_TRACE_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_TRACE_TAG}"
+          IMAGE_SHA_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_SHA_TAG}"
+          IMAGE_DIGEST="$(docker buildx imagetools inspect "$IMAGE_SHA_NAME" | awk '/Digest:/ {print $2; exit}')"
+          if [[ -z "${IMAGE_DIGEST}" ]]; then
+            echo "::error::Unable to resolve image digest for '${IMAGE_SHA_NAME}'."
+            exit 1
+          fi
+
+          cat > image-metadata.json <<EOF
+          {
+            "commit_sha": "${GITHUB_SHA}",
+            "branch": "${GITHUB_REF_NAME}",
+            "image_trace_tag": "${IMAGE_TRACE_TAG}",
+            "image_sha_tag": "${IMAGE_SHA_TAG}",
+            "image_trace_ref": "${IMAGE_TRACE_NAME}",
+            "image_sha_ref": "${IMAGE_SHA_NAME}",
+            "image_digest": "${IMAGE_DIGEST}",
+            "image_digest_ref": "${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}@${IMAGE_DIGEST}",
+            "run_id": "${GITHUB_RUN_ID}",
+            "run_attempt": "${GITHUB_RUN_ATTEMPT}"
+          }
+          EOF
+
+      - name: Upload image metadata artifact
+        if: ${{ inputs.container_registry_url != '' && inputs.container_image_repository != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-metadata
+          path: image-metadata.json
 
       - name: Generate SBOM
         if: ${{ inputs.generate_sbom == true && inputs.container_registry_url != '' }}

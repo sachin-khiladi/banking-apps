@@ -1,13 +1,7 @@
 name: CI
 
+# Legacy workflow kept for manual fallback. Main merge deployments are orchestrated by main-dev-release.yml.
 on:
-  push:
-    branches:
-      - main
-      - develop
-    paths-ignore:
-      - '**/*.md'
-      - '.pipelines/variables/**'
   workflow_dispatch:
 
 permissions:

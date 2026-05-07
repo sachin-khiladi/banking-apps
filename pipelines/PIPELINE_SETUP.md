@@ -11,16 +11,18 @@ GitHub Actions also manages infra/app deployment:
 
 | Workflow | File | Trigger |
 |----------|------|---------|
-| **Terraform Infra Plan** | `.github/workflows/infra-terraform.yml` | PR to `main` (`infra/**`) + manual dispatch (plan only) |
-| **Terraform Infra Apply Dev** | `.github/workflows/infra-apply-dev.yml` | Manual dispatch |
-| **Terraform Infra Apply Prod** | `.github/workflows/infra-apply-prod.yml` | Manual dispatch |
-| **CD (ACA deploy)** | `.github/workflows/cd.yml` | Workflow dependency on successful infra apply workflows |
+| **PR Python Checks** | `.github/workflows/pr.yml` | PRs touching Python code and tests |
+| **Terraform Infra Plan** | `.github/workflows/infra-terraform.yml` | PRs touching `infra/**` |
+| **Main Dev Release** | `.github/workflows/main-dev-release.yml` | Push to `main` (single orchestrated release flow) |
+| **CI (legacy fallback)** | `.github/workflows/ci.yml` | Manual dispatch only |
 
 GitHub deployment order is now strict infra-first:
 
-1. Run `Terraform Infra Apply Dev` or `Terraform Infra Apply Prod`
-2. On success, `CD` is triggered automatically via `workflow_run`
-3. CD deploys app image for the same commit SHA using deterministic tag `sha-<12-char-sha>`
+1. Push merge commit to `main`
+2. `Main Dev Release` runs Terraform plan
+3. Manual approval is required on `banking-dev` before Terraform apply
+4. After infra apply succeeds, Python build job runs and publishes image metadata
+5. Deploy job consumes that metadata and deploys the exact image digest
 
 ---
 
@@ -206,10 +208,10 @@ GitHub Actions reference:
 
 | Situation | Action |
 |-----------|--------|
-| Validate infra changes on PR | `Terraform Infra Plan` runs automatically |
-| Deploy app after infra in dev | Run `Terraform Infra Apply Dev` (CD auto-triggers on success) |
-| Deploy app after infra in prod | Run `Terraform Infra Apply Prod` (CD auto-triggers on success) |
-| CI build/test only | `CI` runs independently and does not trigger deployment |
+| Validate Python changes on PR | `PR Python Checks` runs automatically |
+| Validate Terraform changes on PR | `Terraform Infra Plan` runs automatically |
+| Deploy app in dev after merge | `Main Dev Release` runs plan -> approval -> apply -> build -> deploy |
+| Run legacy fallback build manually | `CI` can be run with manual dispatch |
 
 ---
 
@@ -217,7 +219,7 @@ GitHub Actions reference:
 
 The GitHub workflows use federated identity (`azure/login`) with generalized repository variables.
 
-### Required repository variables for `cd.yml`, reusable ACA deploy, and `.github/workflows/infra-terraform.yml`
+### Required repository variables for `main-dev-release.yml`, reusable ACA deploy, and `.github/workflows/infra-terraform.yml`
 
 The following three variables must be set manually (once) before any workflow runs:
 
@@ -227,20 +229,24 @@ The following three variables must be set manually (once) before any workflow ru
 
 Recommended: define these as repository-level variables, or environment-level variables if you later need per-environment identities.
 
-### Auto-populated variables (best-effort, set by infra-apply workflows)
+### Required repository secrets for image publish
 
-The following variables are written by `infra-apply-dev.yml` and `infra-apply-prod.yml` after a successful `terraform apply`, using `gh variable set`. If repository variable write permissions are restricted, the workflows continue and CD falls back to naming conventions (`rg-bankapi-<env>`, `ca-bankapi-<env>`) and resolves ACR from Azure at deploy time.
+The main release workflow pushes container images to ACR and requires:
+
+- `ACR_USERNAME`
+- `ACR_PASSWORD`
+
+### Optional legacy auto-populated variables (manual fallback path)
+
+The following variables are still written by `infra-apply-dev.yml` for the legacy manual workflow path. The new `main-dev-release.yml` flow uses Terraform outputs directly inside the same run and does not depend on these variables.
 
 | Variable | Set by | Value source |
 |----------|--------|--------------|
 | `AZURE_RESOURCE_GROUP_DEV` | `infra-apply-dev.yml` | `terraform output resource_group_name` |
 | `CONTAINER_APP_NAME_DEV` | `infra-apply-dev.yml` | `terraform output container_app_name` |
 | `ACR_LOGIN_SERVER_DEV` | `infra-apply-dev.yml` | `terraform output acr_login_server` |
-| `AZURE_RESOURCE_GROUP_PROD` | `infra-apply-prod.yml` | `terraform output resource_group_name` |
-| `CONTAINER_APP_NAME_PROD` | `infra-apply-prod.yml` | `terraform output container_app_name` |
-| `ACR_LOGIN_SERVER_PROD` | `infra-apply-prod.yml` | `terraform output acr_login_server` |
 
-These variables are then consumed by `cd.yml` when deploying the container image to Azure Container Apps.
+These variables are consumed by legacy workflows only.
 
 ---
 
