@@ -8,17 +8,17 @@ mock_provider "azurerm" {
 }
 
 variables {
-  resource_group_name = "rg-test"
-  location            = "eastus"
-  app_name            = "bankapi"
-  env                 = "dev"
-  unique_suffix       = "abcdef"
-  acr_sku             = "Basic"
-  uami_principal_id   = "00000000-0000-0000-0000-000000000111"
-  deployer_object_id  = "00000000-0000-0000-0000-000000000222"
-  project_repository_path = "project/fastapi-azure-app"
+  resource_group_name              = "rg-test"
+  location                         = "eastus"
+  app_name                         = "bankapi"
+  env                              = "dev"
+  unique_suffix                    = "abcdef"
+  acr_sku                          = "Basic"
+  uami_principal_id                = "00000000-0000-0000-0000-000000000111"
+  deployer_object_id               = "00000000-0000-0000-0000-000000000222"
+  project_repository_path          = "project/fastapi-azure-app"
   enforce_acr_role_assignment_mode = false
-  tags                = {}
+  tags                             = {}
 }
 
 run "acr_admin_is_disabled" {
