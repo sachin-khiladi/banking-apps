@@ -70,9 +70,9 @@ jobs:
       cancel-in-progress: false
     uses: ./.github/workflows/workflow-deploy-aca-v1.0.0.yml
     with:
-      resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_DEV }}
-      container_app_name: ${{ vars.CONTAINER_APP_NAME_DEV }}
-      container_image_ref: "${{ vars.ACR_LOGIN_SERVER_DEV }}/project/fastapi-azure-app:${{ needs.prepare.outputs.image_tag }}"
+      resource_group_name: rg-bankapi-dev
+      container_app_name: ca-bankapi-dev
+      container_image_ref: "/project/fastapi-azure-app:${{ needs.prepare.outputs.image_tag }}"
       release_environment: dev
       deployment_environment: banking-dev
       verify_image: false

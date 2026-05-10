@@ -175,8 +175,8 @@ jobs:
           set -euo pipefail
           ACR_NAME="${{ inputs.container_registry_url }}"
           ACR_NAME="${ACR_NAME%%.azurecr.io}"
-          ACR_ACCESS_TOKEN="$(az acr login --name "${ACR_NAME}" --expose-token --query accessToken --output tsv)"
-          echo "${ACR_ACCESS_TOKEN}" | docker login "${{ inputs.container_registry_url }}" --username "00000000-0000-0000-0000-000000000000" --password-stdin
+          # Use Entra token-based ACR login from current OIDC-authenticated Azure session.
+          az acr login --name "${ACR_NAME}"
 
           IMAGE_TRACE_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_TRACE_TAG}"
           IMAGE_SHA_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_SHA_TAG}"

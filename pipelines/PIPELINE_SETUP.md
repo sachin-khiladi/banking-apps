@@ -231,14 +231,14 @@ Recommended: define these as repository-level variables, or environment-level va
 
 ### ACR authentication model for image publish
 
-Image publish now uses federated identity (`azure/login`) + Azure RBAC/ABAC with `az acr login --expose-token`.
+Image publish now uses federated identity (`azure/login`) + Azure RBAC/ABAC with `az acr login`.
 
 - No `ACR_USERNAME` / `ACR_PASSWORD` repository secrets are required for the current main release and CI fallback workflows.
 - Ensure the federated deployment identity referenced by `AZURE_CLIENT_ID` has ACR push rights constrained to the project repository path (`project/<project-name>`).
 
 ### Optional legacy auto-populated variables (manual fallback path)
 
-The following variables are still written by `infra-apply-dev.yml` for the legacy manual workflow path. The new `main-dev-release.yml` flow uses Terraform outputs directly inside the same run and does not depend on these variables.
+The following variables are still written by `infra-apply-dev.yml` for compatibility and diagnostics. Current workflows no longer require them as inputs.
 
 | Variable | Set by | Value source |
 |----------|--------|--------------|
@@ -246,7 +246,7 @@ The following variables are still written by `infra-apply-dev.yml` for the legac
 | `CONTAINER_APP_NAME_DEV` | `infra-apply-dev.yml` | `terraform output container_app_name` |
 | `ACR_LOGIN_SERVER_DEV` | `infra-apply-dev.yml` | `terraform output acr_login_server` |
 
-These variables are consumed by legacy workflows only.
+These variables can be retained for operator visibility, but they are not required for successful workflow execution.
 
 ---
 
