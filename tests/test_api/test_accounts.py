@@ -10,16 +10,50 @@ from __future__ import annotations
 from unittest.mock import AsyncMock
 
 import pytest
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from src.exceptions.domain_exceptions import (
     AccountAlreadyClosedException,
     AccountNotFoundException,
+    AccountTypeNotFoundException,
     InsufficientPermissionsException,
 )
 from src.models.account import AccountStatus
 
 from tests.conftest import ACCOUNT_NUMBER, CLOSED_DOC, OWNER_ID, make_account_doc
+
+
+# ── _raise_http mapping regression coverage ───────────────────────────────────
+
+
+class TestRaiseHttpMappings:
+    """Direct unit tests for src.api.accounts._raise_http."""
+
+    @pytest.mark.parametrize(
+        ("exc", "expected_status"),
+        [
+            (AccountNotFoundException(ACCOUNT_NUMBER), 404),
+            (AccountTypeNotFoundException("CURRENT"), 404),
+            (AccountAlreadyClosedException(ACCOUNT_NUMBER), 409),
+            (InsufficientPermissionsException("forbidden"), 403),
+        ],
+    )
+    def test_raise_http_domain_exception_maps_to_expected_status(
+        self, exc: Exception, expected_status: int
+    ) -> None:
+        from src.api.accounts import _raise_http
+
+        with pytest.raises(HTTPException) as raised:
+            _raise_http(exc)
+        assert raised.value.status_code == expected_status
+
+    def test_raise_http_unexpected_exception_maps_to_500(self) -> None:
+        from src.api.accounts import _raise_http
+
+        with pytest.raises(HTTPException) as raised:
+            _raise_http(RuntimeError("unexpected"))
+        assert raised.value.status_code == 500
 
 
 # ── POST /accounts ─────────────────────────────────────────────────────────────

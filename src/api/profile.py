@@ -57,7 +57,9 @@ def _raise_http(exc: Exception) -> NoReturn:
         HTTPException: Always raised with the appropriate HTTP status code.
     """
     if isinstance(exc, UserProfileNotFoundException):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc
     logger.exception("Unexpected exception in profile API handler", exc_info=exc)
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
