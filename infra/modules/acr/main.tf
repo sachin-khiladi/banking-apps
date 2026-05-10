@@ -37,11 +37,11 @@ resource "azapi_update_resource" "acr_role_assignment_mode" {
   type        = "Microsoft.ContainerRegistry/registries@2025-11-01"
   resource_id = azurerm_container_registry.acr.id
 
-  body = jsonencode({
+  body = {
     properties = {
       roleAssignmentMode = var.acr_role_assignment_mode
     }
-  })
+  }
 }
 
 locals {
