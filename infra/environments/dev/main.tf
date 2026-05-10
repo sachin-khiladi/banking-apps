@@ -6,8 +6,9 @@
 data "azurerm_client_config" "current" {}
 
 locals {
-  app_name      = "bankapi"
-  unique_suffix = substr(data.azurerm_client_config.current.subscription_id, 27, 6)
+  app_name                = "bankapi"
+  unique_suffix           = substr(data.azurerm_client_config.current.subscription_id, 27, 6)
+  project_repository_path = "project/${var.project_name}"
   deployment_principal_object_id = coalesce(
     var.deployment_principal_object_id,
     data.azurerm_client_config.current.object_id,
@@ -154,15 +155,16 @@ module "appconfig" {
 module "acr" {
   source = "../../modules/acr"
 
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  app_name            = local.app_name
-  env                 = var.env
-  unique_suffix       = local.unique_suffix
-  acr_sku             = var.acr_sku
-  uami_principal_id   = module.keyvault.uami_principal_id
-  deployer_object_id  = local.deployment_principal_object_id
-  tags                = local.common_tags
+  resource_group_name     = azurerm_resource_group.main.name
+  location                = azurerm_resource_group.main.location
+  app_name                = local.app_name
+  env                     = var.env
+  unique_suffix           = local.unique_suffix
+  acr_sku                 = var.acr_sku
+  uami_principal_id       = module.keyvault.uami_principal_id
+  deployer_object_id      = local.deployment_principal_object_id
+  project_repository_path = local.project_repository_path
+  tags                    = local.common_tags
 
   # UAMI must exist before we can assign the AcrPull role
   depends_on = [module.keyvault]

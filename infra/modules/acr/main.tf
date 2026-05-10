@@ -7,6 +7,15 @@
 # ACR Admin is intentionally disabled — RBAC-only access.
 # ===========================================================================
 
+terraform {
+  required_providers {
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.0"
+    }
+  }
+}
+
 resource "azurerm_container_registry" "acr" {
   # ACR names: alphanumeric only, 5-50 chars, globally unique.
   # Pattern: acr + <app_name> + <env> + <unique_suffix>
@@ -22,12 +31,45 @@ resource "azurerm_container_registry" "acr" {
   tags = var.tags
 }
 
+resource "azapi_update_resource" "acr_role_assignment_mode" {
+  count = var.enforce_acr_role_assignment_mode ? 1 : 0
+
+  type        = "Microsoft.ContainerRegistry/registries@2025-11-01"
+  resource_id = azurerm_container_registry.acr.id
+
+  body = {
+    properties = {
+      roleAssignmentMode = var.acr_role_assignment_mode
+    }
+  }
+}
+
+locals {
+  deployer_repository_condition_default = <<-EOT
+  (
+    (
+      !(ActionMatches{'Microsoft.ContainerRegistry/registries/pull/read'})
+      &&
+      !(ActionMatches{'Microsoft.ContainerRegistry/registries/push/write'})
+    )
+    ||
+    (
+      @Resource[Microsoft.ContainerRegistry/registries/repositories:Name] StringLike '${var.project_repository_path}'
+      ||
+      @Resource[Microsoft.ContainerRegistry/registries/repositories:Name] StringLike '${var.project_repository_path}/*'
+    )
+  )
+  EOT
+}
+
 # ---------------------------------------------------------------------------
 # RBAC — UAMI → AcrPull
 # Allows the Container App's managed identity to pull images at runtime
 # without needing admin credentials or a registry password.
 # ---------------------------------------------------------------------------
 resource "azurerm_role_assignment" "acr_pull_uami" {
+  depends_on = [azapi_update_resource.acr_role_assignment_mode]
+
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPull"
   principal_id         = var.uami_principal_id
@@ -67,9 +109,17 @@ resource "azurerm_role_assignment" "acr_pull_uami" {
 # re-granted.
 # ---------------------------------------------------------------------------
 resource "azurerm_role_assignment" "acr_push_deployer" {
+  depends_on = [azapi_update_resource.acr_role_assignment_mode]
+
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPush"
   principal_id         = var.deployer_object_id
+
+  condition_version = var.enforce_project_repository_abac ? "2.0" : null
+  condition = var.enforce_project_repository_abac ? coalesce(
+    var.deployer_repository_condition,
+    local.deployer_repository_condition_default,
+  ) : null
 
   skip_service_principal_aad_check = true
 

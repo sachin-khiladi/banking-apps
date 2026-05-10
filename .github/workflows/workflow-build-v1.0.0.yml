@@ -32,6 +32,18 @@ on:
         required: false
         type: string
         default: ''
+      azure_client_id:
+        required: false
+        type: string
+        default: ''
+      azure_tenant_id:
+        required: false
+        type: string
+        default: ''
+      azure_subscription_id:
+        required: false
+        type: string
+        default: ''
       sign_image:
         required: false
         type: boolean
@@ -41,10 +53,6 @@ on:
         type: boolean
         default: true
     secrets:
-      registry_username:
-        required: false
-      registry_password:
-        required: false
       cosign_key:
         required: false
       cosign_password:
@@ -52,6 +60,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   python-build:
@@ -115,16 +124,28 @@ jobs:
           name: release-stamp
           path: release-stamp.json
 
+      - name: Azure Login for ACR push
+        if: ${{ inputs.container_image_repository != '' }}
+        uses: azure/login@v2
+        with:
+          client-id: ${{ inputs.azure_client_id }}
+          tenant-id: ${{ inputs.azure_tenant_id }}
+          subscription-id: ${{ inputs.azure_subscription_id }}
+
       - name: Validate image publish inputs
         if: ${{ inputs.container_image_repository != '' }}
         run: |
           set -euo pipefail
           if [[ -z "${{ inputs.container_registry_url }}" ]]; then
-            echo "::error::Image publish requested but 'container_registry_url' is empty. Set ACR_LOGIN_SERVER_DEV before running CI."
+            echo "::error::Image publish requested but 'container_registry_url' is empty. Provide the target ACR login server."
             exit 1
           fi
-          if [[ -z "${{ secrets.registry_username }}" || -z "${{ secrets.registry_password }}" ]]; then
-            echo "::error::Image publish requested but registry credentials are missing. Configure ACR_USERNAME and ACR_PASSWORD secrets."
+          if [[ -z "${{ inputs.azure_client_id }}" || -z "${{ inputs.azure_tenant_id }}" || -z "${{ inputs.azure_subscription_id }}" ]]; then
+            echo "::error::Image publish requested but Azure OIDC inputs are missing. Provide azure_client_id, azure_tenant_id, and azure_subscription_id."
+            exit 1
+          fi
+          if [[ ! "${{ inputs.container_image_repository }}" =~ ^project/[a-z0-9][a-z0-9._-]*$ ]]; then
+            echo "::error::container_image_repository must be project/<project-name> to align with ACR ABAC policy."
             exit 1
           fi
 
@@ -151,9 +172,14 @@ jobs:
       - name: Push Docker Image
         if: ${{ inputs.container_registry_url != '' && inputs.container_image_repository != '' }}
         run: |
+          set -euo pipefail
+          ACR_NAME="${{ inputs.container_registry_url }}"
+          ACR_NAME="${ACR_NAME%%.azurecr.io}"
+          # Use Entra token-based ACR login from current OIDC-authenticated Azure session.
+          az acr login --name "${ACR_NAME}"
+
           IMAGE_TRACE_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_TRACE_TAG}"
           IMAGE_SHA_NAME="${{ inputs.container_registry_url }}/${{ inputs.container_image_repository }}:${IMAGE_SHA_TAG}"
-          docker login -u "${{ secrets.registry_username }}" -p "${{ secrets.registry_password }}" ${{ inputs.container_registry_url }}
           docker push "$IMAGE_TRACE_NAME"
           docker push "$IMAGE_SHA_NAME"
 

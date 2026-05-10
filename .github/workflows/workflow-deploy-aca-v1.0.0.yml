@@ -42,14 +42,6 @@ on:
       azure_subscription_id:
         required: true
         type: string
-    secrets:
-      azure_client_id:
-        required: false
-      registry_username:
-        required: false
-      registry_password:
-        required: false
-
 permissions:
   contents: read
   id-token: write

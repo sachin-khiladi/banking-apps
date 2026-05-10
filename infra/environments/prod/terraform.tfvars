@@ -3,9 +3,10 @@
 # Deploy:  cd environments/prod && terraform init && terraform apply
 # ===========================================================================
 
-env         = "prod"
-location    = "eastus"
-cost_center = "banking-platform"
+env          = "prod"
+location     = "eastus"
+cost_center  = "banking-platform"
+project_name = "fastapi-azure-app"
 
 # Optional override for deployment principal object ID used by bootstrap/deployer RBAC.
 # Set to null to use the currently authenticated principal.

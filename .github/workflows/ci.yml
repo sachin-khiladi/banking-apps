@@ -3,23 +3,55 @@ name: CI
 # Legacy workflow kept for manual fallback. Main merge deployments are orchestrated by main-dev-release.yml.
 on:
   workflow_dispatch:
+    inputs:
+      resource_group_name:
+        description: "Resource group containing the dev ACR"
+        required: false
+        type: string
+        default: "rg-bankapi-dev"
 
 permissions:
   contents: read
   id-token: write
 
 jobs:
+  resolve_acr:
+    name: Resolve dev ACR login server
+    runs-on: ubuntu-latest
+    outputs:
+      acr_login_server: ${{ steps.resolve.outputs.acr_login_server }}
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Resolve ACR login server from resource group
+        id: resolve
+        run: |
+          set -euo pipefail
+          rg="${{ inputs.resource_group_name }}"
+          acr_login_server="$(az acr list --resource-group "$rg" --query '[0].loginServer' --output tsv)"
+          if [[ -z "$acr_login_server" || "$acr_login_server" == "null" ]]; then
+            echo "::error::Unable to resolve ACR login server in resource group '$rg'."
+            exit 1
+          fi
+          echo "acr_login_server=$acr_login_server" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build, test, and publish image
+    needs: resolve_acr
     uses: ./.github/workflows/workflow-build-v1.0.0.yml
     with:
       python_version: '3.11'
       working_directory: '.'
       release_environment: dev
-      container_registry_url: ${{ vars.ACR_LOGIN_SERVER_DEV }}
-      container_image_repository: 'banking-system/fastapi-azure-app'
+      container_registry_url: ${{ needs.resolve_acr.outputs.acr_login_server }}
+      container_image_repository: 'project/fastapi-azure-app'
+      azure_client_id: ${{ vars.AZURE_CLIENT_ID }}
+      azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
+      azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       generate_sbom: true
       sign_image: false
-    secrets:
-      registry_username: ${{ secrets.ACR_USERNAME }}
-      registry_password: ${{ secrets.ACR_PASSWORD }}

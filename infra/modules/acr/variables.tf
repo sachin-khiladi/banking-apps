@@ -79,6 +79,45 @@ variable "deployer_object_id" {
   }
 }
 
+variable "project_repository_path" {
+  description = "Repository path prefix enforced for deployer push/pull access (for example: project/fastapi-azure-app)."
+  type        = string
+
+  validation {
+    condition     = can(regex("^project/[a-z0-9][a-z0-9._-]*$", var.project_repository_path))
+    error_message = "project_repository_path must match 'project/<project-name>' using lowercase letters, digits, dots, underscores, or hyphens."
+  }
+}
+
+variable "enforce_project_repository_abac" {
+  description = "When true, applies an ABAC condition to the deployer AcrPush assignment so access is limited to project_repository_path."
+  type        = bool
+  default     = true
+}
+
+variable "enforce_acr_role_assignment_mode" {
+  description = "When true, configures the ACR registry roleAssignmentMode property via ARM to ensure ABAC repository permissions are active."
+  type        = bool
+  default     = true
+}
+
+variable "acr_role_assignment_mode" {
+  description = "Role assignment mode for ACR repository permissions. Use AbacRepositoryPermissions for RBAC+ABAC and LegacyRegistryPermissions for legacy behavior."
+  type        = string
+  default     = "AbacRepositoryPermissions"
+
+  validation {
+    condition     = contains(["AbacRepositoryPermissions", "LegacyRegistryPermissions"], var.acr_role_assignment_mode)
+    error_message = "acr_role_assignment_mode must be AbacRepositoryPermissions or LegacyRegistryPermissions."
+  }
+}
+
+variable "deployer_repository_condition" {
+  description = "Optional ABAC condition expression override (condition_version 2.0) for the deployer AcrPush role assignment. Leave null to use the module default project path condition."
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)

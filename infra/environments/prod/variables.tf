@@ -23,6 +23,17 @@ variable "cost_center" {
   }
 }
 
+variable "project_name" {
+  type        = string
+  description = "Project repository name used for ACR repository path scoping (project/<project_name>)."
+  default     = "fastapi-azure-app"
+
+  validation {
+    condition     = can(regex("^[a-z0-9][a-z0-9._-]*$", var.project_name))
+    error_message = "project_name must start with a lowercase letter or digit and contain only lowercase letters, digits, dots, underscores, or hyphens."
+  }
+}
+
 variable "deployment_principal_object_id" {
   type        = string
   description = "Object ID of the deployment principal used for bootstrap and deployer RBAC assignments. Defaults to the current principal when null."
