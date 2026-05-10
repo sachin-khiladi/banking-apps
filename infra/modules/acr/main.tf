@@ -45,6 +45,19 @@ resource "azapi_update_resource" "acr_role_assignment_mode" {
 }
 
 locals {
+  deployer_acr_push_role_assignment_name_normalized = (
+    var.deployer_acr_push_role_assignment_name == null ? null : (
+      can(regex("^[0-9a-fA-F]{32}$", trimspace(var.deployer_acr_push_role_assignment_name))) ? lower(format(
+        "%s-%s-%s-%s-%s",
+        substr(trimspace(var.deployer_acr_push_role_assignment_name), 0, 8),
+        substr(trimspace(var.deployer_acr_push_role_assignment_name), 8, 4),
+        substr(trimspace(var.deployer_acr_push_role_assignment_name), 12, 4),
+        substr(trimspace(var.deployer_acr_push_role_assignment_name), 16, 4),
+        substr(trimspace(var.deployer_acr_push_role_assignment_name), 20, 12),
+      )) : lower(trimspace(var.deployer_acr_push_role_assignment_name))
+    )
+  )
+
   deployer_repository_condition_default = <<-EOT
   (
     (
@@ -110,6 +123,10 @@ resource "azurerm_role_assignment" "acr_pull_uami" {
 # ---------------------------------------------------------------------------
 resource "azurerm_role_assignment" "acr_push_deployer" {
   depends_on = [azapi_update_resource.acr_role_assignment_mode]
+
+  # When AcrPush already exists out-of-band at this scope, set the existing
+  # assignment GUID so Terraform adopts it instead of trying to create another.
+  name = local.deployer_acr_push_role_assignment_name_normalized
 
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPush"

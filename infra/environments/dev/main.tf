@@ -155,16 +155,17 @@ module "appconfig" {
 module "acr" {
   source = "../../modules/acr"
 
-  resource_group_name     = azurerm_resource_group.main.name
-  location                = azurerm_resource_group.main.location
-  app_name                = local.app_name
-  env                     = var.env
-  unique_suffix           = local.unique_suffix
-  acr_sku                 = var.acr_sku
-  uami_principal_id       = module.keyvault.uami_principal_id
-  deployer_object_id      = local.deployment_principal_object_id
-  project_repository_path = local.project_repository_path
-  tags                    = local.common_tags
+  resource_group_name                    = azurerm_resource_group.main.name
+  location                               = azurerm_resource_group.main.location
+  app_name                               = local.app_name
+  env                                    = var.env
+  unique_suffix                          = local.unique_suffix
+  acr_sku                                = var.acr_sku
+  uami_principal_id                      = module.keyvault.uami_principal_id
+  deployer_object_id                     = local.deployment_principal_object_id
+  deployer_acr_push_role_assignment_name = var.deployer_acr_push_role_assignment_name
+  project_repository_path                = local.project_repository_path
+  tags                                   = local.common_tags
 
   # UAMI must exist before we can assign the AcrPull role
   depends_on = [module.keyvault]

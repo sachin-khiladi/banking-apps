@@ -41,6 +41,18 @@ variable "deployment_principal_object_id" {
   nullable    = true
 }
 
+variable "deployer_acr_push_role_assignment_name" {
+  type        = string
+  description = "Optional existing AcrPush role assignment GUID at ACR scope for the deployer principal."
+  default     = null
+  nullable    = true
+
+  validation {
+    condition     = var.deployer_acr_push_role_assignment_name == null || can(regex("^([0-9a-fA-F]{32}|[0-9a-fA-F-]{36})$", trimspace(var.deployer_acr_push_role_assignment_name)))
+    error_message = "deployer_acr_push_role_assignment_name must be null, a 32-character GUID, or a 36-character hyphenated GUID."
+  }
+}
+
 variable "rbac_bootstrap_enabled" {
   type        = bool
   description = "Enable bootstrap RBAC role assignments for the deployment principal at resource-group scope."

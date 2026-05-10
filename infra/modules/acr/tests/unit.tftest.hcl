@@ -61,3 +61,16 @@ run "deployer_acr_push_is_abac_scoped_to_project_repository" {
     error_message = "The deployer AcrPush ABAC condition must restrict access to the configured project repository path."
   }
 }
+
+run "deployer_acr_push_adopts_existing_assignment_name" {
+  command = plan
+
+  variables {
+    deployer_acr_push_role_assignment_name = "19876a2709ae484486bf2d700d6b0315"
+  }
+
+  assert {
+    condition     = azurerm_role_assignment.acr_push_deployer.name == "19876a27-09ae-4844-86bf-2d700d6b0315"
+    error_message = "A 32-character role assignment GUID must be normalized to the hyphenated UUID format before use."
+  }
+}
