@@ -17,9 +17,9 @@ jobs:
       working_directory: '.'
       release_environment: dev
       container_registry_url: ${{ vars.ACR_LOGIN_SERVER_DEV }}
-      container_image_repository: 'banking-system/fastapi-azure-app'
+      container_image_repository: 'project/fastapi-azure-app'
+      azure_client_id: ${{ vars.AZURE_CLIENT_ID }}
+      azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
+      azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       generate_sbom: true
       sign_image: false
-    secrets:
-      registry_username: ${{ secrets.ACR_USERNAME }}
-      registry_password: ${{ secrets.ACR_PASSWORD }}

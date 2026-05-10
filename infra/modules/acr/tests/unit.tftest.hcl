@@ -16,6 +16,7 @@ variables {
   acr_sku             = "Basic"
   uami_principal_id   = "00000000-0000-0000-0000-000000000111"
   deployer_object_id  = "00000000-0000-0000-0000-000000000222"
+  project_repository_path = "project/fastapi-azure-app"
   tags                = {}
 }
 
@@ -43,5 +44,19 @@ run "deployer_has_acr_push_role" {
   assert {
     condition     = azurerm_role_assignment.acr_push_deployer.role_definition_name == "AcrPush"
     error_message = "The deployer must receive the AcrPush role."
+  }
+}
+
+run "deployer_acr_push_is_abac_scoped_to_project_repository" {
+  command = plan
+
+  assert {
+    condition     = azurerm_role_assignment.acr_push_deployer.condition_version == "2.0"
+    error_message = "The deployer AcrPush role assignment must use condition_version 2.0 when ABAC enforcement is enabled."
+  }
+
+  assert {
+    condition     = can(regex("project/fastapi-azure-app", azurerm_role_assignment.acr_push_deployer.condition))
+    error_message = "The deployer AcrPush ABAC condition must restrict access to the configured project repository path."
   }
 }

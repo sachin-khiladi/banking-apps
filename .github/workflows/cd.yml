@@ -72,7 +72,7 @@ jobs:
     with:
       resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP_DEV }}
       container_app_name: ${{ vars.CONTAINER_APP_NAME_DEV }}
-      container_image_ref: "${{ vars.ACR_LOGIN_SERVER_DEV }}/banking-system/fastapi-azure-app:${{ needs.prepare.outputs.image_tag }}"
+      container_image_ref: "${{ vars.ACR_LOGIN_SERVER_DEV }}/project/fastapi-azure-app:${{ needs.prepare.outputs.image_tag }}"
       release_environment: dev
       deployment_environment: banking-dev
       verify_image: false

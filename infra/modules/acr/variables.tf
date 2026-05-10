@@ -79,6 +79,28 @@ variable "deployer_object_id" {
   }
 }
 
+variable "project_repository_path" {
+  description = "Repository path prefix enforced for deployer push/pull access (for example: project/fastapi-azure-app)."
+  type        = string
+
+  validation {
+    condition     = can(regex("^project/[a-z0-9][a-z0-9._-]*$", var.project_repository_path))
+    error_message = "project_repository_path must match 'project/<project-name>' using lowercase letters, digits, dots, underscores, or hyphens."
+  }
+}
+
+variable "enforce_project_repository_abac" {
+  description = "When true, applies an ABAC condition to the deployer AcrPush assignment so access is limited to project_repository_path."
+  type        = bool
+  default     = true
+}
+
+variable "deployer_repository_condition" {
+  description = "Optional ABAC condition expression override (condition_version 2.0) for the deployer AcrPush role assignment. Leave null to use the module default project path condition."
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)

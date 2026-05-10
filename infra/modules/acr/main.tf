@@ -22,6 +22,24 @@ resource "azurerm_container_registry" "acr" {
   tags = var.tags
 }
 
+locals {
+  deployer_repository_condition_default = <<-EOT
+  (
+    (
+      !(ActionMatches{'Microsoft.ContainerRegistry/registries/pull/read'})
+      &&
+      !(ActionMatches{'Microsoft.ContainerRegistry/registries/push/write'})
+    )
+    ||
+    (
+      @Resource[Microsoft.ContainerRegistry/registries/repositories:Name] StringLike '${var.project_repository_path}'
+      ||
+      @Resource[Microsoft.ContainerRegistry/registries/repositories:Name] StringLike '${var.project_repository_path}/*'
+    )
+  )
+  EOT
+}
+
 # ---------------------------------------------------------------------------
 # RBAC — UAMI → AcrPull
 # Allows the Container App's managed identity to pull images at runtime
@@ -70,6 +88,12 @@ resource "azurerm_role_assignment" "acr_push_deployer" {
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPush"
   principal_id         = var.deployer_object_id
+
+  condition_version = var.enforce_project_repository_abac ? "2.0" : null
+  condition = var.enforce_project_repository_abac ? coalesce(
+    var.deployer_repository_condition,
+    local.deployer_repository_condition_default,
+  ) : null
 
   skip_service_principal_aad_check = true
 
