@@ -53,10 +53,6 @@ on:
         type: boolean
         default: true
     secrets:
-      registry_username:
-        required: false
-      registry_password:
-        required: false
       cosign_key:
         required: false
       cosign_password:

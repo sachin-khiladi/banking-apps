@@ -229,12 +229,12 @@ The following three variables must be set manually (once) before any workflow ru
 
 Recommended: define these as repository-level variables, or environment-level variables if you later need per-environment identities.
 
-### Required repository secrets for image publish
+### ACR authentication model for image publish
 
-The main release workflow pushes container images to ACR and requires:
+Image publish now uses federated identity (`azure/login`) + Azure RBAC/ABAC with `az acr login --expose-token`.
 
-- `ACR_USERNAME`
-- `ACR_PASSWORD`
+- No `ACR_USERNAME` / `ACR_PASSWORD` repository secrets are required for the current main release and CI fallback workflows.
+- Ensure the federated deployment identity referenced by `AZURE_CLIENT_ID` has ACR push rights constrained to the project repository path (`project/<project-name>`).
 
 ### Optional legacy auto-populated variables (manual fallback path)
 

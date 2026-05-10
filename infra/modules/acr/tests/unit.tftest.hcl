@@ -17,6 +17,7 @@ variables {
   uami_principal_id   = "00000000-0000-0000-0000-000000000111"
   deployer_object_id  = "00000000-0000-0000-0000-000000000222"
   project_repository_path = "project/fastapi-azure-app"
+  enforce_acr_role_assignment_mode = false
   tags                = {}
 }
 

@@ -7,6 +7,15 @@
 # ACR Admin is intentionally disabled — RBAC-only access.
 # ===========================================================================
 
+terraform {
+  required_providers {
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.0"
+    }
+  }
+}
+
 resource "azurerm_container_registry" "acr" {
   # ACR names: alphanumeric only, 5-50 chars, globally unique.
   # Pattern: acr + <app_name> + <env> + <unique_suffix>
@@ -20,6 +29,19 @@ resource "azurerm_container_registry" "acr" {
   admin_enabled = false
 
   tags = var.tags
+}
+
+resource "azapi_update_resource" "acr_role_assignment_mode" {
+  count = var.enforce_acr_role_assignment_mode ? 1 : 0
+
+  type        = "Microsoft.ContainerRegistry/registries@2025-11-01"
+  resource_id = azurerm_container_registry.acr.id
+
+  body = jsonencode({
+    properties = {
+      roleAssignmentMode = var.acr_role_assignment_mode
+    }
+  })
 }
 
 locals {
@@ -46,6 +68,8 @@ locals {
 # without needing admin credentials or a registry password.
 # ---------------------------------------------------------------------------
 resource "azurerm_role_assignment" "acr_pull_uami" {
+  depends_on = [azapi_update_resource.acr_role_assignment_mode]
+
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPull"
   principal_id         = var.uami_principal_id
@@ -85,6 +109,8 @@ resource "azurerm_role_assignment" "acr_pull_uami" {
 # re-granted.
 # ---------------------------------------------------------------------------
 resource "azurerm_role_assignment" "acr_push_deployer" {
+  depends_on = [azapi_update_resource.acr_role_assignment_mode]
+
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPush"
   principal_id         = var.deployer_object_id
