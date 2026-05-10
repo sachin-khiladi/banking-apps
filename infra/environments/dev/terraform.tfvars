@@ -10,7 +10,7 @@ project_name = "fastapi-azure-app"
 
 # Optional override for deployment principal object ID used by bootstrap/deployer RBAC.
 # Set to null to use the currently authenticated principal.
-deployment_principal_object_id = null
+deployment_principal_object_id = "f30f7785-c05b-4c94-819f-63f009dd7b6e"
 
 # RBAC bootstrap — disabled because the CI/CD service principal cannot
 # self-assign roleAssignments/write (circular bootstrap deadlock).

@@ -45,6 +45,28 @@ VALID_PATCH_BODY: dict = {
 
 CUSTOMER_USER: dict = {"sub": OWNER_ID, "role": "customer"}
 
+
+# ── _raise_http mapping regression coverage ───────────────────────────────────
+
+
+class TestRaiseHttpMappings:
+    """Direct unit tests for src.api.profile._raise_http."""
+
+    def test_raise_http_user_profile_not_found_maps_to_404(self) -> None:
+        from src.api.profile import _raise_http
+
+        with pytest.raises(HTTPException) as raised:
+            _raise_http(UserProfileNotFoundException(OWNER_ID))
+        assert raised.value.status_code == 404
+
+    def test_raise_http_unexpected_exception_maps_to_500(self) -> None:
+        from src.api.profile import _raise_http
+
+        with pytest.raises(HTTPException) as raised:
+            _raise_http(RuntimeError("unexpected"))
+        assert raised.value.status_code == 500
+
+
 # ── Test app factory ───────────────────────────────────────────────────────────
 
 
