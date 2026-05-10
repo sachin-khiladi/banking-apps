@@ -79,17 +79,6 @@ variable "deployer_object_id" {
   }
 }
 
-variable "deployer_acr_push_role_assignment_name" {
-  description = "Optional existing role assignment GUID for deployer AcrPush at this ACR scope. Set this when AcrPush already exists so Terraform adopts the existing assignment instead of creating a duplicate."
-  type        = string
-  default     = null
-
-  validation {
-    condition     = var.deployer_acr_push_role_assignment_name == null || can(regex("^([0-9a-fA-F]{32}|[0-9a-fA-F-]{36})$", trimspace(var.deployer_acr_push_role_assignment_name)))
-    error_message = "deployer_acr_push_role_assignment_name must be null, a 32-character GUID, or a 36-character hyphenated GUID."
-  }
-}
-
 variable "project_repository_path" {
   description = "Repository path prefix enforced for deployer push/pull access (for example: project/fastapi-azure-app)."
   type        = string

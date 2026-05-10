@@ -12,10 +12,6 @@ project_name = "fastapi-azure-app"
 # Set to null to use the currently authenticated principal.
 deployment_principal_object_id = null
 
-# Existing AcrPush role assignment ID returned by Azure when this role was
-# created out-of-band. Keeping this value avoids duplicate create attempts.
-deployer_acr_push_role_assignment_name = "19876a2709ae484486bf2d700d6b0315"
-
 # RBAC bootstrap — disabled because the CI/CD service principal cannot
 # self-assign roleAssignments/write (circular bootstrap deadlock).
 # Prerequisite: grant the CI SP 'User Access Administrator' (with ABAC condition)
