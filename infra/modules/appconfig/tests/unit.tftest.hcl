@@ -48,6 +48,15 @@ run "app_identity_has_data_reader_role" {
   }
 }
 
+run "app_reader_assignment_skips_aad_check" {
+  command = plan
+
+  assert {
+    condition     = azurerm_role_assignment.appconfig_reader_app.skip_service_principal_aad_check == true
+    error_message = "App Configuration Data Reader assignment must set skip_service_principal_aad_check = true to avoid UAMI propagation timing failures."
+  }
+}
+
 run "rbac_propagation_wait_default" {
   command = plan
 

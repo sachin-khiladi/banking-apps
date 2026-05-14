@@ -18,6 +18,7 @@ env:
   TF_VERSION: "1.9.8"
   ARM_USE_OIDC: true
   ARM_USE_AZUREAD: true
+  EXPECTED_DEPLOYMENT_PRINCIPAL_OBJECT_ID: "cd7ca1e6-67f4-4120-b3a2-615de398cc6a"
 
 jobs:
   apply_dev:
@@ -52,6 +53,44 @@ jobs:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate OIDC principal and RBAC prerequisites (dev)
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${{ vars.AZURE_CLIENT_ID }}" ]]; then
+            echo "ERROR: vars.AZURE_CLIENT_ID is empty; cannot validate OIDC principal." >&2
+            exit 1
+          fi
+
+          subscription_scope="/subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}"
+          expected_oid="${EXPECTED_DEPLOYMENT_PRINCIPAL_OBJECT_ID}"
+
+          current_oid="$(az ad sp show --id "${{ vars.AZURE_CLIENT_ID }}" --query id -o tsv)"
+          echo "Expected deployment principal object id: ${expected_oid}"
+          echo "OIDC login service principal object id: ${current_oid}"
+
+          if [[ "${current_oid}" != "${expected_oid}" ]]; then
+            echo "ERROR: OIDC principal mismatch. AZURE_CLIENT_ID resolves to ${current_oid}, expected ${expected_oid}." >&2
+            exit 1
+          fi
+
+          has_contributor="$(az role assignment list --assignee-object-id "${current_oid}" --scope "${subscription_scope}" --query "[?roleDefinitionName=='Contributor'] | length(@)" -o tsv)"
+          has_uaa="$(az role assignment list --assignee-object-id "${current_oid}" --scope "${subscription_scope}" --query "[?roleDefinitionName=='User Access Administrator'] | length(@)" -o tsv)"
+
+          if [[ "${has_contributor:-0}" == "0" ]]; then
+            echo "ERROR: Missing subscription-scope Contributor on deployment principal ${current_oid}." >&2
+            echo "Run scripts/bootstrap_pipeline_rbac.sh as a privileged operator before running infra apply." >&2
+            exit 1
+          fi
+
+          if [[ "${has_uaa:-0}" == "0" ]]; then
+            echo "ERROR: Missing subscription-scope User Access Administrator on deployment principal ${current_oid}." >&2
+            echo "Run scripts/bootstrap_pipeline_rbac.sh as a privileged operator before running infra apply." >&2
+            exit 1
+          fi
+
+          echo "OIDC principal and subscription RBAC prerequisites validated."
 
       - name: Ensure required Azure resource providers are registered (dev)
         run: |

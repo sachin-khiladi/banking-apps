@@ -71,6 +71,11 @@ Include `role` in the JWT payload:
 |----------|-------------|
 | `COSMOS_ACCOUNT_URL` | Cosmos DB account endpoint, e.g. `https://<account>.documents.azure.com:443/` |
 | `COSMOS_DB_NAME` | Name of the Cosmos DB database |
+| `AZURE_APP_CONFIG_ENDPOINT` | Azure App Configuration endpoint, e.g. `https://<store>.azconfig.io` |
+| `AZURE_KEY_VAULT_URI` | Azure Key Vault URI, e.g. `https://<vault>.vault.azure.net/` |
+| `ACR_LOGIN_SERVER` | Optional ACR endpoint reference for runtime validation, e.g. `<registry>.azurecr.io` |
+| `AZURE_ACR_LOGIN_SERVER` | Optional alternative ACR endpoint reference for runtime validation |
+| `CONTAINER_REGISTRY_URL` | Optional container registry endpoint reference for runtime validation |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Azure Monitor connection string |
 | `SMTP_HOST` | SMTP server host used for statement e-mail delivery |
 | `SMTP_PORT` | SMTP server port |
@@ -79,6 +84,8 @@ Include `role` in the JWT payload:
 | `SMTP_PASSWORD` | Optional SMTP password for authenticated relays |
 | `SMTP_USE_TLS` | Optional TLS toggle (`true` by default) |
 | `SMTP_TIMEOUT_SECONDS` | Optional SMTP timeout in seconds (`15` default) |
+
+On startup, the app runs a managed-identity runtime preflight in [src/main.py](src/main.py). It validates required endpoint-style variables (`COSMOS_ACCOUNT_URL`, `COSMOS_DB_NAME`, `AZURE_APP_CONFIG_ENDPOINT`, `AZURE_KEY_VAULT_URI`) and logs deterministic, actionable key names when wiring is incomplete. The preflight never logs secret values and does not instantiate Azure SDK clients.
 
 ## Setup Instructions
 1. **Clone the Repository**

@@ -22,6 +22,8 @@ from fastapi.testclient import TestClient
 # the try-block in src/main.py won't raise when the module is first imported.
 os.environ.setdefault("COSMOS_ACCOUNT_URL", "https://test.documents.azure.com:443/")
 os.environ.setdefault("COSMOS_DB_NAME", "test_banking_db")
+os.environ.setdefault("AZURE_APP_CONFIG_ENDPOINT", "https://appconfig-test.azconfig.io")
+os.environ.setdefault("AZURE_KEY_VAULT_URI", "https://kv-test.vault.azure.net/")
 
 from src.api.accounts import (
     admin_router,

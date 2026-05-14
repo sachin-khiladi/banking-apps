@@ -62,6 +62,15 @@ resource "azurerm_role_assignment" "appconfig_reader_app" {
   scope                = azurerm_app_configuration.appconfig.id
   role_definition_name = "App Configuration Data Reader"
   principal_id         = var.app_identity_principal_id
+
+  skip_service_principal_aad_check = true
+
+  lifecycle {
+    ignore_changes = [
+      skip_service_principal_aad_check,
+      role_definition_id,
+    ]
+  }
 }
 
 # ---------------------------------------------------------------------------

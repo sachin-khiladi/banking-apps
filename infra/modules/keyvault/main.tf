@@ -91,6 +91,17 @@ resource "azurerm_role_assignment" "kv_secrets_user_app" {
   scope                = azurerm_key_vault.kv.id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = azurerm_user_assigned_identity.app_identity.principal_id
+
+  # UAMI propagation to Entra can lag shortly after identity creation.
+  # Skipping the AAD check avoids transient assignment failures.
+  skip_service_principal_aad_check = true
+
+  lifecycle {
+    ignore_changes = [
+      skip_service_principal_aad_check,
+      role_definition_id,
+    ]
+  }
 }
 
 # ---------------------------------------------------------------------------

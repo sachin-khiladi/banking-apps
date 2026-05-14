@@ -69,6 +69,18 @@ variable "rbac_bootstrap_skip_sp_aad_check" {
   default     = true
 }
 
+variable "rbac_bootstrap_uaa_condition" {
+  type        = string
+  description = "Optional ABAC condition expression (condition_version 2.0) used for the User Access Administrator bootstrap assignment. Set to null to disable ABAC narrowing."
+  default     = null
+  nullable    = true
+
+  validation {
+    condition     = var.rbac_bootstrap_uaa_condition == null || trimspace(var.rbac_bootstrap_uaa_condition) != ""
+    error_message = "rbac_bootstrap_uaa_condition must be null or a non-empty ABAC condition string."
+  }
+}
+
 variable "container_image" {
   type        = string
   description = "Container image to deploy (registry/image:tag or registry/image@sha256:digest)"

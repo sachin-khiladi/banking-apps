@@ -82,6 +82,15 @@ run "kv_admin_deployer_skips_aad_check" {
   }
 }
 
+run "kv_runtime_reader_skips_aad_check" {
+  command = plan
+
+  assert {
+    condition     = azurerm_role_assignment.kv_secrets_user_app.skip_service_principal_aad_check == true
+    error_message = "kv_secrets_user_app role assignment must set skip_service_principal_aad_check = true to avoid UAMI propagation timing failures."
+  }
+}
+
 run "kv_rbac_propagation_wait_default" {
   command = plan
 

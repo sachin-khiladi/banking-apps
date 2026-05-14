@@ -43,6 +43,7 @@ module "rbac_bootstrap" {
   resource_group_id                = azurerm_resource_group.main.id
   deployment_principal_object_id   = local.deployment_principal_object_id
   role_definition_names            = var.rbac_bootstrap_role_definition_names
+  uaa_condition                    = var.rbac_bootstrap_uaa_condition
   skip_service_principal_aad_check = var.rbac_bootstrap_skip_sp_aad_check
 }
 

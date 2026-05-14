@@ -33,6 +33,7 @@ import src.main as main_module  # noqa: E402 — imported after stubs registered
 from src.api.accounts import get_account_service  # noqa: E402
 from src.api.profile import get_profile_service  # noqa: E402
 from src.api.statements import get_statement_service  # noqa: E402
+from src.exceptions.domain_exceptions import RepositoryException  # noqa: E402
 
 
 # ── Convenience client ────────────────────────────────────────────────────────
@@ -229,7 +230,8 @@ class TestDependencyWiringEnvVarsAbsent:
         with patch.dict(sys.modules, {"src.logging.app_insights": _mock_app_insights}):
             importlib.reload(main_module)
 
-    def test_app_is_still_usable_when_repo_absent(
+    @pytest.mark.asyncio
+    async def test_startup_preflight_raises_when_repo_absent(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkeypatch.delenv("COSMOS_ACCOUNT_URL", raising=False)
@@ -238,9 +240,8 @@ class TestDependencyWiringEnvVarsAbsent:
         with patch.dict(sys.modules, {"src.logging.app_insights": _mock_app_insights}):
             importlib.reload(main_module)
 
-        client = TestClient(main_module.app, raise_server_exceptions=False)
-        response = client.get("/health")
-        assert response.status_code == 200
+        with pytest.raises(RepositoryException):
+            await main_module.startup_preflight()
 
         # Restore
         monkeypatch.setenv(
@@ -267,3 +268,88 @@ class TestDependencyWiringEnvVarsAbsent:
         monkeypatch.setenv("COSMOS_DB_NAME", "test_banking_db")
         with patch.dict(sys.modules, {"src.logging.app_insights": _mock_app_insights}):
             importlib.reload(main_module)
+
+
+class TestStartupPreflightValidation:
+    """Tests for managed-identity startup preflight validation behavior."""
+
+    @staticmethod
+    def _set_valid_required_env(monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setenv(
+            "COSMOS_ACCOUNT_URL", "https://test.documents.azure.com:443/"
+        )
+        monkeypatch.setenv("COSMOS_DB_NAME", "test_banking_db")
+        monkeypatch.setenv(
+            "AZURE_APP_CONFIG_ENDPOINT", "https://appconfig-test.azconfig.io"
+        )
+        monkeypatch.setenv("AZURE_KEY_VAULT_URI", "https://kv-test.vault.azure.net/")
+
+    def test_validate_identity_runtime_configuration_success_when_required_env_present(
+        self, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        self._set_valid_required_env(monkeypatch)
+        monkeypatch.delenv("ACR_LOGIN_SERVER", raising=False)
+        monkeypatch.delenv("AZURE_ACR_LOGIN_SERVER", raising=False)
+        monkeypatch.delenv("CONTAINER_REGISTRY_URL", raising=False)
+
+        with caplog.at_level("INFO"):
+            main_module._validate_identity_runtime_configuration()
+
+        assert (
+            "Startup preflight passed for managed-identity runtime configuration."
+            in caplog.text
+        )
+
+    def test_validate_identity_runtime_configuration_reports_missing_required_keys_sorted(
+        self, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        self._set_valid_required_env(monkeypatch)
+        monkeypatch.delenv("COSMOS_DB_NAME", raising=False)
+        monkeypatch.delenv("AZURE_KEY_VAULT_URI", raising=False)
+
+        with caplog.at_level("ERROR"):
+            with pytest.raises(RepositoryException):
+                main_module._validate_identity_runtime_configuration()
+
+        assert "AZURE_KEY_VAULT_URI, COSMOS_DB_NAME" in caplog.text
+
+    def test_validate_identity_runtime_configuration_reports_invalid_required_https_keys(
+        self, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        self._set_valid_required_env(monkeypatch)
+        monkeypatch.setenv("COSMOS_ACCOUNT_URL", "http://test.documents.azure.com")
+
+        with caplog.at_level("ERROR"):
+            with pytest.raises(RepositoryException):
+                main_module._validate_identity_runtime_configuration()
+
+        assert "COSMOS_ACCOUNT_URL (must be an HTTPS endpoint)" in caplog.text
+
+    def test_validate_identity_runtime_configuration_reports_invalid_optional_acr_keys_sorted(
+        self, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        self._set_valid_required_env(monkeypatch)
+        monkeypatch.setenv("CONTAINER_REGISTRY_URL", "registry.invalid.local")
+        monkeypatch.setenv("ACR_LOGIN_SERVER", "token-secret-value")
+        monkeypatch.delenv("AZURE_ACR_LOGIN_SERVER", raising=False)
+
+        with caplog.at_level("ERROR"):
+            with pytest.raises(RepositoryException):
+                main_module._validate_identity_runtime_configuration()
+
+        assert (
+            "ACR_LOGIN_SERVER (must end with .azurecr.io), "
+            "CONTAINER_REGISTRY_URL (must end with .azurecr.io)" in caplog.text
+        )
+
+    def test_validate_identity_runtime_configuration_does_not_log_env_values(
+        self, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        self._set_valid_required_env(monkeypatch)
+        monkeypatch.setenv("CONTAINER_REGISTRY_URL", "super-secret-registry-value")
+
+        with caplog.at_level("ERROR"):
+            with pytest.raises(RepositoryException):
+                main_module._validate_identity_runtime_configuration()
+
+        assert "super-secret-registry-value" not in caplog.text

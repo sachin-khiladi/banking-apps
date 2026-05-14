@@ -10,16 +10,37 @@ project_name = "fastapi-azure-app"
 
 # Optional override for deployment principal object ID used by bootstrap/deployer RBAC.
 # Set to null to use the currently authenticated principal.
-deployment_principal_object_id = "67102c48-72ac-4923-917a-11edc52d683a"
+deployment_principal_object_id = "cd7ca1e6-67f4-4120-b3a2-615de398cc6a"
 
-# RBAC bootstrap — disabled because the CI/CD service principal cannot
-# self-assign roleAssignments/write (circular bootstrap deadlock).
-# Prerequisite: grant the CI SP 'User Access Administrator' (with ABAC condition)
-# or 'Owner' at subscription scope via the Azure portal or az CLI before enabling.
-# See: infra/modules/rbac_bootstrap/README.md
-rbac_bootstrap_enabled               = false
+# RBAC bootstrap sequencing (operator runbook):
+# 1. Run scripts/bootstrap_pipeline_rbac.sh as a privileged operator to grant
+#    subscription-scoped Contributor + ABAC-conditioned User Access Administrator.
+# 2. Keep rbac_bootstrap_enabled = true so Terraform can assign least-privilege
+#    resource-group scoped roles without self-bootstrap deadlocks.
+# 3. Never rely on Terraform to create its own initial subscription roleAssignments/write.
+rbac_bootstrap_enabled               = true
 rbac_bootstrap_role_definition_names = ["User Access Administrator", "Contributor"]
 rbac_bootstrap_skip_sp_aad_check     = true
+rbac_bootstrap_uaa_condition         = <<-EOT
+(
+	(
+		!(ActionMatches{'Microsoft.Authorization/roleAssignments/write'})
+	)
+	OR
+	(
+		@Request[Microsoft.Authorization/roleAssignments:RoleDefinitionId] ForAnyOfAnyValues:GuidEquals {
+			18d7d88d-d35e-4fb5-a5c3-7773c20a72d9,
+			b24988ac-6180-42a0-ab88-20f7382dd24c,
+			7f951dda-4ed3-4680-a7ca-43fe172d538d,
+			8311e382-0749-4cb8-b61a-304f252e45ec,
+			00482a5a-887f-4fb3-b363-3b7fe8e74483,
+			4633458b-17de-408a-b874-0445c86b69e6,
+			5ae67dd6-50cb-40e7-96ff-dc2bfa4b606b,
+			516239f1-63e1-4d78-a4de-a74fb236a071
+		}
+	)
+)
+EOT
 
 # ---------------------------------------------------------------------------
 # Container image — immutable bootstrap placeholder for initial infrastructure provisioning only.

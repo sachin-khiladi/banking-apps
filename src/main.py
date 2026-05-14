@@ -10,7 +10,10 @@ route contract and do not require pipeline-state inputs.
 
 from __future__ import annotations
 
+import logging
+import os
 from pathlib import Path
+from typing import Callable
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -29,6 +32,33 @@ from src.logging.app_insights import setup_logging
 from src.services.account_service import AccountService
 from src.services.statement_service import StatementService
 from src.services.user_profile_service import UserProfileService
+
+logger = logging.getLogger(__name__)
+
+_REQUIRED_IDENTITY_ENV_RULES: tuple[tuple[str, str, Callable[[str], bool]], ...] = (
+    (
+        "COSMOS_ACCOUNT_URL",
+        "must be an HTTPS endpoint",
+        lambda value: value.startswith("https://"),
+    ),
+    ("COSMOS_DB_NAME", "must be non-empty", lambda value: bool(value.strip())),
+    (
+        "AZURE_APP_CONFIG_ENDPOINT",
+        "must be an HTTPS endpoint",
+        lambda value: value.startswith("https://"),
+    ),
+    (
+        "AZURE_KEY_VAULT_URI",
+        "must be an HTTPS endpoint",
+        lambda value: value.startswith("https://"),
+    ),
+)
+
+_OPTIONAL_ACR_REFERENCE_ENV_NAMES: tuple[str, ...] = (
+    "ACR_LOGIN_SERVER",
+    "AZURE_ACR_LOGIN_SERVER",
+    "CONTAINER_REGISTRY_URL",
+)
 
 # Load .env from the project root (no-op when the file is absent)
 load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env")
@@ -54,6 +84,80 @@ app.add_middleware(
 # ── Logging ───────────────────────────────────────────────────────────────────
 
 setup_logging()
+
+
+def _validate_identity_runtime_configuration() -> None:
+    """Validate managed-identity runtime configuration before app startup.
+
+    This check validates non-secret environment variables only. It intentionally
+    does not instantiate Azure SDK clients.
+
+    Raises:
+        RepositoryException: If mandatory identity-dependent configuration is
+            missing or malformed.
+    """
+    missing_required: list[str] = []
+    invalid_required: list[str] = []
+
+    for env_name, requirement, validator in _REQUIRED_IDENTITY_ENV_RULES:
+        env_value = os.environ.get(env_name, "")
+        if not env_value:
+            missing_required.append(env_name)
+            continue
+        if not validator(env_value):
+            invalid_required.append(f"{env_name} ({requirement})")
+
+    invalid_optional_registry: list[str] = []
+    for env_name in _OPTIONAL_ACR_REFERENCE_ENV_NAMES:
+        env_value = os.environ.get(env_name)
+        if env_value and not env_value.endswith(".azurecr.io"):
+            invalid_optional_registry.append(f"{env_name} (must end with .azurecr.io)")
+
+    missing_required = sorted(missing_required)
+    invalid_required = sorted(invalid_required)
+    invalid_optional_registry = sorted(invalid_optional_registry)
+
+    if missing_required or invalid_required or invalid_optional_registry:
+        if missing_required:
+            logger.error(
+                (
+                    "Startup preflight failed. Missing required managed-identity "
+                    "identity configuration keys: %s"
+                ),
+                ", ".join(missing_required),
+            )
+        if invalid_required:
+            logger.error(
+                (
+                    "Startup preflight failed. Invalid required managed-identity "
+                    "configuration keys: %s"
+                ),
+                ", ".join(invalid_required),
+            )
+        if invalid_optional_registry:
+            logger.error(
+                (
+                    "Startup preflight failed. Invalid optional ACR endpoint "
+                    "references: %s"
+                ),
+                ", ".join(invalid_optional_registry),
+            )
+        raise RepositoryException(
+            (
+                "Application startup preflight failed due to incomplete managed "
+                "identity configuration. Verify required environment variables "
+                "are set with valid endpoint values."
+            )
+        )
+
+    logger.info("Startup preflight passed for managed-identity runtime configuration.")
+
+
+@app.on_event("startup")
+async def startup_preflight() -> None:
+    """Run startup preflight checks for identity-dependent runtime configuration."""
+    _validate_identity_runtime_configuration()
+
 
 # ── Dependency wiring ─────────────────────────────────────────────────────────
 # The concrete CosmosAccountRepository is injected here so service and API

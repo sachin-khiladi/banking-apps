@@ -1,16 +1,16 @@
-16:44:42 - src.api.accounts - ERROR - Unexpected exception in account API handler
+08:13:13 - src.api.accounts - ERROR - Unexpected exception in account API handler
 RuntimeError: unexpected
-16:44:42 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 201 Created"
-16:44:42 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 201 Created"
-16:44:42 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 422 Unprocessable Entity"
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 200 OK"
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 200 OK"
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/CURRENT "HTTP/1.1 404 Not Found"
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/INVALID "HTTP/1.1 422 Unprocessable Entity"
-16:44:42 - src.api.accounts - ERROR - Unexpected exception in account API handler
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 201 Created"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 201 Created"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 422 Unprocessable Entity"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/CURRENT "HTTP/1.1 404 Not Found"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/INVALID "HTTP/1.1 422 Unprocessable Entity"
+08:13:13 - src.api.accounts - ERROR - Unexpected exception in account API handler
 Traceback (most recent call last):
   File "/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/src/api/accounts.py", line 170, in get_balance_by_account_type
     return await service.get_balance_by_type(
@@ -19,28 +19,28 @@ Traceback (most recent call last):
   File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 2154, in _execute_mock_call
     raise effect
 RuntimeError: unexpected
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 500 Internal Server Error"
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
-16:44:42 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 404 Not Found"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 403 Forbidden"
-16:44:43 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 409 Conflict"
-16:44:43 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 404 Not Found"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 409 Conflict"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 404 Not Found"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 422 Unprocessable Entity"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 403 Forbidden"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts?include_closed=false "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 404 Not Found"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 403 Forbidden"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 503 Service Unavailable"
-16:44:43 - src.api.accounts - ERROR - Unexpected exception in account API handler
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts/balance/SAVINGS "HTTP/1.1 500 Internal Server Error"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 404 Not Found"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts/1234567890 "HTTP/1.1 403 Forbidden"
+08:13:13 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 409 Conflict"
+08:13:13 - httpx - INFO - HTTP Request: PUT http://testserver/accounts/1234567890 "HTTP/1.1 404 Not Found"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 409 Conflict"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 404 Not Found"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/accounts/1234567890/close "HTTP/1.1 422 Unprocessable Entity"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts "HTTP/1.1 403 Forbidden"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts?include_closed=false "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 404 Not Found"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/admin/accounts/1234567890 "HTTP/1.1 403 Forbidden"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/accounts "HTTP/1.1 503 Service Unavailable"
+08:13:13 - src.api.accounts - ERROR - Unexpected exception in account API handler
 Traceback (most recent call last):
   File "/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/src/api/accounts.py", line 118, in create_account
     return await service.create_account(payload, owner_id=current_user["sub"])
@@ -49,68 +49,73 @@ Traceback (most recent call last):
   File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 2154, in _execute_mock_call
     raise effect
 RuntimeError: disk full
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 500 Internal Server Error"
-16:44:43 - src.api.profile - ERROR - Unexpected exception in profile API handler
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/accounts "HTTP/1.1 500 Internal Server Error"
+08:13:13 - src.api.profile - ERROR - Unexpected exception in profile API handler
 RuntimeError: unexpected
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 404 Not Found"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 404 Not Found"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 401 Unauthorized"
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 503 Service Unavailable"
-16:44:43 - src.api.profile - ERROR - Unexpected exception in profile API handler
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 404 Not Found"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 404 Not Found"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 401 Unauthorized"
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 503 Service Unavailable"
+08:13:13 - src.api.profile - ERROR - Unexpected exception in profile API handler
 Traceback (most recent call last):
   File "/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/src/api/profile.py", line 97, in get_profile
     return await service.get_profile(current_user["sub"])
   File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 2154, in _execute_mock_call
     raise effect
 RuntimeError: disk full
-16:44:43 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 500 Internal Server Error"
-16:44:43 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
-16:44:43 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
-16:44:43 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
-16:44:43 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
-16:44:43 - src.api.profile - ERROR - Unexpected exception in profile API handler
+08:13:13 - httpx - INFO - HTTP Request: GET http://testserver/profile "HTTP/1.1 500 Internal Server Error"
+08:13:13 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
+08:13:13 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
+08:13:13 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 422 Unprocessable Entity"
+08:13:13 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 200 OK"
+08:13:13 - src.api.profile - ERROR - Unexpected exception in profile API handler
 Traceback (most recent call last):
   File "/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/src/api/profile.py", line 133, in update_profile
     return await service.update_profile(current_user["sub"], payload)
   File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 2154, in _execute_mock_call
     raise effect
 RuntimeError: unexpected
-16:44:43 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 500 Internal Server Error"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 400 Bad Request"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 400 Bad Request"
-16:44:43 - src.api.statements - ERROR - Unexpected exception in statement API handler
+08:13:13 - httpx - INFO - HTTP Request: PATCH http://testserver/profile "HTTP/1.1 500 Internal Server Error"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 200 OK"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 400 Bad Request"
+08:13:13 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 400 Bad Request"
+08:13:14 - src.api.statements - ERROR - Unexpected exception in statement API handler
 Traceback (most recent call last):
   File "/Users/sachinkhilari/Documents/D/MyRepos/azure-container-apps/banking-system/fastapi-azure-app/src/api/statements.py", line 87, in email_statement
     return await service.email_statement(owner_id=owner_id, payload=payload)
   File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 2154, in _execute_mock_call
     raise effect
 RuntimeError: boom
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 500 Internal Server Error"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 503 Service Unavailable"
-16:44:43 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 401 Unauthorized"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/healthz "HTTP/1.1 404 Not Found"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/v1/health "HTTP/1.1 404 Not Found"
-16:44:44 - httpx - INFO - HTTP Request: OPTIONS http://testserver/health "HTTP/1.1 200 OK"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
-16:44:44 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+08:13:14 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 500 Internal Server Error"
+08:13:14 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 503 Service Unavailable"
+08:13:14 - httpx - INFO - HTTP Request: POST http://testserver/statements/email "HTTP/1.1 401 Unauthorized"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/healthz "HTTP/1.1 404 Not Found"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/v1/health "HTTP/1.1 404 Not Found"
+08:13:15 - httpx - INFO - HTTP Request: OPTIONS http://testserver/health "HTTP/1.1 200 OK"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+08:13:15 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+08:13:15 - src.main - ERROR - Startup preflight failed. Missing required managed-identity identity configuration keys: COSMOS_ACCOUNT_URL, COSMOS_DB_NAME
+08:13:15 - src.main - INFO - Startup preflight passed for managed-identity runtime configuration.
+08:13:15 - src.main - ERROR - Startup preflight failed. Missing required managed-identity identity configuration keys: AZURE_KEY_VAULT_URI, COSMOS_DB_NAME
+08:13:15 - src.main - ERROR - Startup preflight failed. Invalid required managed-identity configuration keys: COSMOS_ACCOUNT_URL (must be an HTTPS endpoint)
+08:13:15 - src.main - ERROR - Startup preflight failed. Invalid optional ACR endpoint references: ACR_LOGIN_SERVER (must end with .azurecr.io), CONTAINER_REGISTRY_URL (must end with .azurecr.io)
+08:13:15 - src.main - ERROR - Startup preflight failed. Invalid optional ACR endpoint references: CONTAINER_REGISTRY_URL (must end with .azurecr.io)
