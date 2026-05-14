@@ -85,3 +85,14 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "rbac_propagation_wait_seconds" {
+  description = "Seconds to wait after deployer data-owner role assignment before App Configuration key operations."
+  type        = number
+  default     = 90
+
+  validation {
+    condition     = var.rbac_propagation_wait_seconds >= 0 && var.rbac_propagation_wait_seconds <= 600
+    error_message = "rbac_propagation_wait_seconds must be between 0 and 600."
+  }
+}

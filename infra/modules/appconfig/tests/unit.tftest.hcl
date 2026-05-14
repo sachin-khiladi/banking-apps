@@ -7,6 +7,8 @@ mock_provider "azurerm" {
   }
 }
 
+mock_provider "time" {}
+
 variables {
   resource_group_name        = "rg-test"
   location                   = "eastus"
@@ -43,5 +45,14 @@ run "app_identity_has_data_reader_role" {
   assert {
     condition     = azurerm_role_assignment.appconfig_reader_app.role_definition_name == "App Configuration Data Reader"
     error_message = "The application identity must receive the App Configuration Data Reader role."
+  }
+}
+
+run "rbac_propagation_wait_default" {
+  command = plan
+
+  assert {
+    condition     = time_sleep.wait_for_deployer_data_owner_rbac.create_duration == "90s"
+    error_message = "App Configuration module must wait for deployer RBAC propagation before key operations."
   }
 }

@@ -3,6 +3,15 @@
 # Provisions: Azure App Configuration + RBAC + seed key-values
 # ===========================================================================
 
+terraform {
+  required_providers {
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.11"
+    }
+  }
+}
+
 resource "azurerm_app_configuration" "appconfig" {
   name                       = "appcs-${var.app_name}-${var.env}"
   location                   = var.location
@@ -39,6 +48,13 @@ resource "azurerm_role_assignment" "appconfig_owner_deployer" {
   }
 }
 
+# RBAC propagation in App Configuration data plane can lag immediately after
+# role-assignment create. Delay key reads/writes until permissions are effective.
+resource "time_sleep" "wait_for_deployer_data_owner_rbac" {
+  depends_on      = [azurerm_role_assignment.appconfig_owner_deployer]
+  create_duration = "${var.rbac_propagation_wait_seconds}s"
+}
+
 # ---------------------------------------------------------------------------
 # RBAC — UAMI → Data Reader (runtime read-only access)
 # ---------------------------------------------------------------------------
@@ -57,7 +73,7 @@ resource "azurerm_app_configuration_key" "environment" {
   value                  = var.env
   label                  = var.env
 
-  depends_on = [azurerm_role_assignment.appconfig_owner_deployer]
+  depends_on = [time_sleep.wait_for_deployer_data_owner_rbac]
 }
 
 resource "azurerm_app_configuration_key" "app_name" {
@@ -66,5 +82,5 @@ resource "azurerm_app_configuration_key" "app_name" {
   value                  = var.app_name
   label                  = var.env
 
-  depends_on = [azurerm_role_assignment.appconfig_owner_deployer]
+  depends_on = [time_sleep.wait_for_deployer_data_owner_rbac]
 }

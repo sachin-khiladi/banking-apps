@@ -3,6 +3,15 @@
 # Provisions: User-Assigned Managed Identity + Key Vault (RBAC mode) + Secrets
 # ===========================================================================
 
+terraform {
+  required_providers {
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.11"
+    }
+  }
+}
+
 # ---------------------------------------------------------------------------
 # User-Assigned Managed Identity
 # Created here so the Container App module can attach it without a circular
@@ -68,6 +77,13 @@ resource "azurerm_role_assignment" "kv_admin_deployer" {
   }
 }
 
+# Key Vault data-plane RBAC can take time to propagate after role assignment.
+# Delay secret reads/writes to avoid transient 403 ForbiddenByRbac failures.
+resource "time_sleep" "wait_for_kv_admin_rbac" {
+  depends_on      = [azurerm_role_assignment.kv_admin_deployer]
+  create_duration = "${var.rbac_propagation_wait_seconds}s"
+}
+
 # ---------------------------------------------------------------------------
 # RBAC — UAMI → Key Vault Secrets User (read-only at runtime)
 # ---------------------------------------------------------------------------
@@ -91,7 +107,7 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
   # Wait for deployer to have write access AND the UAMI read role to be assigned
   # so both the secret write and the runtime read path are ready atomically.
   depends_on = [
-    azurerm_role_assignment.kv_admin_deployer,
+    time_sleep.wait_for_kv_admin_rbac,
     azurerm_role_assignment.kv_secrets_user_app,
   ]
 
@@ -111,7 +127,7 @@ resource "azurerm_key_vault_secret" "jwt_secret_key" {
   tags = var.tags
 
   depends_on = [
-    azurerm_role_assignment.kv_admin_deployer,
+    time_sleep.wait_for_kv_admin_rbac,
     azurerm_role_assignment.kv_secrets_user_app,
   ]
 
@@ -131,7 +147,7 @@ resource "azurerm_key_vault_secret" "smtp_password" {
   tags = var.tags
 
   depends_on = [
-    azurerm_role_assignment.kv_admin_deployer,
+    time_sleep.wait_for_kv_admin_rbac,
     azurerm_role_assignment.kv_secrets_user_app,
   ]
 
