@@ -10,7 +10,7 @@ project_name = "fastapi-azure-app"
 
 # Optional override for deployment principal object ID used by bootstrap/deployer RBAC.
 # Set to null to use the currently authenticated principal.
-deployment_principal_object_id = "cd7ca1e6-67f4-4120-b3a2-615de398cc6a"
+deployment_principal_object_id = null
 
 # RBAC bootstrap sequencing (operator runbook):
 # 1. Run scripts/bootstrap_pipeline_rbac.sh as a privileged operator to grant
