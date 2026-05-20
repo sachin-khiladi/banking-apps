@@ -44,24 +44,6 @@ resource "azapi_update_resource" "acr_role_assignment_mode" {
   }
 }
 
-locals {
-  deployer_repository_condition_default = <<-EOT
-  (
-    (
-      !(ActionMatches{'Microsoft.ContainerRegistry/registries/pull/read'})
-      &&
-      !(ActionMatches{'Microsoft.ContainerRegistry/registries/push/write'})
-    )
-    ||
-    (
-      @Resource[Microsoft.ContainerRegistry/registries/repositories:Name] StringLike '${var.project_repository_path}'
-      ||
-      @Resource[Microsoft.ContainerRegistry/registries/repositories:Name] StringLike '${var.project_repository_path}/*'
-    )
-  )
-  EOT
-}
-
 # ---------------------------------------------------------------------------
 # RBAC — UAMI → AcrPull
 # Allows the Container App's managed identity to pull images at runtime
@@ -98,39 +80,3 @@ resource "azurerm_role_assignment" "acr_pull_uami" {
   }
 }
 
-# ---------------------------------------------------------------------------
-# RBAC — deploying principal → AcrPush
-# Allows the CI/CD service-principal pipeline to push images via:
-#   az acr login --name <acr_name>
-#   docker push <acr_login_server>/bank-api:<tag>
-# The deployer is a service principal in CI/CD; skip_service_principal_aad_check
-# prevents the provider from polling AAD for propagation, which avoids
-# intermittent 400/403 errors when the identity was recently created or
-# re-granted.
-# ---------------------------------------------------------------------------
-resource "azurerm_role_assignment" "acr_push_deployer" {
-  depends_on = [azapi_update_resource.acr_role_assignment_mode]
-
-  scope                = azurerm_container_registry.acr.id
-  role_definition_name = "AcrPush"
-  principal_id         = var.deployer_object_id
-
-  condition_version = var.enforce_project_repository_abac ? "2.0" : null
-  condition = var.enforce_project_repository_abac ? coalesce(
-    var.deployer_repository_condition,
-    local.deployer_repository_condition_default,
-  ) : null
-
-  skip_service_principal_aad_check = true
-
-  lifecycle {
-    ignore_changes = [
-      # Provider-only flag; Azure never persists it — ignore to prevent
-      # perpetual "update" cycles after provider version changes.
-      skip_service_principal_aad_check,
-      # Computed alongside role_definition_name; may vary across provider
-      # versions without a real config change.
-      role_definition_id,
-    ]
-  }
-}

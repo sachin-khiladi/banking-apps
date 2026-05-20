@@ -3,15 +3,6 @@
 # Provisions: User-Assigned Managed Identity + Key Vault (RBAC mode) + Secrets
 # ===========================================================================
 
-terraform {
-  required_providers {
-    time = {
-      source  = "hashicorp/time"
-      version = "~> 0.11"
-    }
-  }
-}
-
 # ---------------------------------------------------------------------------
 # User-Assigned Managed Identity
 # Created here so the Container App module can attach it without a circular
@@ -51,40 +42,6 @@ resource "azurerm_key_vault" "kv" {
 }
 
 # ---------------------------------------------------------------------------
-# RBAC — deploying principal → Key Vault Administrator
-# Required so Terraform can write secrets.
-# The deployer is a CI/CD service principal; skip_service_principal_aad_check
-# prevents the provider from polling AAD for propagation, which avoids
-# intermittent 400/403 errors when the identity was recently created or
-# re-granted.
-# ---------------------------------------------------------------------------
-resource "azurerm_role_assignment" "kv_admin_deployer" {
-  scope                = azurerm_key_vault.kv.id
-  role_definition_name = "Key Vault Administrator"
-  principal_id         = var.deployer_object_id
-
-  skip_service_principal_aad_check = true
-
-  lifecycle {
-    ignore_changes = [
-      # Provider-only flag; Azure never persists it — ignore to prevent
-      # perpetual "update" cycles after provider version changes.
-      skip_service_principal_aad_check,
-      # Computed alongside role_definition_name; may vary across provider
-      # versions without a real config change.
-      role_definition_id,
-    ]
-  }
-}
-
-# Key Vault data-plane RBAC can take time to propagate after role assignment.
-# Delay secret reads/writes to avoid transient 403 ForbiddenByRbac failures.
-resource "time_sleep" "wait_for_kv_admin_rbac" {
-  depends_on      = [azurerm_role_assignment.kv_admin_deployer]
-  create_duration = "${var.rbac_propagation_wait_seconds}s"
-}
-
-# ---------------------------------------------------------------------------
 # RBAC — UAMI → Key Vault Secrets User (read-only at runtime)
 # ---------------------------------------------------------------------------
 resource "azurerm_role_assignment" "kv_secrets_user_app" {
@@ -118,7 +75,6 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
   # Wait for deployer to have write access AND the UAMI read role to be assigned
   # so both the secret write and the runtime read path are ready atomically.
   depends_on = [
-    time_sleep.wait_for_kv_admin_rbac,
     azurerm_role_assignment.kv_secrets_user_app,
   ]
 
@@ -138,7 +94,6 @@ resource "azurerm_key_vault_secret" "jwt_secret_key" {
   tags = var.tags
 
   depends_on = [
-    time_sleep.wait_for_kv_admin_rbac,
     azurerm_role_assignment.kv_secrets_user_app,
   ]
 
@@ -158,7 +113,6 @@ resource "azurerm_key_vault_secret" "smtp_password" {
   tags = var.tags
 
   depends_on = [
-    time_sleep.wait_for_kv_admin_rbac,
     azurerm_role_assignment.kv_secrets_user_app,
   ]
 

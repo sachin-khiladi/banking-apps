@@ -130,25 +130,6 @@ resource "azurerm_cosmosdb_sql_container" "user_profiles" {
   }
 }
 
-# ── RBAC: deployer → Cosmos DB Built-in Data Contributor ─────────────────────
-# Grants the principal running Terraform (your local machine / CI pipeline)
-# full data-plane read/write access so you can query Cosmos from your
-# workstation using az CLI or the Azure Portal Data Explorer.
-
-resource "azurerm_cosmosdb_sql_role_assignment" "deployer_data_contributor" {
-  resource_group_name = var.resource_group_name
-  account_name        = azurerm_cosmosdb_account.cosmos.name
-
-  # Built-in role: 00000000-0000-0000-0000-000000000002 = Data Contributor
-  role_definition_id = "${azurerm_cosmosdb_account.cosmos.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
-  principal_id       = var.deployer_object_id
-  scope              = azurerm_cosmosdb_account.cosmos.id
-
-  lifecycle {
-    ignore_changes = [role_definition_id]
-  }
-}
-
 resource "azurerm_cosmosdb_sql_role_assignment" "app_data_contributor" {
   count = var.assign_app_cosmosdb_role ? 1 : 0
 
