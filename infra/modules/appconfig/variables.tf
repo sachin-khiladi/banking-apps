@@ -38,16 +38,6 @@ variable "env" {
   }
 }
 
-variable "deployer_object_id" {
-  description = "Object ID of the principal running Terraform (gets Data Owner role)"
-  type        = string
-
-  validation {
-    condition     = can(regex("^[0-9a-fA-F-]{36}$", var.deployer_object_id))
-    error_message = "deployer_object_id must be a valid GUID."
-  }
-}
-
 variable "app_identity_principal_id" {
   description = "Principal ID of the UAMI that the Container App uses (gets Data Reader role)"
   type        = string
@@ -86,13 +76,3 @@ variable "tags" {
   default     = {}
 }
 
-variable "rbac_propagation_wait_seconds" {
-  description = "Seconds to wait after deployer data-owner role assignment before App Configuration key operations."
-  type        = number
-  default     = 90
-
-  validation {
-    condition     = var.rbac_propagation_wait_seconds >= 0 && var.rbac_propagation_wait_seconds <= 600
-    error_message = "rbac_propagation_wait_seconds must be between 0 and 600."
-  }
-}

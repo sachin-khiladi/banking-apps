@@ -74,11 +74,6 @@ variable "max_throughput" {
   default     = 1000
 }
 
-variable "deployer_object_id" {
-  description = "Object ID of the principal running Terraform; granted Cosmos DB Built-in Data Contributor for local dev access"
-  type        = string
-}
-
 variable "app_uami_principal_id" {
   description = "Principal ID of the Container App user-assigned managed identity; when set, receives Cosmos DB Built-in Data Contributor at account scope"
   type        = string

@@ -21,8 +21,6 @@ mock_provider "azurerm" {
   }
 }
 
-mock_provider "time" {}
-
 variables {
   resource_group_name            = "rg-test"
   location                       = "eastus"
@@ -30,7 +28,6 @@ variables {
   env                            = "dev"
   unique_suffix                  = "abcdef"
   tenant_id                      = "00000000-0000-0000-0000-000000000001"
-  deployer_object_id             = "00000000-0000-0000-0000-000000000002"
   app_insights_connection_string = "InstrumentationKey=mock"
   jwt_secret_key                 = "mock-jwt-secret"
   smtp_password                  = "mock-smtp-password"
@@ -73,29 +70,11 @@ run "key_vault_uses_rbac_authorization" {
   }
 }
 
-run "kv_admin_deployer_skips_aad_check" {
-  command = plan
-
-  assert {
-    condition     = azurerm_role_assignment.kv_admin_deployer.skip_service_principal_aad_check == true
-    error_message = "kv_admin_deployer role assignment must set skip_service_principal_aad_check = true for CI/CD service principal deployers to avoid AAD propagation delays."
-  }
-}
-
 run "kv_runtime_reader_skips_aad_check" {
   command = plan
 
   assert {
     condition     = azurerm_role_assignment.kv_secrets_user_app.skip_service_principal_aad_check == true
     error_message = "kv_secrets_user_app role assignment must set skip_service_principal_aad_check = true to avoid UAMI propagation timing failures."
-  }
-}
-
-run "kv_rbac_propagation_wait_default" {
-  command = plan
-
-  assert {
-    condition     = time_sleep.wait_for_kv_admin_rbac.create_duration == "90s"
-    error_message = "Key Vault module must wait for deployer RBAC propagation before secret operations."
   }
 }

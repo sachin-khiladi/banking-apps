@@ -43,16 +43,6 @@ variable "tenant_id" {
   }
 }
 
-variable "deployer_object_id" {
-  description = "Object ID of the principal running Terraform (needs KV Administrator)"
-  type        = string
-
-  validation {
-    condition     = can(regex("^[0-9a-fA-F-]{36}$", var.deployer_object_id))
-    error_message = "deployer_object_id must be a valid GUID."
-  }
-}
-
 variable "kv_sku" {
   description = "Key Vault SKU: standard | premium"
   type        = string
@@ -120,13 +110,3 @@ variable "tags" {
   default     = {}
 }
 
-variable "rbac_propagation_wait_seconds" {
-  description = "Seconds to wait after deployer Key Vault Administrator role assignment before secret operations."
-  type        = number
-  default     = 90
-
-  validation {
-    condition     = var.rbac_propagation_wait_seconds >= 0 && var.rbac_propagation_wait_seconds <= 600
-    error_message = "rbac_propagation_wait_seconds must be between 0 and 600."
-  }
-}

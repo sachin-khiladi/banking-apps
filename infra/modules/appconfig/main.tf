@@ -3,15 +3,6 @@
 # Provisions: Azure App Configuration + RBAC + seed key-values
 # ===========================================================================
 
-terraform {
-  required_providers {
-    time = {
-      source  = "hashicorp/time"
-      version = "~> 0.11"
-    }
-  }
-}
-
 resource "azurerm_app_configuration" "appconfig" {
   name                       = "appcs-${var.app_name}-${var.env}"
   location                   = var.location
@@ -20,39 +11,6 @@ resource "azurerm_app_configuration" "appconfig" {
   soft_delete_retention_days = var.soft_delete_retention_days
 
   tags = var.tags
-}
-
-# ---------------------------------------------------------------------------
-# RBAC — deploying principal → Data Owner (write key-values via Terraform)
-# The deployer is a CI/CD service principal; skip_service_principal_aad_check
-# prevents the provider from polling AAD for propagation, which avoids
-# intermittent 400/403 errors when the identity was recently created or
-# re-granted.
-# ---------------------------------------------------------------------------
-resource "azurerm_role_assignment" "appconfig_owner_deployer" {
-  scope                = azurerm_app_configuration.appconfig.id
-  role_definition_name = "App Configuration Data Owner"
-  principal_id         = var.deployer_object_id
-
-  skip_service_principal_aad_check = true
-
-  lifecycle {
-    ignore_changes = [
-      # Provider-only flag; Azure never persists it — ignore to prevent
-      # perpetual "update" cycles after provider version changes.
-      skip_service_principal_aad_check,
-      # Computed alongside role_definition_name; may vary across provider
-      # versions without a real config change.
-      role_definition_id,
-    ]
-  }
-}
-
-# RBAC propagation in App Configuration data plane can lag immediately after
-# role-assignment create. Delay key reads/writes until permissions are effective.
-resource "time_sleep" "wait_for_deployer_data_owner_rbac" {
-  depends_on      = [azurerm_role_assignment.appconfig_owner_deployer]
-  create_duration = "${var.rbac_propagation_wait_seconds}s"
 }
 
 # ---------------------------------------------------------------------------
@@ -81,8 +39,6 @@ resource "azurerm_app_configuration_key" "environment" {
   key                    = "app:environment"
   value                  = var.env
   label                  = var.env
-
-  depends_on = [time_sleep.wait_for_deployer_data_owner_rbac]
 }
 
 resource "azurerm_app_configuration_key" "app_name" {
@@ -90,6 +46,4 @@ resource "azurerm_app_configuration_key" "app_name" {
   key                    = "app:name"
   value                  = var.app_name
   label                  = var.env
-
-  depends_on = [time_sleep.wait_for_deployer_data_owner_rbac]
 }
